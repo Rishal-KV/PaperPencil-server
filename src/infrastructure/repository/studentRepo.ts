@@ -55,6 +55,15 @@ class StudentRepo implements IStudentRepo {
       throw error;
     }
   }
+  async updateById(id: string): Promise<void> {
+     try {
+        await studentModel.findOneAndUpdate({_id : id},{
+          is_Verified : true
+        })
+     } catch (error) {
+       throw error
+     }
+  }
 }
 
 export default StudentRepo;

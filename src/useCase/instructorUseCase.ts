@@ -38,17 +38,24 @@ class InstructorUseCase {
       if (instrcutorFound) {
         return { status: false, message: "instructor already exist" };
       } else {
-        let payload: { email: string } = {
-          email: InstructorData.email,
-        };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(InstructorData.email, parseInt(otp));
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
         this.OtpRepo.createOtpCollection(InstructorData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
         hashedPass ? (InstructorData.password = hashedPass) : "";
+        let savedInstructor =
+          await this.instructorRepo.saveInstructorToDatabase(InstructorData);
+        let payload: {
+          name: string | undefined;
+          id: string | undefined;
+          email: string | undefined;
+        } = {
+          name: savedInstructor?.name,
+          email: savedInstructor?.email,
+          id: savedInstructor?._id,
+        };
+        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
 
-        await this.instructorRepo.saveInstructorToDatabase(InstructorData);
         return { status: true, Token: jwtToken };
       }
     } catch (error) {
@@ -59,14 +66,13 @@ class InstructorUseCase {
   async authenticate(token: string, otp: string) {
     try {
       let decodeToken = this.jwt.verifyToken(token);
+      console.log(decodeToken);
+
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            let instructorToken = this.jwt.createToken(
-              decodeToken.email,
-              "instructor"
-            );
+            let instructorToken = this.jwt.createToken(decodeToken.email);
             let instructorData = await this.instructorRepo.fetchInstructorData(
               decodeToken.email
             );
@@ -93,6 +99,7 @@ class InstructorUseCase {
     );
 
     if (instructorDB) {
+      
       if (instructorDB.is_blocked) {
         return { status: false, message: "Account is blocked" };
       } else {
@@ -105,7 +112,12 @@ class InstructorUseCase {
           instructorDB.password
         );
         if (verifyPassword) {
-          let Token = this.jwt.createToken(instructorDB.email, "instructor");
+          let payLoad : {name:string,email:string,id:string} = {
+              name: instructorDB.name,
+              email : instructorDB.email,
+              id:instructorDB._id
+          }
+          let Token = this.jwt.createToken(payLoad);
           return { status: true, token: Token, instructor: instructor };
         } else {
           return { status: false, message: "invalid password" };
@@ -115,42 +127,47 @@ class InstructorUseCase {
       return { status: false, message: "No account found" };
     }
   }
-  async googleAuth(credential : any){
-    
-      try {
-        let { name, email } = credential;
-        let instrcutorFound = await this.instructorRepo.findInstructorByEmail(email);
-        if (instrcutorFound) {
-        
-          if (instrcutorFound.is_blocked) {
-              console.log("blocked");
-              
-            return {
-              status: false,
-              message: `hey ${name} you are blocked by admin`,
-            };
-          } else {
-           let token = this.jwt.createToken(email, "student");
-            return { status: true, message: `hey ${name} welcome back!!`, token };
-          }
-        } else {
-          await this.instructorRepo.saveGoogleAuth(credential);
-          let token = this.jwt.createToken(email, "student");
+  async googleAuth(credential: any) {
+    try {
+      let { name, email } = credential;
+      let instrcutorFound = await this.instructorRepo.findInstructorByEmail(
+        email
+      );
+      if (instrcutorFound) {
+        if (instrcutorFound.is_blocked) {
+          console.log("blocked");
+
           return {
-            status: true,
-            message: `welcome ${name} `,
-            token
+            status: false,
+            message: `hey ${name} you are blocked by admin`,
           };
+        } else {
+          let payload: { id: string; email: string ,name:string} = {
+            id: instrcutorFound._id,
+            email: instrcutorFound.email,
+            name :instrcutorFound.name
+          };
+          let token = this.jwt.createToken(payload);
+          return { status: true, message: `hey ${name} welcome back!!`, token };
         }
-      } catch (error) {
-        throw error
-
+      } else {
+        let instructor = await this.instructorRepo.saveGoogleAuth(credential);
+        let payload: { id: string; email: string,name:string } = {
+          id: instructor._id,
+          email: instructor.email,
+          name : instructor.name
+        };
+        let token = this.jwt.createToken(payload);
+        return {
+          status: true,
+          message: `welcome ${name} `,
+          token,
+        };
       }
-    
-   
+    } catch (error) {
+      throw error;
+    }
   }
-
 }
-
 
 export default InstructorUseCase;

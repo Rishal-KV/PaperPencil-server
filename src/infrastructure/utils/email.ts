@@ -34,6 +34,22 @@ class NodeMailer implements Imailer {
         });
 
     }
+    async sendVerificationMail(id: string,to:string): Promise<any> {
+        let mailOptions = {
+            from: process.env.EMAIL,
+            to: to,
+            subject: 'PaperPencil - Email verification',
+            html: `<p>Click the following link to verify: <a href="http://localhost:3000/verify_user?id=${id}">Click here to verify</a></p>`
+        }
+       
+        this.transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log('Error occurred:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+    }
 }
 
 export default NodeMailer

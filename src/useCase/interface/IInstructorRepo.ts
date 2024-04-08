@@ -4,7 +4,7 @@ interface IInstructorRepo{
     saveInstructorToDatabase(instructor:Instructor):Promise<Instructor|null | void>;
     fetchInstructorData(email:string):Promise<Instructor|null>
     verifyInstructor(email:string):Promise<any>
-    saveGoogleAuth(credential:Instructor):Promise<void>
+    saveGoogleAuth(credential:Instructor):Promise<Instructor>
 }
 
 export default IInstructorRepo

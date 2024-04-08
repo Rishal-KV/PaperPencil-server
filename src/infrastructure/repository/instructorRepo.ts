@@ -42,7 +42,7 @@ class InstructorRepo implements IInstructorRepo {
         })
     
     }
-    async saveGoogleAuth(credential: any): Promise<void> {
+    async saveGoogleAuth(credential: any): Promise<Instructor> {
         try {
           let saved = await instructorModel.create({
             name: credential.name,
@@ -50,6 +50,7 @@ class InstructorRepo implements IInstructorRepo {
             is_Verified : true,
             googleId: credential.sub,
           });
+          return saved
         } catch (error) {
           throw error;
         }

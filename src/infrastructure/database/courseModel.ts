@@ -1,4 +1,5 @@
 import mongoose,{model,Schema} from "mongoose";
+import Course from "../../domain/course";
 const courseSchema = new Schema({
     instructor : {
         type : String,
@@ -42,5 +43,5 @@ const courseSchema = new Schema({
         default:false
     }
 })
-const courseModel = model('course',courseSchema)
+const courseModel = model<Course>('course',courseSchema)
 export default courseModel;

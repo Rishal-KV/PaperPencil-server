@@ -33,6 +33,7 @@ class InstructorController {
     async authenticateInstructor(req:Request,res:Response){
         try {
           let token =   req.headers.authorization as string
+         console.log(token);
          
           
             let response = await this.instructor.authenticate(token,req.body.otp)
@@ -69,8 +70,13 @@ class InstructorController {
    
  async dashboard(req:Request,res:Response){
     try {
-        let courses = await this.course.fetchCourseData();
-        console.log(courses);
+        
+        
+        let token =   req.headers.authorization as string
+       
+        
+        let courses = await this.course.fetchCourseData(token);
+     
         
         res.status(200).json(courses)
     } catch (error) {

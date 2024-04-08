@@ -6,6 +6,7 @@ interface IStudentRepo{
     fetchStudentData(email:string):Promise<student|null>
     verifyStudent(email:string):Promise<any>
     saveGoogleAuth(credential:student):Promise<void>
+    updateById(id:string):Promise<void>
     
 }
 

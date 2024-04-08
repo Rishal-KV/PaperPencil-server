@@ -12,10 +12,10 @@ class Jwt {
         // console.log('this.secretKey:', this.secretKey);
     }
 
-    createToken(email: string , role: string): string {
+    createToken(payload : {name?:string,email:string,id:string}) {
         try {
-            const studentPayload = { email, role };
-            const token = sign(studentPayload, this.secretKey);
+          
+            const token = sign(payload, this.secretKey);
             return token;
         } catch (error) {
             console.error('Error creating token:', error);

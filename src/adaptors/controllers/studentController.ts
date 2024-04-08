@@ -93,6 +93,21 @@ class StudentController {
       console.log(error);
     }
   }
+  async verifyByEmail(req:Request,res:Response){
+    try {
+      console.log("called");
+      
+      let id = req.query.id as string;
+      console.log(id);
+      
+        await this.studentUseCase.verifyByEMail(id)
+       res.json({"test":"tes"})
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 
 export default StudentController;

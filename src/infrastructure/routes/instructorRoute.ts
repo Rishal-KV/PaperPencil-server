@@ -37,8 +37,9 @@ router.post('/login',(req,res) => instrcutorController.Login(req,res));
 
 router.post('/confirm_otp',(req,res)=> instrcutorController.authenticateInstructor(req,res) )
 router.post('/add_course',upload.single('image'),(req,res)=> courseController.addCourse(req,res))
-router.get('/course_list',instructorAuth,(req,res)=>courseController.fetchCourse(req,res))
+router.get('/course_list',instructorAuth,(req,res)=>courseController.fetchINstructorCourse(req,res))
 router.get('/dashboard',instructorAuth,(req,res) =>instrcutorController.dashboard(req,res) )
 router.post('/googleAuth',(req,res)=>instrcutorController.googleLogin(req,res))
+
 
 export default router
