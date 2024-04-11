@@ -14,7 +14,7 @@ class CategoryController {
             let { category } = req.body;
             console.log(category);
             
-            let response = await this.category.addCategory(category.category);
+            let response = await this.category.addCategory(category);
             if (response?.status) {
                 return res.status(200).json(response)
             } else {

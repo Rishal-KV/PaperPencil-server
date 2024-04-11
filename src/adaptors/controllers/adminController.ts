@@ -69,6 +69,8 @@ class adminController{
     async instructorAction(req:Request,res:Response){
         try {
             let {id} = req.body
+            console.log(id);
+            
             let actionstatus = await this.adminUseCase.blockInstructor(id)
             console.log(actionstatus);
             

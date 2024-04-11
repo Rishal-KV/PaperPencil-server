@@ -8,7 +8,7 @@ class CategoryUseCase {
     async addCategory(name: string) {
         try {
             let category = await this.CategoryRepo.findCategory(name);
-            console.log(category);
+         
 
             if (category === null) {
                 let categoryAdded = await this.CategoryRepo.saveCategory(name);

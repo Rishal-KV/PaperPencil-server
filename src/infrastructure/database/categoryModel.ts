@@ -10,6 +10,6 @@ const categorySchema  = new Schema({
         default : false
     }
 });
-
+categorySchema.index({ name: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 let categoryModel = model<Category>('category', categorySchema);
 export default categoryModel;

@@ -72,7 +72,10 @@ class InstructorUseCase {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            let instructorToken = this.jwt.createToken(decodeToken.email);
+            let instructorToken = this.jwt.createToken(
+              decodeToken._id,
+              "instructor"
+            );
             let instructorData = await this.instructorRepo.fetchInstructorData(
               decodeToken.email
             );
@@ -99,7 +102,6 @@ class InstructorUseCase {
     );
 
     if (instructorDB) {
-      
       if (instructorDB.is_blocked) {
         return { status: false, message: "Account is blocked" };
       } else {
@@ -112,12 +114,7 @@ class InstructorUseCase {
           instructorDB.password
         );
         if (verifyPassword) {
-          let payLoad : {name:string,email:string,id:string} = {
-              name: instructorDB.name,
-              email : instructorDB.email,
-              id:instructorDB._id
-          }
-          let Token = this.jwt.createToken(payLoad);
+          let Token = this.jwt.createToken(instructor?._id, "instructor");
           return { status: true, token: Token, instructor: instructor };
         } else {
           return { status: false, message: "invalid password" };
@@ -142,22 +139,13 @@ class InstructorUseCase {
             message: `hey ${name} you are blocked by admin`,
           };
         } else {
-          let payload: { id: string; email: string ,name:string} = {
-            id: instrcutorFound._id,
-            email: instrcutorFound.email,
-            name :instrcutorFound.name
-          };
-          let token = this.jwt.createToken(payload);
+          let token = this.jwt.createToken(instrcutorFound._id, "instrcutor");
           return { status: true, message: `hey ${name} welcome back!!`, token };
         }
       } else {
         let instructor = await this.instructorRepo.saveGoogleAuth(credential);
-        let payload: { id: string; email: string,name:string } = {
-          id: instructor._id,
-          email: instructor.email,
-          name : instructor.name
-        };
-        let token = this.jwt.createToken(payload);
+
+        let token = this.jwt.createToken(instructor._id, "instructor");
         return {
           status: true,
           message: `welcome ${name} `,

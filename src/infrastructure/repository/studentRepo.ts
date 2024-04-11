@@ -43,7 +43,7 @@ class StudentRepo implements IStudentRepo {
       }
     );
   }
-  async saveGoogleAuth(credential: any): Promise<void> {
+  async saveGoogleAuth(credential: any): Promise<student> {
     try {
       let saved = await studentModel.create({
         name: credential.name,
@@ -51,6 +51,7 @@ class StudentRepo implements IStudentRepo {
         is_Verified : true,
         googleId: credential.sub,
       });
+      return saved
     } catch (error) {
       throw error;
     }

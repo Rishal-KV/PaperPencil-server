@@ -30,20 +30,29 @@ class StudentUseCase {
       const studentFound = await this.repository.findStudentByEMail(
         studentData.email
       );
-      if (!studentFound?.is_Verified) {
-        this.sendmail.sendVerificationMail(studentFound?._id,studentFound?.email)
-        return {status : false, message:"please check your mail for verifying your account"}
+      if (studentFound) {
+        if (!studentFound.is_Verified) {
+          this.sendmail.sendVerificationMail(
+            studentFound._id,
+            studentFound.email
+          );
+          return {
+            status: false,
+            message: "please check your mail for verifying your account",
+          };
+        }
       }
 
       if (studentFound) {
         return { status: false, message: "student already exist" };
       } else {
-        let payload: { email: string } = {
+        let payload: { email: string,role:string } = {
           email: studentData.email,
+          role : "student"
         };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string,{expiresIn:"1m"});
         this.OtpRepo.createOtpCollection(studentData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
@@ -59,11 +68,17 @@ class StudentUseCase {
   async authenticate(token: string, otp: string) {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
+      console.log(decodeToken);
+      
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
+        console.log(fetchOtp);
+        console.log(otp);
+        
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            let studentToken = this.Jwt.createToken(decodeToken.email);
+            
+            let studentToken = this.Jwt.createToken(decodeToken._id, "student");
             let studentData = await this.repository.fetchStudentData(
               decodeToken.email
             );
@@ -74,6 +89,8 @@ class StudentUseCase {
               studentData: studentData,
             };
           } else {
+            console.log("eheh");
+            
             return { status: false, message: "invalid otp" };
           }
         } else {
@@ -86,9 +103,14 @@ class StudentUseCase {
   }
   async loginStudent(email: string, password: string) {
     let studentFound = await this.repository.findStudentByEMail(email);
- 
+    console.log(studentFound);
+    
 
     if (studentFound) {
+      let student = await this.repository.fetchStudentData(email)
+      if (!studentFound.is_Verified) {
+        return { status: false, message: "Account is not verified!!" };
+      }
       let verified = await this.bcrypt.encryptPass(
         password,
         studentFound.password
@@ -99,13 +121,13 @@ class StudentUseCase {
       } else if (studentFound.is_blocked) {
         return { status: false, message: "user is blocked" };
       } else {
-        let payLoad: { name: string; email: string; id: string } = {
-          name: studentFound.name,
-          email: studentFound.email,
-          id: studentFound._id,
+        let token = this.Jwt.createToken(studentFound._id, "student");
+        return {
+          status: true,
+          token: token,
+          student: student,
+          message: `welcome ${studentFound.name}`,
         };
-        let token = this.Jwt.createToken(payLoad);
-        return { status: true, token: token, student: studentFound,message :`welcome ${studentFound.name}` };
       }
     } else {
       return { status: false, message: "please create an account" };
@@ -116,7 +138,7 @@ class StudentUseCase {
     try {
       let { name, email } = credential;
       let studentFound = await this.repository.findStudentByEMail(email);
-     
+
       if (studentFound) {
         if (studentFound.is_blocked) {
           console.log("blocked");
@@ -126,19 +148,24 @@ class StudentUseCase {
             message: `hey ${name} you are blocked by admin`,
           };
         } else {
-          let studentData = await this.repository.fetchStudentData(email)
-          let token = this.Jwt.createToken(email);
-          return { status: true, message: `hey ${name} welcome back!!`, token,studentData};
+          let studentData = await this.repository.fetchStudentData(email);
+          let token = this.Jwt.createToken(studentData?._id, "student");
+          return {
+            status: true,
+            message: `hey ${name} welcome back!!`,
+            token,
+            studentData,
+          };
         }
       } else {
-        await this.repository.saveGoogleAuth(credential);
-        let token = this.Jwt.createToken(email);
-        let studentData = await this.repository.fetchStudentData(email)
+        let student = await this.repository.saveGoogleAuth(credential);
+        let token = this.Jwt.createToken(student._id, "student");
+        let studentData = await this.repository.fetchStudentData(email);
         return {
           status: true,
           message: `welcome ${name} let's learn logether`,
           token,
-          studentData
+          studentData,
         };
       }
     } catch (error) {
@@ -146,12 +173,11 @@ class StudentUseCase {
     }
   }
 
-  async verifyByEMail(id:string){
+  async verifyByEMail(id: string) {
     try {
-      await this.repository.updateById(id)
+      await this.repository.updateById(id);
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

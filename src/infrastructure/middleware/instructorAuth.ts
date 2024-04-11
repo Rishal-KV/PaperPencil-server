@@ -10,15 +10,17 @@ export const instructorAuth = async (
   next: NextFunction
 ) => {
   try {
-    let token = req.headers.authorization;
+    let token = req.cookies.studentToken;
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
-      console.log(decodeToken);
 
       if (decodeToken) {
+        if (decodeToken.role !== "student") {
+          return { status: false, message: "No access" };
+        }
         let instructorData = await instructor.findInstructorByEmail(
           decodeToken.email
         );

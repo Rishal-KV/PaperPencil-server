@@ -22,11 +22,8 @@ class AdminUseCase {
           adminFound.password
         );
         if (verifyPassword) {
-          let payLoad: { name?: string; email: string; id: string } = {
-            email: adminFound.email,
-            id: adminFound._id,
-          };
-          let token = this.Jwt.createToken(payLoad);
+         
+          let token = this.Jwt.createToken(adminFound._id,"admin");
           return { status: true, token: token };
         } else {
           return { status: false };

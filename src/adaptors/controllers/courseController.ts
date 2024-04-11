@@ -49,7 +49,7 @@ class CourseController {
 
   async fetchINstructorCourse(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization as string;
+      let token = req.cookies.instructorToken as string;
       console.log(token);
 
       let courseData = await this.courseUseCase.fetchCourseData(token);
