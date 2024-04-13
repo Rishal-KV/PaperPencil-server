@@ -7,6 +7,8 @@ interface Course {
     approved: Boolean,
     listed: Boolean,
     image : string
+    adminVerified :boolean,
+    publish:boolean
 
 
 }

@@ -12,7 +12,7 @@ class CategoryController {
     async addCategory(req: Request, res: Response) {
         try {
             let { category } = req.body;
-            console.log(category);
+           
             
             let response = await this.category.addCategory(category);
             if (response?.status) {
@@ -28,7 +28,7 @@ class CategoryController {
     async fetchCategory(req: Request, res: Response) {
         try {
             let category = await this.category.fetchCategory();
-            console.log(category);
+           
             
             if (category) {
                 res.status(200).json(category)

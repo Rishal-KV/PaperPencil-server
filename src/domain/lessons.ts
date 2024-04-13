@@ -1,4 +1,4 @@
-export interface Lesson {
+interface Lesson {
     _id?: string;
     title: string;
     videoUrl: string;
@@ -6,3 +6,4 @@ export interface Lesson {
     createdAt?: Date;
     updatedAt?: Date;
   }
+  export default Lesson

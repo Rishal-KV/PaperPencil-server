@@ -1,5 +1,6 @@
 import ChapterRepo from "../infrastructure/repository/chapterRepo";
 import Chapter from "../domain/chapter";
+
 class ChapterUseCase {
   private chapterRepo: ChapterRepo;
   constructor(chapter: ChapterRepo) {
@@ -13,15 +14,16 @@ class ChapterUseCase {
       return { status: false };
     }
   }
-  async getChapters(id:string) {
+  async getChapters(id: string) {
     try {
-        let chapters = this.chapterRepo.getChapterById(id);
-        return chapters
+      let chapters = await this.chapterRepo.getChapterById(id);
+
+      return { chapters: chapters };
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
   }
+
 }
 
 export default ChapterUseCase;

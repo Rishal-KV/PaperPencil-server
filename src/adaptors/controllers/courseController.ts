@@ -13,7 +13,7 @@ class CourseController {
     try {
       let formData = req.body;
 
-      let instructor = req.headers.authorization as string;
+      let instructor = req.cookies.instructorToken as string;
 
       if (req.file) {
         await cloudinary.uploader
@@ -50,10 +50,8 @@ class CourseController {
   async fetchINstructorCourse(req: Request, res: Response) {
     try {
       let token = req.cookies.instructorToken as string;
-      console.log(token);
 
       let courseData = await this.courseUseCase.fetchCourseData(token);
-      console.log(courseData);
 
       res.status(200).json(courseData);
     } catch (error) {
@@ -64,12 +62,21 @@ class CourseController {
   async fetchCourse(req: Request, res: Response) {
     try {
       let course = await this.courseUseCase.fetchCourse();
-  
-    console.log("racjerss");
-    
-    
-        res.status(200).json({course:course})
-      
+
+      res.status(200).json({ course: course });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async publishCourse(req: Request, res: Response) {
+    try {
+      let { id } = req.body;
+      let published = await this.courseUseCase.publishCourse(id);
+      if (published.status) {
+        res.status(200).json(published);
+      } else {
+        res.status(401).json(published);
+      }
     } catch (error) {
       console.log(error);
     }

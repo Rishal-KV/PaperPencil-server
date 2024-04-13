@@ -27,12 +27,7 @@ const courseSchema = new Schema({
         type : String,
         require : true
     },
-    chapters : [
-        {
-            type : String,
-            ref : "chapter"
-        }
-    ],
+   
     approved :{
         type : Boolean,
         default : false
@@ -41,6 +36,10 @@ const courseSchema = new Schema({
     listed : {
         type:Boolean,
         default:false
+    },
+    publish: {
+        type : Boolean,
+        default : false
     }
 })
 const courseModel = model<Course>('course',courseSchema)

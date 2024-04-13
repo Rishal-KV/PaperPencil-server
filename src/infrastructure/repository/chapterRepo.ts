@@ -18,12 +18,35 @@ class ChapterRepo implements Chapter {
         
     }
     async getChapterById(id: string): Promise<chapter[] | null> {
-        let chapters = await chapterModel.find({course:id});
+        let chapters = await chapterModel.find({course:id}).populate('lessons');
         if (chapters) {
             return chapters
         }else{
             return null
         }
     }
+
+    async insertLesson(id: string, lesson: string | null | undefined): Promise<Boolean> {
+        let result  = await chapterModel.updateOne({_id : id},{
+            $push : {lessons : lesson}
+        })
+        if (result) {
+            return true
+        }else{
+            return false
+        }
+    }
+    async findChapterOfCourse(id:string):Promise<chapter[]>{
+        try {
+          let chapters = await chapterModel.find({course:id})
+          if (chapters) {
+            return chapters
+          }else{
+            return []
+          }
+        } catch (error) {
+          throw error
+        }
+      }
 }
 export default ChapterRepo

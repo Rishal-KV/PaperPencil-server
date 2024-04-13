@@ -1,5 +1,5 @@
 import { Schema,model } from "mongoose";
-import { Lesson } from "../../domain/lessons";
+import Lesson from "../../domain/lessons";
 const LessonSchema = new Schema({
   title: {
     type: String,
@@ -20,3 +20,4 @@ const LessonSchema = new Schema({
 });
 
 const lessonModel = model<Lesson>('Lesson', LessonSchema);
+export default lessonModel
