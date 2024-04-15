@@ -14,7 +14,7 @@ class LessonUseCase {
       if (lessonAdded) {
         let result = await this.chapterRepo.insertLesson(id, lessonAdded._id);
         if (result) {
-          return { status: true, messgae: "lesson added" };
+          return { status: true, message: "lesson added" };
         } else {
           return { status: false, message: "error adding lesson" };
         }

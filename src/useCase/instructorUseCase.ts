@@ -46,14 +46,11 @@ class InstructorUseCase {
         let savedInstructor =
           await this.instructorRepo.saveInstructorToDatabase(InstructorData);
         let payload: {
-          name: string | undefined;
-          id: string | undefined;
           email: string | undefined;
         } = {
-          name: savedInstructor?.name,
-          email: savedInstructor?.email,
-          id: savedInstructor?._id,
+          email :savedInstructor?.email,
         };
+
         let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
 
         return { status: true, Token: jwtToken };
@@ -64,16 +61,22 @@ class InstructorUseCase {
   }
 
   async authenticate(token: string, otp: string) {
+    console.log(otp);
+    
     try {
       let decodeToken = this.jwt.verifyToken(token);
       console.log(decodeToken);
 
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
+        let instructor = await this.instructorRepo.findInstructorByEmail(decodeToken.email);
+        
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
+            console.log("yesss");
+            
             let instructorToken = this.jwt.createToken(
-              decodeToken._id,
+             instructor?._id,
               "instructor"
             );
             let instructorData = await this.instructorRepo.fetchInstructorData(
@@ -139,15 +142,21 @@ class InstructorUseCase {
             message: `hey ${name} you are blocked by admin`,
           };
         } else {
-          let token = this.jwt.createToken(instrcutorFound._id, "instrcutor");
-          return { status: true, message: `hey ${name} welcome back!!`, token };
+          let instructorData = await this.instructorRepo.fetchInstructorData(
+            email
+          );
+          let token = this.jwt.createToken(instrcutorFound._id, "instrucutor");
+          return { status: true, message: `hey ${name} welcome back!!`, token,instructor:instructorData };
         }
       } else {
         let instructor = await this.instructorRepo.saveGoogleAuth(credential);
-
+        let instructorData = await this.instructorRepo.fetchInstructorData(
+          instructor.email
+        );
         let token = this.jwt.createToken(instructor._id, "instructor");
         return {
           status: true,
+          instructor: instructorData,
           message: `welcome ${name} `,
           token,
         };

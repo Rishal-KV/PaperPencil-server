@@ -44,8 +44,9 @@ class CourseRepo implements Icourse {
 
   async fetchCourse(): Promise<Course[] | null> {
     try {
-      let course = await courseModel.find();
-      return course;
+      let courses = await courseModel.find({ approved: true, listed: true });
+
+      return courses;
     } catch (error) {
       throw error;
     }
@@ -65,6 +66,46 @@ class CourseRepo implements Icourse {
       }
     } catch (error) {
       throw error;
+    }
+  }
+  async courseAction(id: string): Promise<boolean> {
+    console.log(id);
+
+    try {
+      let update = await courseModel.findOneAndUpdate(
+        { _id: id },
+        {
+          approved: true,
+        }
+      );
+      console.log(update);
+
+      if (update) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async courseList(id: string): Promise<boolean> {
+    
+    let course = await courseModel.findById(id);
+    if (course) {
+      let response = await courseModel.findOneAndUpdate(
+        { _id: id },
+        {
+          listed: !course.listed,
+        }
+      );
+      if (response?.listed) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      throw new Error("failed to fetch");
     }
   }
 }

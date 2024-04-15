@@ -63,7 +63,6 @@ class StudentController {
         password
       );
 
-
       if (verifiedStudent && verifiedStudent.status) {
         if (verifiedStudent.status) {
           return res
@@ -91,7 +90,13 @@ class StudentController {
     try {
       let response = await this.studentUseCase.googleAuth(req.body);
       if (response?.status) {
-        res.status(200).json(response);
+        res
+          .cookie("studentToken", response.token, {
+            expires: new Date(Date.now() + 25892000000),
+            secure: true,
+          })
+          .status(200)
+          .json(response);
       } else {
         res.status(401).json(response);
       }
@@ -107,7 +112,6 @@ class StudentController {
       console.log(id);
 
       await this.studentUseCase.verifyByEMail(id);
-      res.json({ test: "tes" });
     } catch (error) {
       console.log(error);
     }

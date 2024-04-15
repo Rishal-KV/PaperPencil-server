@@ -12,7 +12,10 @@ class adminController{
         
         let foundAdmin = await this.adminUseCase.adminSignIn(data);
         if (foundAdmin?.status) {
-            res.status(200).json({status:foundAdmin.status,token:foundAdmin.token})
+            res.cookie("admin", foundAdmin.token, {
+                expires: new Date(Date.now() + 25892000000),
+                secure: true,
+              }).status(200).json(foundAdmin)
         }else if(!foundAdmin?.status){
           
             
@@ -98,7 +101,17 @@ async studentAction(req:Request,res:Response){
         
     }
 }
-    
+    async fetchCourse(req:Request,res:Response){
+        try {
+            let courses = await this.adminUseCase.fetchCourse();
+           
+            
+            res.status(200).json(courses)
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 }
 
 export default adminController

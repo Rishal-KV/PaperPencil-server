@@ -24,7 +24,7 @@ class AdminUseCase {
         if (verifyPassword) {
          
           let token = this.Jwt.createToken(adminFound._id,"admin");
-          return { status: true, token: token };
+          return { status: true, token: token,admin : adminFound.email };
         } else {
           return { status: false };
         }
@@ -65,6 +65,19 @@ class AdminUseCase {
       return blocked_unblocked;
     } catch (error) {
       console.log(error);
+    }
+  }
+  async fetchCourse(){
+    try {
+      let course = await this.adminRepo.fetchCourse();
+      if (course) {
+        return {course:course}
+      }else{
+        throw new Error('no course found')
+      }
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }

@@ -18,6 +18,7 @@ import ChapterController from "../../adaptors/controllers/chapter";
 import LessonController from "../../adaptors/controllers/lesson";
 import LessonUseCase from "../../useCase/lessonUseCase";
 import LessonRepo from "../repository/lessonRepo";
+
 let OtpRep = new OtpRepo();
 let otp = new GenerateOTP();
 let jwt = new Jwt();
@@ -35,7 +36,7 @@ let instructorUseCase = new InstructorUseCase(
 );
 let chapterRepo = new ChapterRepo();
 let courseRepo = new CourseRepo();
-let courseUseCase = new CourseUseCase(courseRepo, jwt,chapterRepo);
+let courseUseCase = new CourseUseCase(courseRepo, jwt, chapterRepo);
 let courseController = new CourseController(courseUseCase);
 let instrcutorController = new InstructorController(
   instructorUseCase,
@@ -57,26 +58,31 @@ router.post("/login", (req, res) => instrcutorController.Login(req, res));
 router.post("/confirm_otp", (req, res) =>
   instrcutorController.authenticateInstructor(req, res)
 );
-router.post("/add_course", upload.single("image"), (req, res) =>
+router.post("/add_course", instructorAuth, upload.single("image"), (req, res) =>
   courseController.addCourse(req, res)
 );
-router.get("/course_list", (req, res) =>
-  courseController.fetchINstructorCourse(req, res)
-);
+router
+  .route("/course_list")
+  .get(instructorAuth,(req, res) => courseController.fetchINstructorCourse(req, res))
+  .patch(instructorAuth,(req, res) => courseController.courseList(req, res));
 router.get("/dashboard", instructorAuth, (req, res) =>
   instrcutorController.dashboard(req, res)
 );
-router.post("/googleAuth", (req, res) =>
+router.post("/googleAuth",instructorAuth, (req, res) =>
   instrcutorController.googleLogin(req, res)
 );
 router
   .route("/chapter")
-  .post((req, res) => chapterController.addChapter(req, res))
-  .get((req, res) => chapterController.getChapter(req, res));
-  router.patch('/publish',(req,res)=>courseController.publishCourse(req,res))
+  .post(instructorAuth,(req, res) => chapterController.addChapter(req, res))
+  .get(instructorAuth,(req, res) => chapterController.getChapter(req, res));
+router.patch("/publish",instructorAuth, (req, res) =>
+  courseController.publishCourse(req, res)
+);
 
 router
   .route("/lesson")
-  .post(upload.single('video'),(req, res) => lessonController.addChapter(req, res));
+  .post(instructorAuth,upload.single("video"), (req, res) =>
+    lessonController.addChapter(req, res)
+  );
 
 export default router;

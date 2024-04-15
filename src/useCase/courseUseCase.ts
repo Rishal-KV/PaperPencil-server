@@ -79,6 +79,36 @@ class CourseUseCase {
       throw error;
     }
   }
+  async courseAction(id:string){
+    try {
+      console.log(id);
+      
+      let courseaction = await this.courseRepo.courseAction(id);
+      // console.log(courseaction);
+      
+      if(courseaction){
+        return {status:true, message:"course approved"}
+      }else{
+           return {status:false, message:"course failed to update"}
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  async listCourse(id:string){
+    try {
+      let response = await this.courseRepo.courseList(id);
+      if (response) {
+       return {status:true,message:"course listed has been listed "}
+      }else{
+        return {status:true,message:"course has been unlisted"}
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 
 export default CourseUseCase;

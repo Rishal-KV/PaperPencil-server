@@ -7,38 +7,48 @@ import CategoryController from "../../adaptors/controllers/category";
 import Bcrypt from "../utils/bcrypt";
 import CategoryUseCase from "../../useCase/categoryUseCase";
 import CategoryRepo from "../repository/categoryRepo";
+import CourseController from "../../adaptors/controllers/courseController";
+import CourseUseCase from "../../useCase/courseUseCase";
+import CourseRepo from "../repository/courseRepo";
+
 const jwt = new Jwt();
 const bcypt = new Bcrypt();
 
 const adminRepo = new AdminRepo();
+const courseRepo = new CourseRepo();
+
+const courseUseCase = new CourseUseCase(courseRepo,jwt)
+let courseController = new CourseController(courseUseCase)
 const adminUseCase = new AdminUseCase(adminRepo, jwt, bcypt);
 let adminController = new AdminController(adminUseCase);
 let categoryRepo = new CategoryRepo();
 let categoryUseCase = new CategoryUseCase(categoryRepo);
 let categoryController = new CategoryController(categoryUseCase);
-const route = express.Router();
+const router = express.Router();
 
-route.post("/login", (req, res) => adminController.adminLogin(req, res));
-route.get("/instructor_details", (req, res) =>
+router.post("/login", (req, res) => adminController.adminLogin(req, res));
+router.get("/instructor_details", (req, res) =>
   adminController.getInstructorData(req, res)
 );
-route.get("/student_details", (req, res) =>
+router.get("/student_details", (req, res) =>
   adminController.getStudentData(req, res)
 );
-route.patch("/instructor_action", (req, res) =>
+router.patch("/instructor_action", (req, res) =>
   adminController.instructorAction(req, res)
 );
-route.patch("/student_action", (req, res) =>
+router.patch("/student_action", (req, res) =>
   adminController.studentAction(req, res)
 );
-route.post("/add_category", (req, res) =>
+router.post("/add_category", (req, res) =>
   categoryController.addCategory(req, res)
 );
-route.get("/get_category", (req, res) =>
+router.get("/get_category", (req, res) =>
   categoryController.fetchCategory(req, res)
 );
-route.patch("/action_category", (req, res) =>
+router.patch("/action_category", (req, res) =>
   categoryController.actionCategory(req, res)
 );
 
-export default route;
+router.route('/course').get((req,res)=>adminController.fetchCourse(req,res))
+.patch((req,res)=>courseController.courseAction(req,res))
+export default router;

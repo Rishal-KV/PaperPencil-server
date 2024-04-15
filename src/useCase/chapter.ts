@@ -7,9 +7,11 @@ class ChapterUseCase {
     this.chapterRepo = chapter;
   }
   async createChapter(chapter: string, id: string) {
+   
+    
     let chapterSaved = await this.chapterRepo.createChapter(chapter, id);
     if (chapterSaved) {
-      return { status: true };
+      return { status: true, message:"chapter added" };
     } else {
       return { status: false };
     }

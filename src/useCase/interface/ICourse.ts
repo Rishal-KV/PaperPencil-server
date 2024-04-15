@@ -4,5 +4,7 @@ interface Icourse {
   fetchCourseById(id:string):Promise<Course[] | null>
   fetchCourse():Promise<Course[] | null>
   updateById(id:string):Promise<boolean>
+  courseAction(id:string):Promise<boolean>
+  courseList(id:string):Promise<boolean>
 }
 export default Icourse;

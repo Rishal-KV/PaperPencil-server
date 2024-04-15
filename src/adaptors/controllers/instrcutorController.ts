@@ -15,12 +15,14 @@ class InstructorController {
 
       let resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
       if (resposneFromSignUp.status) {
-        console.log(resposneFromSignUp);
-
-        res.status(200).json(resposneFromSignUp);
+        res
+          .cookie("instructorOtpToken", resposneFromSignUp.Token, {
+            expires: new Date(Date.now() + 25892000000),
+            secure: true,
+          })
+          .status(200)
+          .json(resposneFromSignUp);
       } else {
-        console.log(resposneFromSignUp);
-
         res.status(401).json(resposneFromSignUp);
       }
     } catch (error) {
@@ -29,12 +31,20 @@ class InstructorController {
   }
   async authenticateInstructor(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization as string;
-      console.log(token);
+      console.log(req.cookies.instructorOtpToken);
+      console.log(req.body);
+      
+      let token = req.cookies.instructorOtpToken as string;
 
       let response = await this.instructor.authenticate(token, req.body.otp);
       if (response?.status) {
-        res.status(200).json(response);
+        res
+          .cookie("instructorToken", response.token, {
+            expires: new Date(Date.now() + 25892000000),
+            secure: true,
+          })
+          .status(200)
+          .json(response);
       } else {
         res.status(401).json(response);
       }
@@ -68,10 +78,8 @@ class InstructorController {
 
   async dashboard(req: Request, res: Response) {
     try {
-      let token = req.cookies.instructorToken
+      let token = req.cookies.instructorToken;
       console.log(token);
-;
-
       let courses = await this.course.fetchCourseData(token);
 
       res.status(200).json(courses);
@@ -83,10 +91,13 @@ class InstructorController {
     try {
       let response = await this.instructor.googleAuth(req.body);
       if (response?.status) {
-        res.cookie("instructorToken",response.token,{
-             expires : new Date(Date.now() + 25892000000),
-             secure : true
-        }).status(200).json(response);
+        res
+          .cookie("instructorToken", response.token, {
+            expires: new Date(Date.now() + 25892000000),
+            secure: true,
+          })
+          .status(200)
+          .json(response);
       } else {
         res.status(401).json(response);
       }

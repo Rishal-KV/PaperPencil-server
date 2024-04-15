@@ -28,7 +28,7 @@ class InstructorRepo implements IInstructorRepo {
             
         }
     }
-    async fetchInstructorData(email: string): Promise<Instructor | null> {
+    async fetchInstructorData(email: string | undefined): Promise<Instructor | null> {
         try {
             let instructor = await instructorModel.findOne({email},{email:1,name:1})
             return instructor
