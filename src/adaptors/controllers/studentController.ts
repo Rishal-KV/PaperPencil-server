@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import StudentUseCase from "../../useCase/studentUseCase";
-
+import cloudinary from "../../infrastructure/utils/cloudinary";
+import fs from 'fs'
 class StudentController {
   private studentUseCase: StudentUseCase;
   constructor(studentUseCase: StudentUseCase) {
@@ -114,6 +115,106 @@ class StudentController {
       await this.studentUseCase.verifyByEMail(id);
     } catch (error) {
       console.log(error);
+    }
+  }
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      let { email } = req.body;
+      let response = await this.studentUseCase.forgotPassword(email);
+      console.log(response);
+
+      if (response?.status) {
+        res
+          .cookie("studentEmail", response.student, {
+            expires: new Date(Date.now() + 25892000000),
+            secure: true,
+          })
+          .status(200)
+          .json(response);
+      } else {
+        res.status(401).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async setForgotPassword(req: Request, res: Response) {
+    try {
+      let email = req.cookies.studentEmail as string;
+
+      let password = req.body.password;
+      let response = await this.studentUseCase.setForgotPassword(
+        email,
+        password
+      );
+      // console.log(response);
+
+      if (response?.status) {
+        res.status(200).json(response);
+      } else {
+        res.status(401).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async getStudentData(req:Request,res:Response){
+    try {
+      let token  = req.cookies.studentToken as string
+      
+      let student = await this.studentUseCase.get_studentData(token)
+      res.status(200).json(student)
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  async updateProfile(req:Request,res:Response){
+    try {
+      console.log(req.body);
+     
+      let token = req.cookies.studentToken as string;
+      let response = await this.studentUseCase.updateProfile(token,req.body)
+      if (response?.status) {
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  async updateImage(req:Request,res:Response){
+    try {
+      let token = req.cookies.studentToken
+      let formData = req.body
+      let file = req.file
+      if (req.file) {
+        await cloudinary.uploader
+          .upload(req.file?.path, { folder: "profile" })
+          .then((res) => {
+            if (res.url) {
+              formData.image = res.url;
+              console.log(res.url);
+
+              fs.unlinkSync("./src/public/" + req.file?.originalname);
+            } else {
+              throw Error("unable to get url");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        }
+
+        let response = await this.studentUseCase.updateImage(token,formData);
+        if (response?.status) {
+          res.status(200).json(response)
+        }
+      
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }

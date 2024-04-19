@@ -14,6 +14,8 @@ class CourseController {
       let formData = req.body;
 
       let instructor = req.cookies.instructorToken as string;
+      
+      
 
       if (req.file) {
         await cloudinary.uploader
@@ -109,6 +111,22 @@ class CourseController {
       
       res.status(200).json(response)
     } catch (error) {
+      
+    }
+  }
+  async fetchSpecificCourse(req:Request,res:Response){
+    try {
+      let id = req.query.id as string
+      console.log(id);
+      
+      let courses = await this.courseUseCase?.fetchSpecificCourse(id);
+      if (courses?.status) {
+        res.status(200).json(courses)
+      }else{
+        res.status(401).json(courses)
+      }
+    } catch (error) {
+      console.log(error);
       
     }
   }

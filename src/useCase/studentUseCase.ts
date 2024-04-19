@@ -9,6 +9,7 @@ import Jwt from "../infrastructure/utils/Jwt";
 import Bcrypt from "../infrastructure/utils/bcrypt";
 import Imailer from "./interface/IMailer";
 import OtpRepo from "../infrastructure/repository/otpRepository";
+import Icourse from "./interface/ICourse";
 
 class StudentUseCase {
   constructor(
@@ -17,13 +18,15 @@ class StudentUseCase {
     private Jwt: Jwt,
     private bcrypt: Bcrypt,
     private sendmail: Imailer,
-    private OtpRepo: OtpRepo
+    private OtpRepo: OtpRepo,
+    private courseRepo: Icourse
   ) {
     this.repository = repository;
     this.generateOtp = generateOtp;
     this.sendmail = sendmail;
     this.OtpRepo = OtpRepo;
     this.Jwt = Jwt;
+    this.courseRepo = courseRepo;
   }
   async signUpAndSendOtp(studentData: student) {
     try {
@@ -46,13 +49,15 @@ class StudentUseCase {
       if (studentFound) {
         return { status: false, message: "student already exist" };
       } else {
-        let payload: { email: string,role:string } = {
+        let payload: { email: string; role: string } = {
           email: studentData.email,
-          role : "student"
+          role: "student",
         };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string,{expiresIn:"1m"});
+        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string, {
+          expiresIn: "1m",
+        });
         this.OtpRepo.createOtpCollection(studentData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
@@ -69,15 +74,14 @@ class StudentUseCase {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
       console.log(decodeToken);
-      
+
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
-        console.log(fetchOtp);
-        console.log(otp);
-        
+        // console.log(fetchOtp);
+        // console.log(otp);
+
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            
             let studentToken = this.Jwt.createToken(decodeToken._id, "student");
             let studentData = await this.repository.fetchStudentData(
               decodeToken.email
@@ -90,7 +94,7 @@ class StudentUseCase {
             };
           } else {
             console.log("eheh");
-            
+
             return { status: false, message: "invalid otp" };
           }
         } else {
@@ -104,10 +108,9 @@ class StudentUseCase {
   async loginStudent(email: string, password: string) {
     let studentFound = await this.repository.findStudentByEMail(email);
     console.log(studentFound);
-    
 
     if (studentFound) {
-      let student = await this.repository.fetchStudentData(email)
+      let student = await this.repository.fetchStudentData(email);
       if (!studentFound.is_Verified) {
         return { status: false, message: "Account is not verified!!" };
       }
@@ -176,6 +179,77 @@ class StudentUseCase {
   async verifyByEMail(id: string) {
     try {
       await this.repository.updateById(id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async forgotPassword(email: string) {
+    try {
+      let student = await this.repository.findStudentByEMail(email);
+      if (student) {
+        return { status: true, student: student.email };
+      } else {
+        return { status: false, message: "no student found" };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async setForgotPassword(email: string, password: string) {
+    try {
+      let becryptedPassword = await this.bcrypt.hashPass(password);
+      if (typeof becryptedPassword == "string") {
+        let updated = await this.repository.setForgotPassword(
+          email,
+          becryptedPassword
+        );
+        if (updated) {
+          return { status: true, message: "password changed successfully" };
+        } else {
+          return { status: true, message: "failed to change password" };
+        }
+      } else {
+        console.log("failed to encrypt");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async get_studentData(token: string) {
+    try {
+      let encryptedToken = this.Jwt.verifyToken(token);
+
+      let data = await this.repository.getStudentById(encryptedToken?.id);
+      if (data) {
+        return { status: true, student: data };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async updateProfile(token: string, data: student) {
+    try {
+      let decryptedToken = this.Jwt.verifyToken(token);
+      let updated = await this.repository.updateProfile(
+        decryptedToken?.id,
+        data
+      );
+      if (updated) {
+        return { status: true, message: "profile updated successfully" };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateImage(token: string, image: any) {
+    try {
+      let decodeToken = this.Jwt.verifyToken(token)
+      let response = await this.repository.updateImage(decodeToken?.id, image);
+      if (response) {
+        return { status: true, message: "image updated successfully" };
+      }
     } catch (error) {
       console.log(error);
     }

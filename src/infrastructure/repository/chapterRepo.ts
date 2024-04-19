@@ -27,6 +27,8 @@ class ChapterRepo implements Chapter {
     }
 
     async insertLesson(id: string, lesson: string | null | undefined): Promise<Boolean> {
+      console.log(id);
+      
         let result  = await chapterModel.updateOne({_id : id},{
             $push : {lessons : lesson}
         })

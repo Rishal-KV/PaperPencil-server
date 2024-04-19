@@ -12,6 +12,9 @@ const studentSchema: Schema<student> = new Schema({
         required: true
 
     },
+    profileImage : {
+       type : String
+    },
     password: {
         type: String,
     
@@ -19,6 +22,9 @@ const studentSchema: Schema<student> = new Schema({
     is_blocked: {
         type: Boolean,
         default: false
+    },
+    number : {
+        type : Number
     },
     is_Verified : {
         type: Boolean,

@@ -79,34 +79,44 @@ class CourseUseCase {
       throw error;
     }
   }
-  async courseAction(id:string){
+  async courseAction(id: string) {
     try {
       console.log(id);
-      
+
       let courseaction = await this.courseRepo.courseAction(id);
       // console.log(courseaction);
-      
-      if(courseaction){
-        return {status:true, message:"course approved"}
-      }else{
-           return {status:false, message:"course failed to update"}
+
+      if (courseaction) {
+        return { status: courseaction, message: "course approved" };
+      } else {
+        return { status: courseaction, message: "course failed to update" };
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async listCourse(id:string){
+  async listCourse(id: string) {
     try {
       let response = await this.courseRepo.courseList(id);
       if (response) {
-       return {status:true,message:"course listed has been listed "}
-      }else{
-        return {status:true,message:"course has been unlisted"}
+        return { status: true, message: "course has been listed " };
+      } else {
+        return { status: false, message: "course has been unlisted" };
       }
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+  async fetchSpecificCourse(id: string) {
+    try {
+      let specificCourse = await this.courseRepo.fetchSpecificCourse(id);
+      if (specificCourse) {
+        return { status: true, courses: specificCourse };
+      } else {
+        return { status: true, message: "no course found" };
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

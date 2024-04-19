@@ -87,6 +87,7 @@ class InstructorUseCase {
               status: true,
               token: instructorToken,
               instructorData: instructorData,
+              message : `welcome ${instructorData?.name}`
             };
           } else {
             return { status: false, message: "invalid otp" };
@@ -145,7 +146,7 @@ class InstructorUseCase {
           let instructorData = await this.instructorRepo.fetchInstructorData(
             email
           );
-          let token = this.jwt.createToken(instrcutorFound._id, "instrucutor");
+          let token = this.jwt.createToken(instrcutorFound._id, "instructor");
           return { status: true, message: `hey ${name} welcome back!!`, token,instructor:instructorData };
         }
       } else {

@@ -55,6 +55,22 @@ class InstructorRepo implements IInstructorRepo {
           throw error;
         }
       }
+      async findInstructorById(id:string):Promise<Instructor|null>{
+        try {
+            let instructor = await instructorModel.findById(id);
+            console.log(instructor);
+            
+            
+            if (instructor) {
+                return instructor
+            }else{
+                return null
+            }
+        } catch (error) {
+          throw error
+            
+        }
+      }
 }
 
 export default InstructorRepo

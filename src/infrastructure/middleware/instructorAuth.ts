@@ -10,23 +10,29 @@ export const instructorAuth = async (
   next: NextFunction
 ) => {
   try {
-    let token = req.cookies.studentToken;
+    let token = req.cookies.instructorToken;
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
+      console.log(decodeToken);
 
       if (decodeToken) {
-        if (decodeToken.role !== "student") {
+        if (decodeToken.role !== "instructor") {
           return { status: false, message: "No access" };
         }
-        let instructorData = await instructor.findInstructorByEmail(
-          decodeToken.email
+        let instructorData = await instructor.findInstructorById(
+          decodeToken.id
         );
+        
+
         if (instructor && instructorData?.is_blocked) {
+          
+          
           res.status(401).json({ blocked: true });
         } else {
+          
           next();
         }
       }

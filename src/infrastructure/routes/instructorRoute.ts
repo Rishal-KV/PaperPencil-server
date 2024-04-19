@@ -63,25 +63,27 @@ router.post("/add_course", instructorAuth, upload.single("image"), (req, res) =>
 );
 router
   .route("/course_list")
-  .get(instructorAuth,(req, res) => courseController.fetchINstructorCourse(req, res))
-  .patch(instructorAuth,(req, res) => courseController.courseList(req, res));
+  .get(instructorAuth, (req, res) =>
+    courseController.fetchINstructorCourse(req, res)
+  )
+  .patch(instructorAuth, (req, res) => courseController.courseList(req, res));
 router.get("/dashboard", instructorAuth, (req, res) =>
   instrcutorController.dashboard(req, res)
 );
-router.post("/googleAuth",instructorAuth, (req, res) =>
+router.post("/googleAuth", (req, res) =>
   instrcutorController.googleLogin(req, res)
 );
 router
   .route("/chapter")
-  .post(instructorAuth,(req, res) => chapterController.addChapter(req, res))
-  .get(instructorAuth,(req, res) => chapterController.getChapter(req, res));
-router.patch("/publish",instructorAuth, (req, res) =>
+  .post(instructorAuth, (req, res) => chapterController.addChapter(req, res))
+  .get(instructorAuth, (req, res) => chapterController.getChapter(req, res));
+router.patch("/publish", instructorAuth, (req, res) =>
   courseController.publishCourse(req, res)
 );
 
 router
   .route("/lesson")
-  .post(instructorAuth,upload.single("video"), (req, res) =>
+  .post(instructorAuth, upload.single("video"), (req, res) =>
     lessonController.addChapter(req, res)
   );
 

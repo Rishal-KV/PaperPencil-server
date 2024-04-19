@@ -48,22 +48,91 @@ class StudentRepo implements IStudentRepo {
       let saved = await studentModel.create({
         name: credential.name,
         email: credential.email,
-        is_Verified : true,
+        is_Verified: true,
         googleId: credential.sub,
+        profileImage: "",
+        about: "",
+        number: "",
       });
-      return saved
+      return saved;
     } catch (error) {
       throw error;
     }
   }
   async updateById(id: string): Promise<void> {
-     try {
-        await studentModel.findOneAndUpdate({_id : id},{
-          is_Verified : true
-        })
-     } catch (error) {
-       throw error
-     }
+    try {
+      await studentModel.findOneAndUpdate(
+        { _id: id },
+        {
+          is_Verified: true,
+        }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+  async setForgotPassword(email: string, password: string): Promise<boolean> {
+    try {
+      let updated = await studentModel.findOneAndUpdate(
+        { email: email },
+        {
+          password: password,
+        }
+      );
+      if (updated) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getStudentById(id: string): Promise<student | null> {
+    try {
+      let data = await studentModel.findOne({ _id: id }).select("-password");
+      if (data) {
+        return data;
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updateProfile(id: string, data: student): Promise<boolean> {
+    try {
+      let updated = await studentModel.findOneAndUpdate(
+        { _id: id },
+        {
+          name: data.name,
+          number: data.number,
+          about: data.about,
+          profileImage: data.profileImage,
+        },
+        { new: true }
+      );
+      if (updated) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updateImage(id: string, image: any): Promise<boolean> {
+    try {
+      let updates = await studentModel.findOneAndUpdate({_id:id},{
+        profileImage : image.image
+      })
+      if (updates) {
+        return true
+      }else{
+        return false
+      }
+    } catch (error) {
+      throw error
+    }
   }
 }
 

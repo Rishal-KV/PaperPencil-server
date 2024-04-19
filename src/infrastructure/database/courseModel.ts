@@ -35,7 +35,7 @@ const courseSchema = new Schema({
 
     listed : {
         type:Boolean,
-        default:false
+        default:true
     },
     publish: {
         type : Boolean,

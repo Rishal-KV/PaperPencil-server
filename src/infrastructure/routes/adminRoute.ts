@@ -10,7 +10,7 @@ import CategoryRepo from "../repository/categoryRepo";
 import CourseController from "../../adaptors/controllers/courseController";
 import CourseUseCase from "../../useCase/courseUseCase";
 import CourseRepo from "../repository/courseRepo";
-
+import { adminAuth } from "../middleware/adminAuth";
 const jwt = new Jwt();
 const bcypt = new Bcrypt();
 
@@ -27,28 +27,28 @@ let categoryController = new CategoryController(categoryUseCase);
 const router = express.Router();
 
 router.post("/login", (req, res) => adminController.adminLogin(req, res));
-router.get("/instructor_details", (req, res) =>
+router.get("/instructor_details",adminAuth, (req, res) =>
   adminController.getInstructorData(req, res)
 );
-router.get("/student_details", (req, res) =>
+router.get("/student_details",adminAuth, (req, res) =>
   adminController.getStudentData(req, res)
 );
-router.patch("/instructor_action", (req, res) =>
+router.patch("/instructor_action", adminAuth,(req, res) =>
   adminController.instructorAction(req, res)
 );
-router.patch("/student_action", (req, res) =>
+router.patch("/student_action",adminAuth, (req, res) =>
   adminController.studentAction(req, res)
 );
-router.post("/add_category", (req, res) =>
+router.post("/add_category",adminAuth, (req, res) =>
   categoryController.addCategory(req, res)
 );
-router.get("/get_category", (req, res) =>
+router.get("/get_category",adminAuth, (req, res) =>
   categoryController.fetchCategory(req, res)
 );
-router.patch("/action_category", (req, res) =>
+router.patch("/action_category", adminAuth,(req, res) =>
   categoryController.actionCategory(req, res)
 );
 
-router.route('/course').get((req,res)=>adminController.fetchCourse(req,res))
-.patch((req,res)=>courseController.courseAction(req,res))
+router.route('/course').get(adminAuth,(req,res)=>adminController.fetchCourse(req,res))
+.patch(adminAuth,(req,res)=>courseController.courseAction(req,res))
 export default router;
