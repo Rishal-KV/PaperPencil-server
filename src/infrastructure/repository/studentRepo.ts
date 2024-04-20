@@ -50,7 +50,7 @@ class StudentRepo implements IStudentRepo {
         email: credential.email,
         is_Verified: true,
         googleId: credential.sub,
-        profileImage: "",
+        profileImage: credential.picture,
         about: "",
         number: "",
       });

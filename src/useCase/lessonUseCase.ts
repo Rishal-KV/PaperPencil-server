@@ -18,8 +18,21 @@ class LessonUseCase {
         } else {
           return { status: false, message: "error adding lesson" };
         }
-      }else{
-        return {stats :false}
+      } else {
+        return { stats: false };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteLesson(chapterId: string | undefined, lessonId: string) {
+    try {
+      let deleted = await this.lessonRepo.deleteLesson(lessonId);
+      if (deleted) {
+        let deletedChapter = await this.chapterRepo.deleteLesson(chapterId, lessonId);
+        if (deletedChapter) {
+          return {status:true, message:"chapter deleted successfully"};
+        }
       }
     } catch (error) {
       throw error;

@@ -9,14 +9,18 @@ export const instructorAuth = async (
   res: Response,
   next: NextFunction
 ) => {
+
   try {
     let token = req.cookies.instructorToken;
+
+
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
-      console.log(decodeToken);
+    
+      
 
       if (decodeToken) {
         if (decodeToken.role !== "instructor") {

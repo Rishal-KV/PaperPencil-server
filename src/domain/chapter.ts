@@ -3,6 +3,7 @@
     title: string;
     lessons?: string[];
     course: string;
+    order:number
     createdAt?: Date;
     updatedAt?: Date;
   }

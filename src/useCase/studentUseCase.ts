@@ -139,6 +139,8 @@ class StudentUseCase {
 
   async googleAuth(credential: any) {
     try {
+      console.log(credential);
+      
       let { name, email } = credential;
       let studentFound = await this.repository.findStudentByEMail(email);
 

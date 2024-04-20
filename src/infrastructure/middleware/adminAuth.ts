@@ -8,6 +8,8 @@ export const adminAuth = async (
 ) => {
   try {
     let token = req.cookies.admin;
+   
+    
     if (!token) {
       res.status(401).json({ status: true, message: "no token found" });
     } else {

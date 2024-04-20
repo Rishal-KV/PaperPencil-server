@@ -67,6 +67,7 @@ router
     courseController.fetchINstructorCourse(req, res)
   )
   .patch(instructorAuth, (req, res) => courseController.courseList(req, res));
+  
 router.get("/dashboard", instructorAuth, (req, res) =>
   instrcutorController.dashboard(req, res)
 );
@@ -76,7 +77,10 @@ router.post("/googleAuth", (req, res) =>
 router
   .route("/chapter")
   .post(instructorAuth, (req, res) => chapterController.addChapter(req, res))
-  .get(instructorAuth, (req, res) => chapterController.getChapter(req, res));
+  .get(instructorAuth, (req, res) => chapterController.getChapter(req, res))
+  .patch(instructorAuth, (req, res) =>
+    chapterController.updateChapter(req, res)
+  );
 router.patch("/publish", instructorAuth, (req, res) =>
   courseController.publishCourse(req, res)
 );
@@ -85,6 +89,9 @@ router
   .route("/lesson")
   .post(instructorAuth, upload.single("video"), (req, res) =>
     lessonController.addChapter(req, res)
+  )
+  .delete(instructorAuth, (req, res) =>
+    lessonController.deleteLesson(req, res)
   );
 
 export default router;

@@ -14,8 +14,6 @@ class CourseController {
       let formData = req.body;
 
       let instructor = req.cookies.instructorToken as string;
-      
-      
 
       if (req.file) {
         await cloudinary.uploader
@@ -83,51 +81,45 @@ class CourseController {
       console.log(error);
     }
   }
-  async courseAction(req:Request,res:Response){
+  async courseAction(req: Request, res: Response) {
     try {
-      let {id} = req.body
-     
-      
+      let { id } = req.body;
+
       let actionResponse = await this.courseUseCase?.courseAction(id);
-    
-      
+
       if (actionResponse?.status) {
-        res.status(200).json(actionResponse)
-      }else{
-        res.status(400).json(actionResponse)
+        res.status(200).json(actionResponse);
+      } else {
+        res.status(400).json(actionResponse);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async courseList(req:Request,res:Response){
+  async courseList(req: Request, res: Response) {
     try {
-      let {id} = req.body;
+      let { id } = req.body;
       console.log(id);
-      
+
       let response = await this.courseUseCase?.listCourse(id);
       console.log(response);
-      
-      res.status(200).json(response)
-    } catch (error) {
-      
-    }
+
+      res.status(200).json(response);
+    } catch (error) {}
   }
-  async fetchSpecificCourse(req:Request,res:Response){
+  async fetchSpecificCourse(req: Request, res: Response) {
     try {
-      let id = req.query.id as string
+      let id = req.query.id as string;
       console.log(id);
-      
+
       let courses = await this.courseUseCase?.fetchSpecificCourse(id);
       if (courses?.status) {
-        res.status(200).json(courses)
-      }else{
-        res.status(401).json(courses)
+        res.status(200).json(courses);
+      } else {
+        res.status(401).json(courses);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

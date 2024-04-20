@@ -8,8 +8,10 @@ class ChapterController {
   }
   async addChapter(req: Request, res: Response) {
     try {
-      let { title, id } = req.body;
-      let addedResponse = await this.chapterUseCase.createChapter(title, id);
+      let { title, id,order } = req.body;
+      
+      
+      let addedResponse = await this.chapterUseCase.createChapter(title, id,order);
 
       if (addedResponse) {
         res.status(200).json(addedResponse);
@@ -28,6 +30,23 @@ class ChapterController {
       res.status(200).json(chapters);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async updateChapter(req:Request,res:Response){
+    try {
+      console.log(req.body);
+      
+      let {title,order,id} = req.body;
+      let response = await this.chapterUseCase.updateChapter(id,title,order);
+      if (response?.status) {
+        res.status(200).json(response)
+      }else{
+        res.status(401).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+      
     }
   }
  

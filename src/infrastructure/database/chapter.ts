@@ -1,17 +1,23 @@
-import { Schema,model } from "mongoose";
+import { Schema, model } from "mongoose";
 import Chapter from "../../domain/chapter";
-const ChapterSchema = new Schema({
+const ChapterSchema = new Schema<Chapter>({
   title: {
     type: String,
     required: true,
   },
-  lessons: [{
-    type: String,
-    ref: 'Lesson',
-  }],
+  lessons: [
+    {
+      type: String,
+      ref: "Lesson",
+    },
+  ],
   course: {
     type: String,
-    ref: 'Course',
+    ref: "Course",
+  },
+  order: {
+    type: Number,
+    require: true,
   },
   createdAt: {
     type: Date,
@@ -19,5 +25,5 @@ const ChapterSchema = new Schema({
   },
 });
 
-const  chapterModel = model<Chapter>('Chapter', ChapterSchema);
-export default chapterModel
+const chapterModel = model<Chapter>("Chapter", ChapterSchema);
+export default chapterModel;
