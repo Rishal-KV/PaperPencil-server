@@ -8,6 +8,7 @@ interface IInstructorRepo {
   verifyInstructor(email: string): Promise<any>;
   saveGoogleAuth(credential: Instructor): Promise<Instructor>;
   findInstructorById(id: string): Promise<Instructor | null>;
+  updateProfile(id:string,instructorData:Instructor):Promise<boolean>
 }
 
 export default IInstructorRepo;

@@ -48,7 +48,7 @@ class InstructorUseCase {
         let payload: {
           email: string | undefined;
         } = {
-          email :savedInstructor?.email,
+          email: savedInstructor?.email,
         };
 
         let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
@@ -62,21 +62,23 @@ class InstructorUseCase {
 
   async authenticate(token: string, otp: string) {
     console.log(otp);
-    
+
     try {
       let decodeToken = this.jwt.verifyToken(token);
       console.log(decodeToken);
 
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
-        let instructor = await this.instructorRepo.findInstructorByEmail(decodeToken.email);
-        
+        let instructor = await this.instructorRepo.findInstructorByEmail(
+          decodeToken.email
+        );
+
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
             console.log("yesss");
-            
+
             let instructorToken = this.jwt.createToken(
-             instructor?._id,
+              instructor?._id,
               "instructor"
             );
             let instructorData = await this.instructorRepo.fetchInstructorData(
@@ -87,7 +89,7 @@ class InstructorUseCase {
               status: true,
               token: instructorToken,
               instructorData: instructorData,
-              message : `welcome ${instructorData?.name}`
+              message: `welcome ${instructorData?.name}`,
             };
           } else {
             return { status: false, message: "invalid otp" };
@@ -147,7 +149,12 @@ class InstructorUseCase {
             email
           );
           let token = this.jwt.createToken(instrcutorFound._id, "instructor");
-          return { status: true, message: `hey ${name} welcome back!!`, token,instructor:instructorData };
+          return {
+            status: true,
+            message: `hey ${name} welcome back!!`,
+            token,
+            instructor: instructorData,
+          };
         }
       } else {
         let instructor = await this.instructorRepo.saveGoogleAuth(credential);
@@ -164,6 +171,23 @@ class InstructorUseCase {
       }
     } catch (error) {
       throw error;
+    }
+  }
+  async fetchProfile(email: string) {
+    try {
+      let instructor = this.instructorRepo.fetchInstructorData(email);
+      return instructor;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async updateProfile (id:string,instructorData:Instructor){
+    try {
+      const response = await this.instructorRepo.updateProfile(id,instructorData);
+    return  response ? {status:true,message:"updated succesfully"} : {status:false, message:"failed to update"}
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }

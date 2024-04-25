@@ -67,7 +67,7 @@ router
     courseController.fetchINstructorCourse(req, res)
   )
   .patch(instructorAuth, (req, res) => courseController.courseList(req, res));
-  
+
 router.get("/dashboard", instructorAuth, (req, res) =>
   instrcutorController.dashboard(req, res)
 );
@@ -93,5 +93,9 @@ router
   .delete(instructorAuth, (req, res) =>
     lessonController.deleteLesson(req, res)
   );
+
+router
+  .route("/profile")
+  .get((req, res) => instrcutorController.fetchProfile(req, res));
 
 export default router;

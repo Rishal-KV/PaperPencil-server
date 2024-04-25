@@ -20,12 +20,18 @@ const instructorShema = new Schema({
     type: Boolean,
     default: false,
   },
+  profileImage: {
+    type: String,
+  },
+  phone: {
+    type: Number,
+  },
   about: {
     type: String,
   },
-  googleId:{
-    type : String
-}
+  googleId: {
+    type: String,
+  },
 });
 
 const instructorModel = mongoose.model<Instructor>(

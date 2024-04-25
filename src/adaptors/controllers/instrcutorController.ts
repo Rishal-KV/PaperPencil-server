@@ -57,7 +57,7 @@ class InstructorController {
       let instructorData = req.body;
 
       let verifiedInstructor = await this.instructor.Login(instructorData);
-
+ 
       if (verifiedInstructor.status) {
         return res
           .cookie("studentToken", verifiedInstructor.token, {
@@ -105,5 +105,19 @@ class InstructorController {
       console.log(error);
     }
   }
+
+  async fetchProfile(req:Request,res:Response){
+    try {
+      const email = req.query.email as string
+      const response = await this.instructor.fetchProfile(email)
+      console.log(response);
+      
+      res.status(200).json(response)
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  
 }
 export default InstructorController;

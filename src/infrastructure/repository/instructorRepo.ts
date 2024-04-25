@@ -30,7 +30,7 @@ class InstructorRepo implements IInstructorRepo {
     }
     async fetchInstructorData(email: string | undefined): Promise<Instructor | null> {
         try {
-            let instructor = await instructorModel.findOne({email},{email:1,name:1})
+            let instructor = await instructorModel.findOne({email},{email:1,name:1,about:1,imageUrl:1})
             return instructor
         } catch (error) {
             throw error
@@ -70,6 +70,19 @@ class InstructorRepo implements IInstructorRepo {
           throw error
             
         }
+      }
+     async updateProfile(id: string,instructorData:Instructor): Promise<boolean> {
+          try {
+            const updated = await instructorModel.findOneAndUpdate({_id:id},{
+                name : instructorData.name,
+                phone : instructorData.phone,
+                about : instructorData.about
+             
+            },{new:true})
+          return updated ?  true : false
+          } catch (error) {
+            throw error
+          }
       }
 }
 
