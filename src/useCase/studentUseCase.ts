@@ -221,6 +221,8 @@ class StudentUseCase {
   async get_studentData(token: string) {
     try {
       let encryptedToken = this.Jwt.verifyToken(token);
+      console.log(encryptedToken);
+      
 
       let data = await this.repository.getStudentById(encryptedToken?.id);
       if (data) {

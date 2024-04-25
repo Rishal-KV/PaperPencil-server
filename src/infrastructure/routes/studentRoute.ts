@@ -14,21 +14,33 @@ import ChapterUseCase from "../../useCase/chapter";
 import ChapterRepo from "../repository/chapterRepo";
 import ChapterController from "../../adaptors/controllers/chapter";
 import upload from "../middleware/multer";
+import EnrolledCourseRepo from "../repository/enrolled";
+import EnrolledCourseUseCase from "../../useCase/enrolledCourse";
+import EnrollController from "../../adaptors/controllers/enrollController";
+import ReviewRepo from "../repository/reviewRepo";
+import ReviewUseCase from "../../useCase/reviewUseCase";
+import ReviewController from "../../adaptors/controllers/reviewController";
 
-let otp = new GenerateOTP();
-let repository = new StudentRepo();
-let courseRepo = new CourseRepo();
-let jwt = new Jwt();
-let bcrypt = new Bcrypt();
-let sendMail = new NodeMailer();
-let OtpRep = new OtpRepo();
-let courseuseCase = new CourseUseCase(courseRepo, jwt);
-let courseController = new CourseController(courseuseCase);
-let chapterRepo = new ChapterRepo();
-let chapterUseCase = new ChapterUseCase(chapterRepo);
-let chapterController = new ChapterController(chapterUseCase);
+const otp = new GenerateOTP();
+const repository = new StudentRepo();
+const courseRepo = new CourseRepo();
+const jwt = new Jwt();
+const bcrypt = new Bcrypt();
+const sendMail = new NodeMailer();
+const OtpRep = new OtpRepo();
+const courseuseCase = new CourseUseCase(courseRepo, jwt);
+const courseController = new CourseController(courseuseCase);
+const chapterRepo = new ChapterRepo();
+const chapterUseCase = new ChapterUseCase(chapterRepo);
+const chapterController = new ChapterController(chapterUseCase);
+const enrollRepo = new EnrolledCourseRepo();
+const enrollUseCase = new EnrolledCourseUseCase(enrollRepo);
+const enrollController = new EnrollController(enrollUseCase);
+const reviewRepo = new ReviewRepo();
+const reviewUseCase = new ReviewUseCase(reviewRepo);
+const reviewController = new ReviewController(reviewUseCase);
 
-let studentUseCase = new StudentUseCase(
+const studentUseCase = new StudentUseCase(
   otp,
   repository,
   jwt,
@@ -38,7 +50,7 @@ let studentUseCase = new StudentUseCase(
   courseRepo
 );
 
-let controller = new studentController(studentUseCase);
+const controller = new studentController(studentUseCase);
 const router = express.Router();
 
 router.post("/login_student", (req, res) => controller.studentLogin(req, res));
@@ -63,8 +75,30 @@ router.post("/changepassword", (req, res) =>
 router.post("/setpassword", (req, res) =>
   controller.setForgotPassword(req, res)
 );
-router.route("/profile").get((req, res) => controller.getStudentData(req, res)).
-patch((req,res)=>controller.updateProfile(req,res));
+router
+  .route("/profile")
+  .get((req, res) => controller.getStudentData(req, res))
+  .patch((req, res) => controller.updateProfile(req, res));
 
-router.patch('/update_image',upload.single('image'),(req,res)=>controller.updateImage(req,res))
+router.patch("/update_image", upload.single("image"), (req, res) =>
+  controller.updateImage(req, res)
+);
+
+router.post("/stripe_payment", (req, res) =>
+  courseController.payment(req, res)
+);
+
+router
+  .route("/enroll")
+  .post((req, res) => enrollController.enroll(req, res))
+  .get((req, res) => enrollController.checkEnroll(req, res));
+
+router
+  .route("/review")
+  .post((req, res) => reviewController.addReview(req, res))
+  .get((req, res) => reviewController.fetchReviews(req, res));
+
+router.get("/check_review", (req, res) =>
+  reviewController.checkReview(req, res)
+);
 export default router;

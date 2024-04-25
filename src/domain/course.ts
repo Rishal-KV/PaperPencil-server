@@ -1,9 +1,10 @@
 interface Course {
     _id : string,
+    instructor:string
     name: string,
     price: number,
     description: string,
-    chapters: string[],
+    category:string
     approved: Boolean,
     listed: Boolean,
     image : string

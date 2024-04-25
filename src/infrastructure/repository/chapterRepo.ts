@@ -23,7 +23,7 @@ class ChapterRepo implements Chapter {
   async getChapterById(id: string): Promise<chapter[] | null> {
     let chapters = await chapterModel
       .find({ course: id })
-      .populate("lessons")
+      .populate("lessons").populate({ path: 'course', populate: { path: 'category' } })
       .sort("order");
     if (chapters) {
       return chapters;

@@ -28,6 +28,7 @@ class CategoryController {
     async fetchCategory(req: Request, res: Response) {
         try {
             let category = await this.category.fetchCategory();
+           console.log(category);
            
             
             if (category) {

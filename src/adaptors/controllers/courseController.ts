@@ -1,7 +1,7 @@
 import CourseUseCase from "../../useCase/courseUseCase";
 import { Request, Response } from "express";
 import cloudinary from "../../infrastructure/utils/cloudinary";
-
+import { paymentCheckOut } from "../../infrastructure/utils/stripe";
 import fs from "fs";
 class CourseController {
   private courseUseCase?: CourseUseCase;
@@ -12,6 +12,7 @@ class CourseController {
   async addCourse(req: Request, res: Response) {
     try {
       let formData = req.body;
+      console.log(formData);
 
       let instructor = req.cookies.instructorToken as string;
 
@@ -61,7 +62,12 @@ class CourseController {
 
   async fetchCourse(req: Request, res: Response) {
     try {
-      let course = await this.courseUseCase?.fetchCourse();
+      const search = req.query.search as string;
+      console.log(req.query);
+
+      console.log(search);
+
+      let course = await this.courseUseCase?.fetchCourse(search);
 
       res.status(200).json({ course: course });
     } catch (error) {
@@ -118,6 +124,16 @@ class CourseController {
       } else {
         res.status(401).json(courses);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async payment(req: Request, res: Response) {
+    try {
+      
+
+      let sessionId = await paymentCheckOut(req.body);
+      res.status(200).json(sessionId);
     } catch (error) {
       console.log(error);
     }

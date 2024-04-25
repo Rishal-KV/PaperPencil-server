@@ -13,7 +13,7 @@ const ChapterSchema = new Schema<Chapter>({
   ],
   course: {
     type: String,
-    ref: "Course",
+    ref: "course",
   },
   order: {
     type: Number,

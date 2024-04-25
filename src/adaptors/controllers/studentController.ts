@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import StudentUseCase from "../../useCase/studentUseCase";
 import cloudinary from "../../infrastructure/utils/cloudinary";
-import fs from 'fs'
+import fs from "fs";
 class StudentController {
   private studentUseCase: StudentUseCase;
   constructor(studentUseCase: StudentUseCase) {
@@ -41,7 +41,7 @@ class StudentController {
       );
       if (response?.status) {
         res
-          .cookie("student", response.token, {
+          .cookie("studentToken", response.token, {
             expires: new Date(Date.now() + 25892000000),
             secure: true,
           })
@@ -159,36 +159,37 @@ class StudentController {
       console.log(error);
     }
   }
-  async getStudentData(req:Request,res:Response){
+  async getStudentData(req: Request, res: Response) {
     try {
-      let token  = req.cookies.studentToken as string
+      let token = req.cookies.studentToken as string;
+    
       
-      let student = await this.studentUseCase.get_studentData(token)
-      res.status(200).json(student)
+      
+      
+
+      let student = await this.studentUseCase.get_studentData(token);
+      res.status(200).json(student);
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async updateProfile(req:Request,res:Response){
+  async updateProfile(req: Request, res: Response) {
     try {
       console.log(req.body);
-     
+
       let token = req.cookies.studentToken as string;
-      let response = await this.studentUseCase.updateProfile(token,req.body)
+      let response = await this.studentUseCase.updateProfile(token, req.body);
       if (response?.status) {
         res.status(200).json(response);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async updateImage(req:Request,res:Response){
+  async updateImage(req: Request, res: Response) {
     try {
-      let token = req.cookies.studentToken
-      let formData = req.body
-      let file = req.file
+      let token = req.cookies.studentToken;
+      let formData = req.body;
       if (req.file) {
         await cloudinary.uploader
           .upload(req.file?.path, { folder: "profile" })
@@ -205,16 +206,14 @@ class StudentController {
           .catch((err) => {
             console.log(err);
           });
-        }
+      }
 
-        let response = await this.studentUseCase.updateImage(token,formData);
-        if (response?.status) {
-          res.status(200).json(response)
-        }
-      
+      let response = await this.studentUseCase.updateImage(token, formData);
+      if (response?.status) {
+        res.status(200).json(response);
+      }
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

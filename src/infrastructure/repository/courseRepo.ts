@@ -8,16 +8,18 @@ class CourseRepo implements Icourse {
     instructor: string
   ): Promise<Boolean> {
     try {
-      console.log(instructor);
+      console.log(course);
 
-      let { name, price, description, chapters, image } = course;
+      let { name, price, description, image, category } = course;
+    
+
       let saved = await courseModel.create({
         instructor: instructor,
         name: name,
         price: price,
         description: description,
+        category: category,
         image: image,
-        chapters: chapters,
       });
       if (saved) {
         return true;
@@ -42,17 +44,32 @@ class CourseRepo implements Icourse {
     }
   }
 
-  async fetchCourse(): Promise<Course[] | null> {
+  async fetchCourse(search: string): Promise<Course[] | null> {
     try {
-      let courses = await courseModel
-        .find({ approved: true, listed: true })
-        .populate("instructor");
+      let courses;
+
+      if (search !== undefined) {
+        courses = await courseModel
+          .find({
+            approved: true,
+            listed: true,
+            name: { $regex: new RegExp(search, "i") },
+          })
+          .populate("instructor");
+      } else {
+        console.log("ook");
+
+        courses = await courseModel
+          .find({ approved: true, listed: true })
+          .populate("instructor");
+      }
 
       return courses;
     } catch (error) {
       throw error;
     }
   }
+
   async updateById(id: string): Promise<boolean> {
     try {
       let update = await courseModel.findOneAndUpdate(
@@ -112,7 +129,10 @@ class CourseRepo implements Icourse {
 
   async fetchSpecificCourse(id: string): Promise<Course | null> {
     try {
-      let specificCourse = await courseModel.findOne({ _id: id }).populate('category').populate('instructor');
+      let specificCourse = await courseModel
+        .findOne({ _id: id })
+        .populate("category")
+        .populate("instructor");
       if (specificCourse) {
         return specificCourse;
       } else {
@@ -122,6 +142,7 @@ class CourseRepo implements Icourse {
       throw error;
     }
   }
+
 }
 
 export default CourseRepo;

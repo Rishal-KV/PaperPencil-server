@@ -45,9 +45,11 @@ class CourseUseCase {
     }
   }
 
-  async fetchCourse() {
+  async fetchCourse(search:string) {
     try {
-      let course = this.courseRepo.fetchCourse();
+      console.log(search);
+      
+      let course = this.courseRepo.fetchCourse(search);
       return course;
     } catch (error) {
       console.log(error);
