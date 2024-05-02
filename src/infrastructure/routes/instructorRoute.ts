@@ -10,7 +10,6 @@ import OtpRepo from "../repository/otpRepository";
 import CourseRepo from "../repository/courseRepo";
 import CourseUseCase from "../../useCase/courseUseCase";
 import CourseController from "../../adaptors/controllers/courseController";
-import upload from "../middleware/multer";
 import instructorAuth from "../middleware/instructorAuth";
 import ChapterRepo from "../repository/chapterRepo";
 import ChapterUseCase from "../../useCase/chapter";
@@ -18,6 +17,7 @@ import ChapterController from "../../adaptors/controllers/chapter";
 import LessonController from "../../adaptors/controllers/lesson";
 import LessonUseCase from "../../useCase/lessonUseCase";
 import LessonRepo from "../repository/lessonRepo";
+import upload from "../middleware/multer";
 
 let OtpRep = new OtpRepo();
 let otp = new GenerateOTP();
@@ -53,6 +53,7 @@ const router = express.Router();
 router.post("/sign_up", (req, res) =>
   instrcutorController.SignUpAndSendOtp(req, res)
 );
+router.post('/resend_otp',(req,res) => instrcutorController.resendOtp(req,res))
 router.post("/login", (req, res) => instrcutorController.Login(req, res));
 
 router.post("/confirm_otp", (req, res) =>
@@ -96,6 +97,9 @@ router
 
 router
   .route("/profile")
-  .get((req, res) => instrcutorController.fetchProfile(req, res));
+  .get(instructorAuth,(req, res) => instrcutorController.fetchProfile(req, res)).
+  post(instructorAuth,(req,res)=>instrcutorController.updateProfile(req,res)).
+  patch(instructorAuth,upload.single('image'),(req,res) =>  instrcutorController.updateImage(req,res));
 
+  router.get('/course',instructorAuth,(req,res) => courseController.fetchSpecificCourse(req,res))
 export default router;

@@ -20,7 +20,7 @@ const instructorShema = new Schema({
     type: Boolean,
     default: false,
   },
-  profileImage: {
+  imageUrl: {
     type: String,
   },
   phone: {

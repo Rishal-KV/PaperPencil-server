@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import EnrolledCourse from "../../domain/enrolledCourse";
 const enrolledCourseSchema = new Schema({
-  courseId: {
+  course: {
     ref: "course",
     type: String,
   },

@@ -20,7 +20,7 @@ import EnrollController from "../../adaptors/controllers/enrollController";
 import ReviewRepo from "../repository/reviewRepo";
 import ReviewUseCase from "../../useCase/reviewUseCase";
 import ReviewController from "../../adaptors/controllers/reviewController";
-
+import studentAuth from "../middleware/studentAuth";
 const otp = new GenerateOTP();
 const repository = new StudentRepo();
 const courseRepo = new CourseRepo();
@@ -77,10 +77,10 @@ router.post("/setpassword", (req, res) =>
 );
 router
   .route("/profile")
-  .get((req, res) => controller.getStudentData(req, res))
-  .patch((req, res) => controller.updateProfile(req, res));
+  .get(studentAuth,(req, res) => controller.getStudentData(req, res))
+  .patch(studentAuth,(req, res) => controller.updateProfile(req, res));
 
-router.patch("/update_image", upload.single("image"), (req, res) =>
+router.patch("/update_image", studentAuth, upload.single("image"), (req, res) =>
   controller.updateImage(req, res)
 );
 
@@ -101,4 +101,6 @@ router
 router.get("/check_review", (req, res) =>
   reviewController.checkReview(req, res)
 );
+router.post('/forgot_confirm_otp',(req,res) => controller.forgotConfirmOtp(req,res))
+router.get('/enrolled_course',studentAuth,(req,res)=>enrollController.fetchCourse(req,res))
 export default router;

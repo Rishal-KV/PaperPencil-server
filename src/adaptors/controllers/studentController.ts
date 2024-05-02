@@ -34,6 +34,7 @@ class StudentController {
   async authenticateStudent(req: Request, res: Response) {
     try {
       let token = req.cookies.studentOtp;
+      console.log(token);
 
       let response = await this.studentUseCase.authenticate(
         token,
@@ -125,7 +126,7 @@ class StudentController {
 
       if (response?.status) {
         res
-          .cookie("studentEmail", response.student, {
+          .cookie("studentOtp", response.student, {
             expires: new Date(Date.now() + 25892000000),
             secure: true,
           })
@@ -162,10 +163,6 @@ class StudentController {
   async getStudentData(req: Request, res: Response) {
     try {
       let token = req.cookies.studentToken as string;
-    
-      
-      
-      
 
       let student = await this.studentUseCase.get_studentData(token);
       res.status(200).json(student);
@@ -211,6 +208,23 @@ class StudentController {
       let response = await this.studentUseCase.updateImage(token, formData);
       if (response?.status) {
         res.status(200).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async forgotConfirmOtp(req: Request, res: Response) {
+    try {
+      const email = req.cookies.studentOtp;
+
+      const otp = req.body.otp;
+
+      const response = await this.studentUseCase.confirmForgotOtp(email, otp);
+
+      if (response?.status) {
+        res.status(200).json(response);
+      } else {
+        res.status(401).json(response);
       }
     } catch (error) {
       console.log(error);

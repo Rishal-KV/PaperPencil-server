@@ -8,5 +8,6 @@ interface Icourse {
   courseList(id:string):Promise<boolean>
   fetchSpecificCourse(id:string):Promise<Course | null>
 
+
 }
 export default Icourse;

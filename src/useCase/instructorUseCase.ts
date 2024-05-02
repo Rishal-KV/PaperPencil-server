@@ -181,13 +181,44 @@ class InstructorUseCase {
       console.log(error);
     }
   }
-  async updateProfile (id:string,instructorData:Instructor){
+  async updateProfile(id: string, instructorData: Instructor) {
     try {
-      const response = await this.instructorRepo.updateProfile(id,instructorData);
-    return  response ? {status:true,message:"updated succesfully"} : {status:false, message:"failed to update"}
+      const response = await this.instructorRepo.updateProfile(
+        id,
+        instructorData
+      );
+      return response
+        ? { status: true, message: "updated succesfully" }
+        : { status: false, message: "failed to update" };
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+  async updateImage(id: string, imageUrl: string) {
+    try {
+      const decodeToken = this.jwt.verifyToken(id);
+      console.log(decodeToken);
+
+      const response = await this.instructorRepo.updateImage(
+        decodeToken?.id,
+        imageUrl
+      );
+      if (response) {
+        return { status: true, message: "profile photo updated" };
+      } else {
+        return { status: false, message: "failed to update" };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async resendOtp(token: string) {
+    const decodeToken = this.jwt.verifyToken(token);
+    if (decodeToken && decodeToken.email) {
+      let otp  = this.generateOtp.generateOTP() ;
+      this.OtpRepo.createOtpCollection(decodeToken.email,otp );
+      this.sendmail.sendMail(decodeToken.email,parseInt(otp))
+      return { status: true, message: "otp resend successfully" };
     }
   }
 }

@@ -22,9 +22,11 @@ class enrollController {
     try {
       let courseId = req.query.courseId as string;
       let studentId = req.query.studentId as string;
-console.log(studentId);
+
 
       let enrolled = await this.enrollUseCase.checkEnroll(studentId, courseId);
+    
+      
       if (enrolled?.enrolled) {
         res.status(200).json(enrolled);
       } else {
@@ -32,6 +34,22 @@ console.log(studentId);
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+  async fetchCourse(req:Request,res:Response){
+    try {
+      const studentId = req.query.studentId as string
+  
+      
+      const response = await this.enrollUseCase.enrolledCourse(studentId);
+      if (response?.status) {
+        res.status(200).json(response)
+      }else{
+        res.status(401).json(response)
+      }
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }

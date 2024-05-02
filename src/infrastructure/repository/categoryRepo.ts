@@ -26,10 +26,9 @@ class CategoryRepo implements ICategory {
   async findCategory(name: string): Promise<Category | null> {
     try {
       const categoryFound = await categoryModel.findOne({
-        name: { $regex: `^${name}$`, $options: 'i' },
+        name: { $regex: `^${name}$`, $options: "i" },
       });
-  
-      
+
       if (categoryFound) {
         return categoryFound;
       } else {
@@ -59,6 +58,39 @@ class CategoryRepo implements ICategory {
           }
         );
         return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updateCategory(
+    catId: string,
+    cat: string
+  ): Promise<boolean | Category> {
+    try {
+      const updated = await categoryModel.findOneAndUpdate(
+        { _id: catId },
+        {
+          name: cat,
+        },
+        { new: true }
+      );
+      if (updated) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getSpecific_category(id: string): Promise<Category | null> {
+    try {
+      const category = await categoryModel.findOne({ _id: id });
+      if (category) {
+        return category;
+      } else {
+        return null;
       }
     } catch (error) {
       throw error;

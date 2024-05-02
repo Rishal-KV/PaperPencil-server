@@ -39,7 +39,7 @@ class ReviewRepo implements IReview {
             },
           ],
         });
-        return { review: false };
+        return { review: true };
       }
     } catch (error) {
       throw error;
@@ -47,8 +47,7 @@ class ReviewRepo implements IReview {
   }
   async checkReview(studentId: string, courseId: string): Promise<boolean> {
     // console.log(studentId, courseId, + "oooo");
-console.log(courseId , "repoo");
-
+    console.log(courseId, "repoo");
 
     try {
       const reviewed = await reviewModel.findOne(
@@ -57,10 +56,9 @@ console.log(courseId , "repoo");
           reviews: { $elemMatch: { studentId: studentId } },
         }
       );
+     
 
-
-
-      if (reviewed) {
+      if (reviewed?.reviews && reviewed.reviews.length > 0) {
         return true;
       } else {
         return false;
@@ -71,7 +69,9 @@ console.log(courseId , "repoo");
   }
   async fetchReview(courseId: string): Promise<Review | null> {
     try {
-      const reviews = await reviewModel.findOne({ courseId: courseId }).populate('reviews.studentId');
+      const reviews = await reviewModel
+        .findOne({ courseId: courseId })
+        .populate("reviews.studentId");
       if (reviews) {
         return reviews;
       } else {

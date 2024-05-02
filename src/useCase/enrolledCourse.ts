@@ -31,5 +31,18 @@ class enrolledCourseUseCase {
       console.log(error);
     }
   }
+  async enrolledCourse (studentId:string){
+    try {
+      const response = await this.enrolledCourseRepo.fetchEnrolledCourse(studentId);
+      if (response) {
+        return {status:true,courses:response}
+      }else{
+        return {status:false, message:"failed to fetch"}
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 export default enrolledCourseUseCase;

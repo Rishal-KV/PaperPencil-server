@@ -1,3 +1,4 @@
+import EnrolledCourse from "../../domain/enrolledCourse";
 import IEnrolled from "../../useCase/interface/IEnrolled";
 import enrolledCourseModel from "../database/enrolledCourse";
 class EnrolledCourseRepo implements IEnrolled {
@@ -7,15 +8,17 @@ class EnrolledCourseRepo implements IEnrolled {
   ): Promise<boolean | { message: string }> {
     try {
       const enrolled = await enrolledCourseModel.findOne({
-        studentId,
-        courseId,
+        studentId: studentId,
+        course: courseId,
       });
+  
+
       if (enrolled) {
         return { message: "already enrolled" };
       } else {
         const enroll = await enrolledCourseModel.create({
           studentId: studentId,
-          courseId: courseId,
+          course: courseId,
         });
         if (enroll) {
           return true;
@@ -31,7 +34,7 @@ class EnrolledCourseRepo implements IEnrolled {
     try {
       const enrolled = await enrolledCourseModel.findOne({
         studentId: studentId,
-        courseId: courseId,
+        course: courseId,
       });
       if (enrolled) {
         return true;
@@ -40,6 +43,21 @@ class EnrolledCourseRepo implements IEnrolled {
       }
     } catch (error) {
       throw error;
+    }
+  }
+  async fetchEnrolledCourse(
+    studentId: string
+  ): Promise<EnrolledCourse[] | null> {
+    const enrolledCourse = await enrolledCourseModel
+      .find({ studentId: studentId })
+      .populate({
+        path: "course",
+        populate: { path: "instructor", model: "instructor" },
+      });
+    if (enrolledCourse) {
+      return enrolledCourse;
+    } else {
+      return null;
     }
   }
 }

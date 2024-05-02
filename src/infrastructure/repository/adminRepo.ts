@@ -65,7 +65,6 @@ class AdminRepo implements IAdminRepo {
   async blockStudent(id: string): Promise<boolean> {
     try {
       let student = await studentModel.findById(id);
-      console.log(student);
 
       if (student?.is_blocked) {
         let eheh = await studentModel.findOneAndUpdate(
@@ -75,7 +74,6 @@ class AdminRepo implements IAdminRepo {
           },
           { new: true }
         );
-        console.log(eheh);
 
         return true;
       } else {
@@ -93,7 +91,9 @@ class AdminRepo implements IAdminRepo {
   }
   async fetchCourse(): Promise<Course[] | null> {
     try {
-      let course = await courseModel.find({publish:true}).populate('instructor');
+      let course = await courseModel
+        .find({ publish: true })
+        .populate("instructor");
       if (course) {
         return course;
       } else {

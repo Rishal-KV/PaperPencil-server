@@ -1,5 +1,5 @@
 interface EnrolledCourse {
-  courseId: string;
+  course: string;
   studentId: string;
 }
 export default EnrolledCourse;

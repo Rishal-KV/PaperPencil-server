@@ -72,13 +72,13 @@ class StudentUseCase {
 
   async authenticate(token: string, otp: string) {
     try {
+      
+      
       let decodeToken = this.Jwt.verifyToken(token);
-      console.log(decodeToken);
-
+   
+      
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
-        // console.log(fetchOtp);
-        // console.log(otp);
 
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
@@ -93,8 +93,6 @@ class StudentUseCase {
               studentData: studentData,
             };
           } else {
-            console.log("eheh");
-
             return { status: false, message: "invalid otp" };
           }
         } else {
@@ -107,8 +105,6 @@ class StudentUseCase {
   }
   async loginStudent(email: string, password: string) {
     let studentFound = await this.repository.findStudentByEMail(email);
-    console.log(studentFound);
-
     if (studentFound) {
       let student = await this.repository.fetchStudentData(email);
       if (!studentFound.is_Verified) {
@@ -140,7 +136,7 @@ class StudentUseCase {
   async googleAuth(credential: any) {
     try {
       console.log(credential);
-      
+
       let { name, email } = credential;
       let studentFound = await this.repository.findStudentByEMail(email);
 
@@ -188,7 +184,12 @@ class StudentUseCase {
   async forgotPassword(email: string) {
     try {
       let student = await this.repository.findStudentByEMail(email);
+
       if (student) {
+        const otp = this.generateOtp.generateOTP();
+        this.OtpRepo.createOtpCollection(student.email, otp);
+        await this.sendmail.sendMail(student.email, parseInt(otp));
+
         return { status: true, student: student.email };
       } else {
         return { status: false, message: "no student found" };
@@ -208,7 +209,7 @@ class StudentUseCase {
         if (updated) {
           return { status: true, message: "password changed successfully" };
         } else {
-          return { status: true, message: "failed to change password" };
+          return { status: false, message: "failed to change password" };
         }
       } else {
         console.log("failed to encrypt");
@@ -221,9 +222,6 @@ class StudentUseCase {
   async get_studentData(token: string) {
     try {
       let encryptedToken = this.Jwt.verifyToken(token);
-      console.log(encryptedToken);
-      
-
       let data = await this.repository.getStudentById(encryptedToken?.id);
       if (data) {
         return { status: true, student: data };
@@ -249,10 +247,33 @@ class StudentUseCase {
 
   async updateImage(token: string, image: any) {
     try {
-      let decodeToken = this.Jwt.verifyToken(token)
+      let decodeToken = this.Jwt.verifyToken(token);
       let response = await this.repository.updateImage(decodeToken?.id, image);
       if (response) {
         return { status: true, message: "image updated successfully" };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async confirmForgotOtp(email: string, otp: string) {
+    try {
+      console.log(otp);
+      
+      const response = await this.OtpRepo.getOtpByEmail(email);
+    console.log(response);
+    
+      
+      if (response) {
+        if (response.otp == otp) {
+         
+          
+          return { status: true };
+        } else {
+          return { status: false, message: "incorrect otp!!!" };
+        }
+      } else {
+        return { status: false, message: "otp has been expired" };
       }
     } catch (error) {
       console.log(error);

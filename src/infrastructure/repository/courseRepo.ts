@@ -1,7 +1,7 @@
 import Icourse from "../../useCase/interface/ICourse";
 import Course from "../../domain/course";
 import courseModel from "../database/courseModel";
-
+import categoryModel from "../database/categoryModel";
 class CourseRepo implements Icourse {
   async saveCourseToDataBase(
     course: Course,
@@ -11,7 +11,6 @@ class CourseRepo implements Icourse {
       console.log(course);
 
       let { name, price, description, image, category } = course;
-    
 
       let saved = await courseModel.create({
         instructor: instructor,
@@ -47,6 +46,14 @@ class CourseRepo implements Icourse {
   async fetchCourse(search: string): Promise<Course[] | null> {
     try {
       let courses;
+      const blockedCategories = await categoryModel.find(
+        { is_blocked: true },
+        { _id: 1 }
+      );
+
+      const blockedCategoryIds = blockedCategories.map(
+        (category) => category._id
+      );
 
       if (search !== undefined) {
         courses = await courseModel
@@ -54,11 +61,10 @@ class CourseRepo implements Icourse {
             approved: true,
             listed: true,
             name: { $regex: new RegExp(search, "i") },
+            category: { $nin: blockedCategoryIds },
           })
           .populate("instructor");
       } else {
-        console.log("ook");
-
         courses = await courseModel
           .find({ approved: true, listed: true })
           .populate("instructor");
@@ -142,7 +148,6 @@ class CourseRepo implements Icourse {
       throw error;
     }
   }
-
 }
 
 export default CourseRepo;
