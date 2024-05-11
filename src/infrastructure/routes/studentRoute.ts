@@ -21,6 +21,12 @@ import ReviewRepo from "../repository/reviewRepo";
 import ReviewUseCase from "../../useCase/reviewUseCase";
 import ReviewController from "../../adaptors/controllers/reviewController";
 import studentAuth from "../middleware/studentAuth";
+import CategoryController from "../../adaptors/controllers/category";
+import CategoryUseCase from "../../useCase/categoryUseCase";
+import CategoryRepo from "../repository/categoryRepo";
+import ChatUseCase from "../../useCase/chatUseCase";
+import ChatRepo from "../repository/chatRepo";
+import ChatController from "../../adaptors/controllers/chatController";
 const otp = new GenerateOTP();
 const repository = new StudentRepo();
 const courseRepo = new CourseRepo();
@@ -39,7 +45,9 @@ const enrollController = new EnrollController(enrollUseCase);
 const reviewRepo = new ReviewRepo();
 const reviewUseCase = new ReviewUseCase(reviewRepo);
 const reviewController = new ReviewController(reviewUseCase);
-
+const chatRepo = new ChatRepo();
+const chatUseCase = new ChatUseCase(chatRepo);
+const chatController = new ChatController(chatUseCase);
 const studentUseCase = new StudentUseCase(
   otp,
   repository,
@@ -52,7 +60,9 @@ const studentUseCase = new StudentUseCase(
 
 const controller = new studentController(studentUseCase);
 const router = express.Router();
-
+const categoryRepo = new CategoryRepo();
+const categoryUseCase = new CategoryUseCase(categoryRepo);
+const categoryController = new CategoryController(categoryUseCase);
 router.post("/login_student", (req, res) => controller.studentLogin(req, res));
 router.post("/signup_student", (req, res) =>
   controller.SignUpAndSendOtp(req, res)
@@ -63,9 +73,12 @@ router.post("/verify_otp", (req, res) =>
 );
 router.post("/google_login", (req, res) => controller.googleLogin(req, res));
 router.get("/get_course", (req, res) => courseController.fetchCourse(req, res));
-router.get("/getspecific_course", (req, res) =>
-  courseController.fetchSpecificCourse(req, res)
-);
+
+router
+  .route("/getspecific_course")
+  .get((req, res) => courseController.fetchSpecificCourse(req, res))
+  .patch((req, res) => courseController.updateCourse(req, res));
+
 router.get("/get_chapter", (req, res) =>
   chapterController.getChapter(req, res)
 );
@@ -77,8 +90,8 @@ router.post("/setpassword", (req, res) =>
 );
 router
   .route("/profile")
-  .get(studentAuth,(req, res) => controller.getStudentData(req, res))
-  .patch(studentAuth,(req, res) => controller.updateProfile(req, res));
+  .get(studentAuth, (req, res) => controller.getStudentData(req, res))
+  .patch(studentAuth, (req, res) => controller.updateProfile(req, res));
 
 router.patch("/update_image", studentAuth, upload.single("image"), (req, res) =>
   controller.updateImage(req, res)
@@ -93,6 +106,9 @@ router
   .post((req, res) => enrollController.enroll(req, res))
   .get((req, res) => enrollController.checkEnroll(req, res));
 
+router.post("/create_chat", studentAuth, (req, res) =>
+  enrollController.createChat(req, res)
+);
 router
   .route("/review")
   .post((req, res) => reviewController.addReview(req, res))
@@ -101,6 +117,34 @@ router
 router.get("/check_review", (req, res) =>
   reviewController.checkReview(req, res)
 );
-router.post('/forgot_confirm_otp',(req,res) => controller.forgotConfirmOtp(req,res))
-router.get('/enrolled_course',studentAuth,(req,res)=>enrollController.fetchCourse(req,res))
+router.post("/forgot_confirm_otp", (req, res) =>
+  controller.forgotConfirmOtp(req, res)
+);
+router.get("/enrolled_course", studentAuth, (req, res) =>
+  enrollController.fetchCourse(req, res)
+);
+router.get("/category", studentAuth, (req, res) =>
+  categoryController.fetchCategory(req, res)
+);
+
+router
+  .route("/progress")
+  .post(studentAuth, (req, res) => enrollController.saveProgress(req, res))
+  .get(studentAuth, (req, res) => enrollController.checkProgress(req, res));
+router.post("/progress", studentAuth, (req, res) =>
+  enrollController.saveProgress(req, res)
+);
+
+router.get("/get_instructor", (req, res) =>
+  courseController.getInstructor(req, res)
+);
+
+router.get("/get_chatlist", (req, res) =>
+  chatController.fetchChatList(req, res)
+);
+
+router.get("/get_conversations", studentAuth, (req, res) =>
+  chatController.fetchConversation(req, res)
+);
+
 export default router;

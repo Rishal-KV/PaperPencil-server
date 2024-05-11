@@ -43,32 +43,42 @@ class CourseRepo implements Icourse {
     }
   }
 
-  async fetchCourse(search: string): Promise<Course[] | null> {
+  async fetchCourse(
+    search?: string,
+    category?: string
+  ): Promise<Course[] | null> {
     try {
-      let courses;
+      // Construct the base query
+      let query: any = {
+        approved: true,
+        listed: true,
+      };
+
+      // Fetch blocked category IDs
       const blockedCategories = await categoryModel.find(
         { is_blocked: true },
         { _id: 1 }
       );
-
       const blockedCategoryIds = blockedCategories.map(
         (category) => category._id
       );
 
-      if (search !== undefined) {
-        courses = await courseModel
-          .find({
-            approved: true,
-            listed: true,
-            name: { $regex: new RegExp(search, "i") },
-            category: { $nin: blockedCategoryIds },
-          })
-          .populate("instructor");
-      } else {
-        courses = await courseModel
-          .find({ approved: true, listed: true })
-          .populate("instructor");
+      // Apply category filter if category is provided and not blocked
+      if (category && !blockedCategoryIds.includes(category)) {
+        query.category = category;
       }
+
+      // Apply search criteria if search is provided
+      if (search) {
+        // Add search criteria to match either the name or description fields
+        const searchQuery = {
+          $or: [{ name: { $regex: new RegExp(search, "i") } }],
+        };
+        Object.assign(query, searchQuery);
+      }
+
+      // Fetch courses based on the constructed query
+      const courses = await courseModel.find(query).populate("instructor");
 
       return courses;
     } catch (error) {
@@ -148,6 +158,28 @@ class CourseRepo implements Icourse {
       throw error;
     }
   }
+  async updateCourse(courseId: string, course: Course): Promise<boolean> {
+    try {
+      const updated = await courseModel.findOneAndUpdate(
+        { _id: courseId },
+        {
+          name: course.name,
+          price: course.price,
+          category: course.category,
+          description: course.description,
+        },
+        { new: true }
+      );
+      if (updated) {
+        return true;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  
 }
 
 export default CourseRepo;

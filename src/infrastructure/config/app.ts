@@ -4,7 +4,8 @@ import studentRoute from '../routes/studentRoute';
 import instructorRouter from '../routes/instructorRoute';
 import adminRoute from '../routes/adminRoute';
 import cookieParser from 'cookie-parser';
-
+import {initializeSocket } from './socket';
+import http  from 'http'
 
 
 
@@ -24,8 +25,7 @@ export const createServer = () =>{
         app.use('/',studentRoute);
         app.use('/instructor',instructorRouter);
         app.use('/admin',adminRoute);
-        
-        
+       
         return app
     } catch (error:any) {
          console.log(error.message);

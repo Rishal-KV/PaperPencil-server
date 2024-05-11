@@ -63,11 +63,9 @@ class CourseController {
   async fetchCourse(req: Request, res: Response) {
     try {
       const search = req.query.search as string;
-      console.log(req.query);
+      const category = req.query.category as string;
 
-      console.log(search);
-
-      let course = await this.courseUseCase?.fetchCourse(search);
+      let course = await this.courseUseCase?.fetchCourse(search, category);
 
       res.status(200).json({ course: course });
     } catch (error) {
@@ -130,14 +128,40 @@ class CourseController {
   }
   async payment(req: Request, res: Response) {
     try {
-      
-
       let sessionId = await paymentCheckOut(req.body);
       res.status(200).json(sessionId);
     } catch (error) {
       console.log(error);
     }
   }
+
+  async updateCourse(req: Request, res: Response) {
+    try {
+      const courseId = req.body.courseId;
+      const course = req.body.courseData;
+
+      const response = await this.courseUseCase?.updateCourse(courseId, course);
+      if (response?.status) {
+        res.status(200).json(response);
+      } else {
+        res.status(401).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+async getInstructor(req:Request, res:Response) {
+  try {
+    const courseId = req.query.courseId as string;
+  
+    
+    const response = await this.courseUseCase?.getInstructor(courseId);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    
+  }
+ }
 }
 
 export default CourseController;

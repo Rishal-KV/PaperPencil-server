@@ -6,8 +6,10 @@ import jwt from "jsonwebtoken";
 import Imailer from "./interface/IMailer";
 import Bcrypt from "../infrastructure/utils/bcrypt";
 import OtpRepo from "../infrastructure/repository/otpRepository";
+
 class InstructorUseCase {
   private instructorRepo: InstructorRepo;
+ 
   private jwt: Jwt;
   private generateOtp: GenerateOTP;
   private sendmail: Imailer;
@@ -19,14 +21,15 @@ class InstructorUseCase {
     generateOtp: GenerateOTP,
     sendmail: Imailer,
     bcrypt: Bcrypt,
-    otp: OtpRepo
+    otp: OtpRepo,
+ 
   ) {
     this.instructorRepo = instructorRepo;
     this.jwt = jwt;
     this.generateOtp = generateOtp;
     this.sendmail = sendmail;
     this.bcrypt = bcrypt;
-    this.OtpRepo = otp;
+    this.OtpRepo = otp
   }
 
   async signUpAndSendOtp(InstructorData: Instructor) {

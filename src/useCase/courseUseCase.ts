@@ -45,11 +45,11 @@ class CourseUseCase {
     }
   }
 
-  async fetchCourse(search:string) {
+  async fetchCourse(search: string, category: string) {
     try {
       console.log(search);
-      
-      let course = this.courseRepo.fetchCourse(search);
+
+      let course = this.courseRepo.fetchCourse(search, category);
       return course;
     } catch (error) {
       console.log(error);
@@ -83,10 +83,7 @@ class CourseUseCase {
   }
   async courseAction(id: string) {
     try {
-      console.log(id);
-
       let courseaction = await this.courseRepo.courseAction(id);
-      // console.log(courseaction);
 
       if (courseaction) {
         return { status: courseaction, message: "course approved" };
@@ -117,6 +114,27 @@ class CourseUseCase {
       } else {
         return { status: true, message: "no course found" };
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateCourse(courseId: string, course: Course) {
+    try {
+      const response = await this.courseRepo.updateCourse(courseId, course);
+      if (response) {
+        return { status: true, message: "course updated successfully" };
+      } else {
+        return { status: false, message: "failed to update" };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async getInstructor(courseId: string) {
+    try {
+      const response: any = await this.courseRepo.fetchSpecificCourse(courseId);
+      return { status: true, instructorId: response?.instructor._id };
     } catch (error) {
       console.log(error);
     }

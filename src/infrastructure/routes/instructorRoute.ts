@@ -18,15 +18,23 @@ import LessonController from "../../adaptors/controllers/lesson";
 import LessonUseCase from "../../useCase/lessonUseCase";
 import LessonRepo from "../repository/lessonRepo";
 import upload from "../middleware/multer";
+import EnrolledCourseRepo from "../repository/enrolled";
+import EnrolledCourseUseCase from "../../useCase/enrolledCourse";
+import EnrollController from "../../adaptors/controllers/enrollController";
+import ChatRepo from "../repository/chatRepo";
+import ChatUseCase from "../../useCase/chatUseCase";
+import ChatController from "../../adaptors/controllers/chatController";
+const chatRepo  = new ChatRepo();
+const chatUseCase = new ChatUseCase(chatRepo)
+const chatController = new ChatController(chatUseCase)
+const OtpRep = new OtpRepo();
+const otp = new GenerateOTP();
+const jwt = new Jwt();
+const mail = new NodeMailer();
+const instructorRepo = new InstructorRepo();
+const bcrypt = new Bcrypt();
 
-let OtpRep = new OtpRepo();
-let otp = new GenerateOTP();
-let jwt = new Jwt();
-let mail = new NodeMailer();
-let instructorRepo = new InstructorRepo();
-let bcrypt = new Bcrypt();
-
-let instructorUseCase = new InstructorUseCase(
+const instructorUseCase = new InstructorUseCase(
   instructorRepo,
   jwt,
   otp,
@@ -34,20 +42,23 @@ let instructorUseCase = new InstructorUseCase(
   bcrypt,
   OtpRep
 );
-let chapterRepo = new ChapterRepo();
-let courseRepo = new CourseRepo();
-let courseUseCase = new CourseUseCase(courseRepo, jwt, chapterRepo);
-let courseController = new CourseController(courseUseCase);
-let instrcutorController = new InstructorController(
+const chapterRepo = new ChapterRepo();
+const courseRepo = new CourseRepo();
+const courseUseCase = new CourseUseCase(courseRepo, jwt, chapterRepo);
+const courseController = new CourseController(courseUseCase);
+const enrollRepo = new EnrolledCourseRepo();
+const enrollUseCase = new EnrolledCourseUseCase(enrollRepo);
+const enrollController = new EnrollController(enrollUseCase)
+const instrcutorController = new InstructorController(
   instructorUseCase,
   courseUseCase
 );
 
-let chapterUseCase = new ChapterUseCase(chapterRepo);
-let chapterController = new ChapterController(chapterUseCase);
-let lessonRepo = new LessonRepo();
-let lessonUseCase = new LessonUseCase(lessonRepo, chapterRepo);
-let lessonController = new LessonController(lessonUseCase);
+const chapterUseCase = new ChapterUseCase(chapterRepo);
+const chapterController = new ChapterController(chapterUseCase);
+const lessonRepo = new LessonRepo();
+const lessonUseCase = new LessonUseCase(lessonRepo, chapterRepo);
+const lessonController = new LessonController(lessonUseCase);
 const router = express.Router();
 
 router.post("/sign_up", (req, res) =>
@@ -102,4 +113,8 @@ router
   patch(instructorAuth,upload.single('image'),(req,res) =>  instrcutorController.updateImage(req,res));
 
   router.get('/course',instructorAuth,(req,res) => courseController.fetchSpecificCourse(req,res))
+  router.get('/enrollments',instructorAuth,(req,res) => enrollController.enrollments(req,res) );
+  router.get('/profit',instructorAuth,(req,res)=>enrollController.calProfit(req,res));
+  router.get('/get_chat', (req,res) => chatController.fetchInstructorChats(req,res))
+  router.get('/get_conversations',(req,res) => chatController.fetchConversation(req,res))
 export default router;

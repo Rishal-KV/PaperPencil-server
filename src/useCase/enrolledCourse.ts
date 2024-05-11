@@ -1,5 +1,5 @@
 import EnrolledCourseRepo from "../infrastructure/repository/enrolled";
-class enrolledCourseUseCase {
+class EnrolledCourseUseCase {
   private enrolledCourseRepo: EnrolledCourseRepo;
   constructor(enrolledCourseRepo: EnrolledCourseRepo) {
     this.enrolledCourseRepo = enrolledCourseRepo;
@@ -44,5 +44,62 @@ class enrolledCourseUseCase {
       
     }
   }
+  async enrollments(courseId:string){
+    try {
+      const response = await this.enrolledCourseRepo.fetchEnrollments(courseId);
+      if (response) {
+        return {status:true, enrollments:response}
+      }else{
+        return {status:false, enrollments:response}
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  async getProfit(instructorId:string){
+    try {
+      const response = await this.enrolledCourseRepo.profitCalc(instructorId);
+      console.log(response);
+      
+      const profit = response[0].totalIncome;
+      return {totalIncome : profit}
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  async saveProgress(courseId:string,lessoId:string,studentId:string){
+    try {
+      await this.enrolledCourseRepo.saveProgress(courseId,studentId,lessoId);
+      return {status:true}
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+async checkProgress(studentId:string,courseId:string){
+  try {
+    const response = await this.enrolledCourseRepo.checkProgress(studentId,courseId);
+    if (response) {
+      return {status:true,enrolledCourse:response}
+    }
+  } catch (error) {
+    console.log(error);
+    
+  }
 }
-export default enrolledCourseUseCase;
+async createChat(studentId:string, instructorId:string){
+  try {
+    const response = await this.enrolledCourseRepo.createChat(studentId,instructorId);
+    return { status:response, message : "connected"}
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+}
+export default EnrolledCourseUseCase;

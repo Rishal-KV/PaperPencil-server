@@ -9,8 +9,26 @@ const enrolledCourseSchema = new Schema({
     ref: "student",
     type: String,
   },
-  
+  enrolled: {
+    type: Date,
+    default: Date.now,
+  },
+  completedLessons: [
+    {
+      type: String,
+      ref: "Lesson",
+    },
+  ],
+  completedChapters: [
+    {
+      type: String,
+      ref: "Chapter",
+    },
+  ],
 });
 
-const enrolledCourseModel = model<EnrolledCourse>("enrolledcourse", enrolledCourseSchema);
+const enrolledCourseModel = model<EnrolledCourse>(
+  "enrolledcourse",
+  enrolledCourseSchema
+);
 export default enrolledCourseModel;

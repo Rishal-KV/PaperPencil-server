@@ -4,6 +4,7 @@ interface Lesson {
     videoUrl: string;
     chapterId: string;
     createdAt?: Date;
-    updatedAt?: Date;
+    
+  
   }
   export default Lesson
