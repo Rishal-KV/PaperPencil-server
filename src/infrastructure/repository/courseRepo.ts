@@ -54,17 +54,8 @@ class CourseRepo implements Icourse {
         listed: true,
       };
 
-      // Fetch blocked category IDs
-      const blockedCategories = await categoryModel.find(
-        { is_blocked: true },
-        { _id: 1 }
-      );
-      const blockedCategoryIds = blockedCategories.map(
-        (category) => category._id
-      );
-
-      // Apply category filter if category is provided and not blocked
-      if (category && !blockedCategoryIds.includes(category)) {
+      // Apply category filter if category is provided
+      if (category) {
         query.category = category;
       }
 
@@ -72,7 +63,11 @@ class CourseRepo implements Icourse {
       if (search) {
         // Add search criteria to match either the name or description fields
         const searchQuery = {
-          $or: [{ name: { $regex: new RegExp(search, "i") } }],
+          $and: [
+            { name: { $regex: new RegExp(search, "i") } },
+
+            { category: category },
+          ],
         };
         Object.assign(query, searchQuery);
       }
@@ -113,7 +108,6 @@ class CourseRepo implements Icourse {
           approved: true,
         }
       );
-      console.log(update);
 
       if (update) {
         return true;
@@ -179,7 +173,6 @@ class CourseRepo implements Icourse {
       throw error;
     }
   }
-  
 }
 
 export default CourseRepo;
