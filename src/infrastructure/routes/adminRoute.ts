@@ -54,7 +54,7 @@ router.get("/get_category",adminAuth, (req, res) =>
 router.patch("/action_category", adminAuth,(req, res) =>
   categoryController.actionCategory(req, res)
 );
-router.patch('/edit_category',(req,res) => categoryController.updateCategory(req,res))
+router.patch('/edit_category',adminAuth,(req,res) => categoryController.updateCategory(req,res))
 router.get('/chapter',(req,res) => chapterContoller.getChapter(req,res))
 router.route('/course').get(adminAuth,(req,res)=>adminController.fetchCourse(req,res))
 .patch(adminAuth,(req,res)=>courseController.courseAction(req,res));

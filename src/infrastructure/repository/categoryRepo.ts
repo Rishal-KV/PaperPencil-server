@@ -68,17 +68,20 @@ class CategoryRepo implements ICategory {
     cat: string
   ): Promise<boolean | Category> {
     try {
-      const updated = await categoryModel.findOneAndUpdate(
-        { _id: catId },
-        {
-          name: cat,
-        },
-        { new: true }
-      );
-      if (updated) {
-        return true;
-      } else {
+      const categoryFound = await categoryModel.findOne({
+        name: { $regex: `^${cat}$`, $options: "i" },
+      });
+      if (categoryFound) {
         return false;
+      } else {
+        await categoryModel.findOneAndUpdate(
+          { _id: catId },
+          {
+            name: cat,
+          },
+          { new: true }
+        );
+        return true;
       }
     } catch (error) {
       throw error;

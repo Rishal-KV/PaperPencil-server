@@ -123,7 +123,7 @@ router.post("/forgot_confirm_otp", (req, res) =>
 router.get("/enrolled_course", studentAuth, (req, res) =>
   enrollController.fetchCourse(req, res)
 );
-router.get("/category", studentAuth, (req, res) =>
+router.get("/category",  (req, res) =>
   categoryController.fetchCategory(req, res)
 );
 

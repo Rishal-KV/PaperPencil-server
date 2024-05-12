@@ -56,7 +56,7 @@ class CategoryUseCase {
       if (response) {
         return { status: true, message: "updated succesfully" };
       } else {
-        return { status: false, message: "failed to update" };
+        return { status: false, message: "category already exist!!!" };
       }
     } catch (error) {
       console.log(error);
