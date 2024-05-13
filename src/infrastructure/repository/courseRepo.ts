@@ -45,15 +45,18 @@ class CourseRepo implements Icourse {
 
   async fetchCourse(
     search?: string,
-    category?: string
+    category?: string,
+    price? : any
   ): Promise<Course[] | null> {
     try {
       // Construct the base query
+      console.log(price,"price");
+      
       let query: any = {
         approved: true,
         listed: true,
       };
-
+     
       // Apply category filter if category is provided
       if (category) {
         query.category = category;
@@ -72,9 +75,18 @@ class CourseRepo implements Icourse {
         Object.assign(query, searchQuery);
       }
 
+ 
+      const sortOptions:any = {};
+      if (price !== "") {
+          sortOptions.price = price === 'desc' ? -1 : 1;
+      }
+      
+      console.log(sortOptions,"heheh");
+      
       // Fetch courses based on the constructed query
-      const courses = await courseModel.find(query).populate("instructor");
+      const courses = await courseModel.find(query).sort(sortOptions).populate("instructor");
 
+       
       return courses;
     } catch (error) {
       throw error;

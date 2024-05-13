@@ -64,8 +64,10 @@ class CourseController {
     try {
       const search = req.query.search as string;
       const category = req.query.category as string;
-
-      let course = await this.courseUseCase?.fetchCourse(search, category);
+      const price = req.query.price as string
+     
+ 
+      let course = await this.courseUseCase?.fetchCourse(search, category,price);
 
       res.status(200).json({ course: course });
     } catch (error) {

@@ -24,6 +24,9 @@ import EnrollController from "../../adaptors/controllers/enrollController";
 import ChatRepo from "../repository/chatRepo";
 import ChatUseCase from "../../useCase/chatUseCase";
 import ChatController from "../../adaptors/controllers/chatController";
+import CategoryRepo from "../repository/categoryRepo";
+import CategoryUseCase from "../../useCase/categoryUseCase";
+import CategoryController from "../../adaptors/controllers/category";
 const chatRepo  = new ChatRepo();
 const chatUseCase = new ChatUseCase(chatRepo)
 const chatController = new ChatController(chatUseCase)
@@ -33,7 +36,9 @@ const jwt = new Jwt();
 const mail = new NodeMailer();
 const instructorRepo = new InstructorRepo();
 const bcrypt = new Bcrypt();
-
+const categoryRepo = new CategoryRepo()
+const categoryUseCase = new CategoryUseCase(categoryRepo);
+const categoryController = new CategoryController(categoryUseCase)
 const instructorUseCase = new InstructorUseCase(
   instructorRepo,
   jwt,
@@ -66,7 +71,7 @@ router.post("/sign_up", (req, res) =>
 );
 router.post('/resend_otp',(req,res) => instrcutorController.resendOtp(req,res))
 router.post("/login", (req, res) => instrcutorController.Login(req, res));
-
+router.get('/category',instructorAuth, (req,res) => categoryController.fetchCategory(req,res) )
 router.post("/confirm_otp", (req, res) =>
   instrcutorController.authenticateInstructor(req, res)
 );
