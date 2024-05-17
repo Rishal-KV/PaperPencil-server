@@ -142,8 +142,8 @@ class StudentUseCase {
 
       if (studentFound) {
         if (studentFound.is_blocked) {
-          console.log("blocked");
-
+        
+           
           return {
             status: false,
             message: `hey ${name} you are blocked by admin`,

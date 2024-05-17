@@ -18,11 +18,10 @@ export const initializeSocket = (server: HttpServer) => {
 
     socket.on("sendMessage", async ({ text, sender, receiver }) => {
       try {
-        console.log(sender,  "okk" , receiver);
+        console.log(sender, "okk", receiver);
         const conversation = await chatModel.findOne({
           members: { $all: [sender, receiver] },
         });
-
 
         if (conversation) {
           const newMessage = await messageModel.create({
@@ -33,9 +32,6 @@ export const initializeSocket = (server: HttpServer) => {
           });
 
           if (newMessage) {
-            console.log(newMessage);
-            
-            
             io.to(sender).emit("newMessage", { newMessage });
             io.to(receiver).emit("newMessage", { newMessage });
           }

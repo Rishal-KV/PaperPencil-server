@@ -4,11 +4,9 @@ import { Types } from "mongoose";
 import messageModel from "../database/message";
 import Message from "../../domain/message";
 class chatRepo implements IChat {
-   
   async fetchStudentChats(student: string): Promise<any> {
-    const studentId = new Types.ObjectId(student)
+    const studentId = new Types.ObjectId(student);
     const chats = await chatModel.aggregate([
-  
       {
         $match: {
           "members.0": studentId,
@@ -16,32 +14,33 @@ class chatRepo implements IChat {
       },
       {
         $lookup: {
-          from: "instructors", 
-          localField: "members.1", 
+          from: "instructors",
+          localField: "members.1",
           foreignField: "_id",
-          as: "instructorDetails", 
+          as: "instructorDetails",
         },
       },
-    {
-      $unwind : "$instructorDetails"
-    }
+      {
+        $unwind: "$instructorDetails",
+      },
     ]);
-    return chats
+    return chats;
   }
- 
+
   async fetchConversation(converstaionId: string): Promise<Message[] | null> {
-    const conversations = await messageModel.find({conversationId:converstaionId})
+    const conversations = await messageModel.find({
+      conversationId: converstaionId,
+    });
     if (conversations) {
-      return conversations
-    }else{
-      return null
+      return conversations;
+    } else {
+      return null;
     }
   }
 
   async fetchInstructorChats(instructor: string): Promise<any> {
-    const instructorId = new Types.ObjectId(instructor)
+    const instructorId = new Types.ObjectId(instructor);
     const chats = await chatModel.aggregate([
-  
       {
         $match: {
           "members.1": instructorId,
@@ -49,18 +48,18 @@ class chatRepo implements IChat {
       },
       {
         $lookup: {
-          from: "students", 
-          localField: "members.0", 
+          from: "students",
+          localField: "members.0",
           foreignField: "_id",
-          as: "studentDetails", 
+          as: "studentDetails",
         },
       },
-    {
-      $unwind : "$studentDetails"
-    }
+      {
+        $unwind: "$studentDetails",
+      },
     ]);
-    return chats
+    return chats;
   }
 }
 
-export default chatRepo
+export default chatRepo;

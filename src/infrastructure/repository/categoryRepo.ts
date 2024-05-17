@@ -16,7 +16,7 @@ class CategoryRepo implements ICategory {
   }
   async fetchCategory(): Promise<Category[] | null> {
     try {
-      let category = categoryModel.find();
+      let category = categoryModel.find({is_blocked:false});
       return category;
     } catch (error) {
       throw error;

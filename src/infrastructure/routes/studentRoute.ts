@@ -27,6 +27,9 @@ import CategoryRepo from "../repository/categoryRepo";
 import ChatUseCase from "../../useCase/chatUseCase";
 import ChatRepo from "../repository/chatRepo";
 import ChatController from "../../adaptors/controllers/chatController";
+import FavouriteController from "../../adaptors/controllers/favouriteContoller";
+import FavouriteRepo from "../repository/favouriteRepo";
+import FavouriteUseCase from "../../useCase/favouriteUseCase";
 const otp = new GenerateOTP();
 const repository = new StudentRepo();
 const courseRepo = new CourseRepo();
@@ -59,6 +62,9 @@ const studentUseCase = new StudentUseCase(
 );
 
 const controller = new studentController(studentUseCase);
+const favouriteRepo = new FavouriteRepo()
+const favouriteUseCase = new FavouriteUseCase(favouriteRepo)
+const favouriteController = new FavouriteController(favouriteUseCase)
 const router = express.Router();
 const categoryRepo = new CategoryRepo();
 const categoryUseCase = new CategoryUseCase(categoryRepo);
@@ -147,4 +153,6 @@ router.get("/get_conversations", studentAuth, (req, res) =>
   chatController.fetchConversation(req, res)
 );
 
+router.route('/favourite').post((req,res) => favouriteController.addToFavourite(req,res)).
+get((req,res)=>favouriteController.fetchFavourites(req,res));
 export default router;

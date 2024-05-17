@@ -1,7 +1,6 @@
 import Icourse from "../../useCase/interface/ICourse";
 import Course from "../../domain/course";
 import courseModel from "../database/courseModel";
-import categoryModel from "../database/categoryModel";
 class CourseRepo implements Icourse {
   async saveCourseToDataBase(
     course: Course,

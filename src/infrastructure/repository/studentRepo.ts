@@ -28,7 +28,7 @@ class StudentRepo implements IStudentRepo {
     try {
       let student = await studentModel.findOne(
         { email },
-        { email: 1, name: 1 }
+        { email: 1, name: 1, profileImage:1 }
       );
       return student;
     } catch (error) {
