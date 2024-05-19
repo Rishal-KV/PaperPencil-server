@@ -10,6 +10,8 @@ class FavouriteUseCase {
       const added = await this.favourite.addToFavourite(studentId, courseId);
       if (added) {
         return { status: true, message: "added to favourites" };
+      }else{
+        return {status:false, message:"removed from favourites"}
       }
     } catch (error) {
       console.log(error);

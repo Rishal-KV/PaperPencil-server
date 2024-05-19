@@ -8,19 +8,26 @@ class FavouriteRepo implements IFavourite {
         studentId: studentId,
       });
       if (favouriteFound) {
-        await favouriteModel.findByIdAndUpdate(
-          { studentId: studentId },
-          {
-            $push: { favourites: courseId },
-          }
-        );
-        return true;
-      } else {
-        favouriteModel.create({
-          studentId: studentId,
+        if (favouriteFound.favourites.includes(courseId)) {
+          await favouriteModel.updateOne(
+            { studentId },
+            { $pull: { favourites: courseId } }
+          );
+          return false
+        }else{
+          await favouriteModel.updateOne(
+            { studentId },
+            { $push: { favourites: courseId } }
+          );
+        }
+        return true
+      }else {
+      
+        await favouriteModel.create({
+          studentId,
           favourites: [courseId],
         });
-        return true;
+       return true
       }
     } catch (error) {
       throw error;
@@ -29,7 +36,7 @@ class FavouriteRepo implements IFavourite {
 
   async fetchFavourites(studentId: string): Promise<Favourites | null> {
     try {
-      const favourites = await favouriteModel.findOne({ studentId: studentId });
+      const favourites = await favouriteModel.findOne({ studentId: studentId }).populate('favourites').exec();
       if (favourites) {
         return favourites;
       } else {

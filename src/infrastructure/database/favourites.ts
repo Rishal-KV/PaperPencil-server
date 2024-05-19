@@ -7,6 +7,7 @@ const favouriteSchema = new Schema<Favourites>({
   },
   favourites: [
     {
+      
       type: String,
       ref: "course",
     },

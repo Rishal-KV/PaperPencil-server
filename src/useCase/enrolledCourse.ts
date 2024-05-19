@@ -101,5 +101,14 @@ async createChat(studentId:string, instructorId:string){
     
   }
 }
+async fetchMonthlySales(instructorId:string){
+  try {
+    const response = await this.enrolledCourseRepo.fetchMonthlySales(instructorId);
+    return response
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
 }
 export default EnrolledCourseUseCase;

@@ -9,6 +9,7 @@ interface IEnrolled{
     saveProgress(courseId:string, lessonId:string,studentId:string):Promise<void>
     checkProgress(studentId:string,courseId:string):Promise<EnrolledCourse| null>
     createChat(studentId:string,instructorId:string):Promise<boolean>
+    fetchMonthlySales(instructorId:string):Promise <any>
 }
 
 export default IEnrolled

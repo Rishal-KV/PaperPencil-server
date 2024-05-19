@@ -71,42 +71,60 @@ class EnrollController {
       console.log(error);
     }
   }
-  async saveProgress(req:Request,res:Response){
+  async saveProgress(req: Request, res: Response) {
     try {
       const lessonId = req.body.lessonId;
       const courseId = req.body.courseId;
-      const studentId = req.body.studentId
-      const response = await this.enrollUseCase.saveProgress(courseId,lessonId,studentId)
-      res.status(200).json(response)
+      const studentId = req.body.studentId;
+      const response = await this.enrollUseCase.saveProgress(
+        courseId,
+        lessonId,
+        studentId
+      );
+      res.status(200).json(response);
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async checkProgress(req:Request,res:Response) {
+  async checkProgress(req: Request, res: Response) {
     try {
       const studentId = req.query.studentId as string;
-      const courseId = req.query.courseId as string
-      const response = await this.enrollUseCase.checkProgress(studentId,courseId);
+      const courseId = req.query.courseId as string;
+      const response = await this.enrollUseCase.checkProgress(
+        studentId,
+        courseId
+      );
       if (response?.status) {
-        res.status(200).json(response)
+        res.status(200).json(response);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
 
-  async createChat(req:Request,res:Response){
+  async createChat(req: Request, res: Response) {
     try {
-      const {studentId,instructorId} = req.body;
+      const { studentId, instructorId } = req.body;
       console.log(req.body);
-      
-      const response = await this.enrollUseCase.createChat(studentId, instructorId);
-      res.status(200).json(response)
+
+      const response = await this.enrollUseCase.createChat(
+        studentId,
+        instructorId
+      );
+      res.status(200).json(response);
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+
+  async fetchMonthlySales(req: Request, res: Response) {
+    try {
+      const insturctorId = req.query.instructorId as string;
+
+      const response = await this.enrollUseCase.fetchMonthlySales(insturctorId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
     }
   }
 }

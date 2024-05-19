@@ -34,7 +34,7 @@ export const instructorAuth = async (
         if (instructor && instructorData?.is_blocked) {
           
           
-          res.status(401).json({ blocked: true });
+          res.status(401).json({ blocked: true ,role:decodeToken.role});
         } else {
           
           next();

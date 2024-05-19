@@ -5,6 +5,20 @@ import chapterModel from "../database/chapter";
 import enrolledCourseModel from "../database/enrolledCourse";
 import chatModel from "../database/chat";
 import { Types } from "mongoose";
+interface CompleteMonthlySales {
+  year: number;
+  month: number;
+  totalSales: number;
+  enrollmentCount: number;
+}
+interface MonthlySales {
+  _id: {
+    year: number;
+    month: number;
+  };
+  totalSales: number;
+  enrollmentCount: number;
+}
 class EnrolledCourseRepo implements IEnrolled {
   async purchaseCourse(
     studentId: string,
@@ -75,8 +89,6 @@ class EnrolledCourseRepo implements IEnrolled {
   }
   async profitCalc(instructorId: string): Promise<InstructorIncome[]> {
     try {
-      console.log(instructorId);
-
       const profit = await enrolledCourseModel.aggregate([
         {
           $addFields: {
@@ -176,23 +188,95 @@ class EnrolledCourseRepo implements IEnrolled {
     }
   }
   async createChat(studentId: string, instructorId: string): Promise<boolean> {
-  
-    
     const chatExist = await chatModel.findOne({
       members: { $all: [studentId, instructorId] },
     });
-   
 
     if (!chatExist) {
       const newChat = chatModel.create({
-        members: [ studentId, instructorId ],
+        members: [studentId, instructorId],
       });
       return true;
     }
     return true;
   }
 
+  async  fetchMonthlySales(instructorId: string): Promise<any> {
+    try {
+      const monthlySales: MonthlySales[] = await enrolledCourseModel.aggregate([
+        {
+          $addFields: {
+            course: { $toObjectId: "$course" },
+          },
+        },
+        {
+          $lookup: {
+            from: "courses",
+            localField: "course",
+            foreignField: "_id",
+            as: "courseDetails",
+          },
+        },
+        {
+          $unwind: "$courseDetails",
+        },
+        {
+          $match: {
+            "courseDetails.instructor": instructorId
+          },
+        },
+        {
+          $project: {
+            year: { $year: "$enrolled" },
+            month: { $month: "$enrolled" },
+            coursePrice: "$courseDetails.price",
+          },
+        },
+        {
+          $group: {
+            _id: { year: "$year", month: "$month" },
+            totalSales: { $sum: { $multiply: ["$coursePrice", 0.8] } },
+            enrollmentCount: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 },
+        },
+      ]);
   
+      // Create an array of all months within the year range found in the results
+      const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
+      const endDate = new Date(monthlySales[monthlySales.length - 1]._id.year, 11); // End of the last year
+  
+      const completeMonthlySales: CompleteMonthlySales[] = [];
+      let currentDate = startDate;
+  
+      while (currentDate <= endDate) {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1; // getMonth() is zero-based
+  
+        const monthlySale = monthlySales.find(
+          (sale) => sale._id.year === year && sale._id.month === month
+        );
+  
+        completeMonthlySales.push({
+          year,
+          month,
+          totalSales: monthlySale ? monthlySale.totalSales : 0,
+          enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
+        });
+  
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      }
+ 
+  
+   
+      return completeMonthlySales
+    } catch (error) {
+      console.error("Error fetching monthly sales:", error);
+      throw error;
+    }
+  }
 }
 
 export default EnrolledCourseRepo;

@@ -27,18 +27,18 @@ import ChatController from "../../adaptors/controllers/chatController";
 import CategoryRepo from "../repository/categoryRepo";
 import CategoryUseCase from "../../useCase/categoryUseCase";
 import CategoryController from "../../adaptors/controllers/category";
-const chatRepo  = new ChatRepo();
-const chatUseCase = new ChatUseCase(chatRepo)
-const chatController = new ChatController(chatUseCase)
+const chatRepo = new ChatRepo();
+const chatUseCase = new ChatUseCase(chatRepo);
+const chatController = new ChatController(chatUseCase);
 const OtpRep = new OtpRepo();
 const otp = new GenerateOTP();
 const jwt = new Jwt();
 const mail = new NodeMailer();
 const instructorRepo = new InstructorRepo();
 const bcrypt = new Bcrypt();
-const categoryRepo = new CategoryRepo()
+const categoryRepo = new CategoryRepo();
 const categoryUseCase = new CategoryUseCase(categoryRepo);
-const categoryController = new CategoryController(categoryUseCase)
+const categoryController = new CategoryController(categoryUseCase);
 const instructorUseCase = new InstructorUseCase(
   instructorRepo,
   jwt,
@@ -53,7 +53,7 @@ const courseUseCase = new CourseUseCase(courseRepo, jwt, chapterRepo);
 const courseController = new CourseController(courseUseCase);
 const enrollRepo = new EnrolledCourseRepo();
 const enrollUseCase = new EnrolledCourseUseCase(enrollRepo);
-const enrollController = new EnrollController(enrollUseCase)
+const enrollController = new EnrollController(enrollUseCase);
 const instrcutorController = new InstructorController(
   instructorUseCase,
   courseUseCase
@@ -69,9 +69,13 @@ const router = express.Router();
 router.post("/sign_up", (req, res) =>
   instrcutorController.SignUpAndSendOtp(req, res)
 );
-router.post('/resend_otp',(req,res) => instrcutorController.resendOtp(req,res))
+router.post("/resend_otp", (req, res) =>
+  instrcutorController.resendOtp(req, res)
+);
 router.post("/login", (req, res) => instrcutorController.Login(req, res));
-router.get('/category',instructorAuth, (req,res) => categoryController.fetchCategory(req,res) )
+router.get("/category", instructorAuth, (req, res) =>
+  categoryController.fetchCategory(req, res)
+);
 router.post("/confirm_otp", (req, res) =>
   instrcutorController.authenticateInstructor(req, res)
 );
@@ -113,13 +117,33 @@ router
 
 router
   .route("/profile")
-  .get(instructorAuth,(req, res) => instrcutorController.fetchProfile(req, res)).
-  post(instructorAuth,(req,res)=>instrcutorController.updateProfile(req,res)).
-  patch(instructorAuth,upload.single('image'),(req,res) =>  instrcutorController.updateImage(req,res));
+  .get(instructorAuth, (req, res) =>
+    instrcutorController.fetchProfile(req, res)
+  )
+  .post(instructorAuth, (req, res) =>
+    instrcutorController.updateProfile(req, res)
+  )
+  .patch(instructorAuth, upload.single("image"), (req, res) =>
+    instrcutorController.updateImage(req, res)
+  );
 
-  router.get('/course',instructorAuth,(req,res) => courseController.fetchSpecificCourse(req,res))
-  router.get('/enrollments',instructorAuth,(req,res) => enrollController.enrollments(req,res) );
-  router.get('/profit',instructorAuth,(req,res)=>enrollController.calProfit(req,res));
-  router.get('/get_chat', (req,res) => chatController.fetchInstructorChats(req,res))
-  router.get('/get_conversations',(req,res) => chatController.fetchConversation(req,res))
+router.get("/course", instructorAuth, (req, res) =>
+  courseController.fetchSpecificCourse(req, res)
+);
+router.get("/enrollments", instructorAuth, (req, res) =>
+  enrollController.enrollments(req, res)
+);
+router.get("/profit", instructorAuth, (req, res) =>
+  enrollController.calProfit(req, res)
+);
+router.get("/get_chat", (req, res) =>
+  chatController.fetchInstructorChats(req, res)
+);
+router.get("/get_conversations", (req, res) =>
+  chatController.fetchConversation(req, res)
+);
+
+router.get("/sales", (req, res) =>
+  enrollController.fetchMonthlySales(req, res)
+);
 export default router;

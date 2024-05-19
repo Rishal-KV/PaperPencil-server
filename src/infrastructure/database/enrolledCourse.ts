@@ -25,6 +25,7 @@ const enrolledCourseSchema = new Schema({
       ref: "Chapter",
     },
   ],
+ 
 });
 
 const enrolledCourseModel = model<EnrolledCourse>(

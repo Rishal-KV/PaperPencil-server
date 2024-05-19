@@ -155,4 +155,6 @@ router.get("/get_conversations", studentAuth, (req, res) =>
 
 router.route('/favourite').post((req,res) => favouriteController.addToFavourite(req,res)).
 get((req,res)=>favouriteController.fetchFavourites(req,res));
+
+
 export default router;
