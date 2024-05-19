@@ -27,6 +27,9 @@ import ChatController from "../../adaptors/controllers/chatController";
 import CategoryRepo from "../repository/categoryRepo";
 import CategoryUseCase from "../../useCase/categoryUseCase";
 import CategoryController from "../../adaptors/controllers/category";
+import QuestionRepo from "../repository/question";
+import QuestionUseCase from "../../useCase/questionUseCase";
+import QuestionController from "../../adaptors/controllers/questionController";
 const chatRepo = new ChatRepo();
 const chatUseCase = new ChatUseCase(chatRepo);
 const chatController = new ChatController(chatUseCase);
@@ -64,6 +67,9 @@ const chapterController = new ChapterController(chapterUseCase);
 const lessonRepo = new LessonRepo();
 const lessonUseCase = new LessonUseCase(lessonRepo, chapterRepo);
 const lessonController = new LessonController(lessonUseCase);
+const questionRepo = new QuestionRepo();
+const questionUseCase = new QuestionUseCase(questionRepo);
+const questionController = new QuestionController(questionUseCase);
 const router = express.Router();
 
 router.post("/sign_up", (req, res) =>
@@ -146,4 +152,6 @@ router.get("/get_conversations", (req, res) =>
 router.get("/sales", (req, res) =>
   enrollController.fetchMonthlySales(req, res)
 );
+
+router.route('/question').post(instructorAuth,(req,res) => questionController.addQuestion(req,res))
 export default router;

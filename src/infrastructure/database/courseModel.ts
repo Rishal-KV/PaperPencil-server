@@ -40,6 +40,12 @@ const courseSchema = new Schema<Course>({
     type: Boolean,
     default: false,
   },
+  questions: [
+    {
+      type: String,
+      ref: "question",
+    },
+  ],
 });
 const courseModel = model<Course>("course", courseSchema);
 export default courseModel;

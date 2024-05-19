@@ -10,6 +10,7 @@ interface Course {
     image : string
     adminVerified :boolean,
     publish:boolean
+    questions : string[]
 
 
 }

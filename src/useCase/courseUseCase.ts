@@ -109,10 +109,12 @@ class CourseUseCase {
   async fetchSpecificCourse(id: string) {
     try {
       let specificCourse = await this.courseRepo.fetchSpecificCourse(id);
+      
+      
       if (specificCourse) {
         return { status: true, courses: specificCourse };
       } else {
-        return { status: true, message: "no course found" };
+        return { status: false, message: "no course found" };
       }
     } catch (error) {
       console.log(error);

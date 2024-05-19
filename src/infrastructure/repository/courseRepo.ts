@@ -110,7 +110,7 @@ class CourseRepo implements Icourse {
     }
   }
   async courseAction(id: string): Promise<boolean> {
-    console.log(id);
+   
 
     try {
       let update = await courseModel.findOneAndUpdate(
@@ -149,6 +149,8 @@ class CourseRepo implements Icourse {
   }
 
   async fetchSpecificCourse(id: string): Promise<Course | null> {
+    
+    
     try {
       let specificCourse = await courseModel
         .findOne({ _id: id })
