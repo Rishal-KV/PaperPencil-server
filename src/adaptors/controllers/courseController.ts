@@ -65,6 +65,7 @@ class CourseController {
       const search = req.query.search as string;
       const category = req.query.category as string;
       const price = req.query.price as string
+     console.log(search,"search");
      
  
       let course = await this.courseUseCase?.fetchCourse(search, category,price);

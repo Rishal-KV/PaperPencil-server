@@ -1,3 +1,5 @@
+import { Types } from "mongoose"
+
 interface Course {
     _id : string,
     instructor:string
@@ -10,7 +12,7 @@ interface Course {
     image : string
     adminVerified :boolean,
     publish:boolean
-    questions : string[]
+    questions : String[]
 
 
 }

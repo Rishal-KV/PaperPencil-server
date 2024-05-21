@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { model, Schema, Types } from "mongoose";
 import Course from "../../domain/course";
 const courseSchema = new Schema<Course>({
   instructor: {
@@ -46,6 +46,7 @@ const courseSchema = new Schema<Course>({
       ref: "question",
     },
   ],
+  
 });
 const courseModel = model<Course>("course", courseSchema);
 export default courseModel;

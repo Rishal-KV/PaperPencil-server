@@ -30,6 +30,9 @@ import ChatController from "../../adaptors/controllers/chatController";
 import FavouriteController from "../../adaptors/controllers/favouriteContoller";
 import FavouriteRepo from "../repository/favouriteRepo";
 import FavouriteUseCase from "../../useCase/favouriteUseCase";
+import QuestionRepo from "../repository/question";
+import QuestionUseCase from "../../useCase/questionUseCase";
+import QuestionController from "../../adaptors/controllers/questionController";
 const otp = new GenerateOTP();
 const repository = new StudentRepo();
 const courseRepo = new CourseRepo();
@@ -62,13 +65,17 @@ const studentUseCase = new StudentUseCase(
 );
 
 const controller = new studentController(studentUseCase);
-const favouriteRepo = new FavouriteRepo()
-const favouriteUseCase = new FavouriteUseCase(favouriteRepo)
-const favouriteController = new FavouriteController(favouriteUseCase)
+const favouriteRepo = new FavouriteRepo();
+const favouriteUseCase = new FavouriteUseCase(favouriteRepo);
+const favouriteController = new FavouriteController(favouriteUseCase);
 const router = express.Router();
 const categoryRepo = new CategoryRepo();
 const categoryUseCase = new CategoryUseCase(categoryRepo);
 const categoryController = new CategoryController(categoryUseCase);
+
+const questionRepo = new QuestionRepo();
+const questionUseCase = new QuestionUseCase(questionRepo);
+const questionController = new QuestionController(questionUseCase);
 router.post("/login_student", (req, res) => controller.studentLogin(req, res));
 router.post("/signup_student", (req, res) =>
   controller.SignUpAndSendOtp(req, res)
@@ -129,7 +136,7 @@ router.post("/forgot_confirm_otp", (req, res) =>
 router.get("/enrolled_course", studentAuth, (req, res) =>
   enrollController.fetchCourse(req, res)
 );
-router.get("/category",  (req, res) =>
+router.get("/category", (req, res) =>
   categoryController.fetchCategory(req, res)
 );
 
@@ -153,8 +160,12 @@ router.get("/get_conversations", studentAuth, (req, res) =>
   chatController.fetchConversation(req, res)
 );
 
-router.route('/favourite').post((req,res) => favouriteController.addToFavourite(req,res)).
-get((req,res)=>favouriteController.fetchFavourites(req,res));
+router
+  .route("/favourite")
+  .post((req, res) => favouriteController.addToFavourite(req, res))
+  .get((req, res) => favouriteController.fetchFavourites(req, res));
 
-
+router.post("/answer", studentAuth, (req, res) =>
+  questionController.answerToQuestion(req, res)
+);
 export default router;

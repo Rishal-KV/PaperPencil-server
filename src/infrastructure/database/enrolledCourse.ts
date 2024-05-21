@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import EnrolledCourse from "../../domain/enrolledCourse";
-const enrolledCourseSchema = new Schema({
+const enrolledCourseSchema = new Schema<EnrolledCourse>({
   course: {
     ref: "course",
     type: String,
@@ -25,6 +25,10 @@ const enrolledCourseSchema = new Schema({
       ref: "Chapter",
     },
   ],
+  attendedQuestions :[ {
+    type : String
+  }]
+
  
 });
 

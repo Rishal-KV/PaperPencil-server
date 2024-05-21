@@ -1,9 +1,10 @@
 interface EnrolledCourse {
   course: string;
   studentId: string;
-  date:any;
+  enrolled:any;
   completedChapters:[]
   completedLessons:[];
+  attendedQuestions :[]
   
 }
 export default EnrolledCourse;

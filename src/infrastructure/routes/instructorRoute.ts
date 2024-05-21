@@ -153,5 +153,8 @@ router.get("/sales", (req, res) =>
   enrollController.fetchMonthlySales(req, res)
 );
 
-router.route('/question').post(instructorAuth,(req,res) => questionController.addQuestion(req,res))
+router
+  .route("/question")
+  .post(instructorAuth, (req, res) => questionController.addQuestion(req, res)).
+  get(instructorAuth,(req,res)=>questionController.fetchQuestion(req,res));
 export default router;

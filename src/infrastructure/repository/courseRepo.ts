@@ -45,53 +45,47 @@ class CourseRepo implements Icourse {
   async fetchCourse(
     search?: string,
     category?: string,
-    price? : any
+    price?: any
   ): Promise<Course[] | null> {
     try {
       // Construct the base query
-      console.log(price,"price");
-      
+   
+  
       let query: any = {
         approved: true,
         listed: true,
       };
-     
+  
       // Apply category filter if category is provided
       if (category) {
         query.category = category;
       }
-
+  
       // Apply search criteria if search is provided
       if (search) {
-        // Add search criteria to match either the name or description fields
-        const searchQuery = {
-          $and: [
-            { name: { $regex: new RegExp(search, "i") } },
-
-            { category: category },
-          ],
-        };
-        Object.assign(query, searchQuery);
+        query.$or = [
+          { name: { $regex: new RegExp(search, "i") } },
+          { description: { $regex: new RegExp(search, "i") } }
+        ];
       }
-
- 
-      const sortOptions:any = {};
+  
+      const sortOptions: any = {};
       if (price !== "") {
-          sortOptions.price = price === 'desc' ? -1 : 1;
+        sortOptions.price = price === "desc" ? -1 : 1;
       }
-      
-      console.log(sortOptions,"heheh");
-      
+  
       // Fetch courses based on the constructed query
-      const courses = await courseModel.find(query).sort(sortOptions).populate("instructor");
-
-       
+      const courses = await courseModel
+        .find(query)
+        .sort(sortOptions)
+        .populate("instructor");
+  
       return courses;
     } catch (error) {
       throw error;
     }
   }
-
+  
   async updateById(id: string): Promise<boolean> {
     try {
       let update = await courseModel.findOneAndUpdate(
@@ -110,8 +104,6 @@ class CourseRepo implements Icourse {
     }
   }
   async courseAction(id: string): Promise<boolean> {
-   
-
     try {
       let update = await courseModel.findOneAndUpdate(
         { _id: id },
@@ -149,13 +141,12 @@ class CourseRepo implements Icourse {
   }
 
   async fetchSpecificCourse(id: string): Promise<Course | null> {
-    
-    
     try {
       let specificCourse = await courseModel
         .findOne({ _id: id })
         .populate("category")
-        .populate("instructor");
+        .populate("instructor")
+        .populate("questions");
       if (specificCourse) {
         return specificCourse;
       } else {
