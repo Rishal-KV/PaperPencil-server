@@ -1,5 +1,7 @@
 import EnrolledCourseUseCase from "../../useCase/enrolledCourse";
 import { Request, Response } from "express";
+import { generateCertificate } from "../../infrastructure/utils/pdfKIT";
+import EnrolledCourse, { IsCourseCompleted } from "../../domain/enrolledCourse";
 class EnrollController {
   private enrollUseCase: EnrolledCourseUseCase;
   constructor(enrollUseCase: EnrolledCourseUseCase) {
@@ -122,6 +124,60 @@ class EnrollController {
       const insturctorId = req.query.instructorId as string;
 
       const response = await this.enrollUseCase.fetchMonthlySales(insturctorId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async generateCertificate(req: Request, res: Response) {
+    try {
+   
+      const courseId = req.params.courseId;
+      const studentId = req.params.studentId;
+      const isCourseCompleted: IsCourseCompleted =
+        (await this.enrollUseCase.isCourseCompleted(
+          courseId,
+          studentId
+        )) as any;
+
+      console.log(isCourseCompleted,"completed");
+
+      if (isCourseCompleted) {
+        generateCertificate(
+          res,
+          isCourseCompleted.response?.studentId.name as string,
+          isCourseCompleted.response?.course.name as string,
+          isCourseCompleted.response?.completedDate as Date
+        );
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=certificate.pdf"
+        );
+        res.setHeader("Content-Type", "application/pdf");
+      } else {
+        res.status(401).json({ message: "course not completed" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("An error occurred");
+    }
+  }
+
+  async courseProgress(req: Request, res: Response) {
+    try {
+      const studentId = req.body.studentId;
+      const courseId = req.body.courseId;
+      const date = req.body.date;
+
+      console.log(req.body);
+
+      const response = await this.enrollUseCase.saveCourseProgress(
+        studentId,
+        courseId,
+        date
+      );
+
       res.status(200).json(response);
     } catch (error) {
       console.log(error);

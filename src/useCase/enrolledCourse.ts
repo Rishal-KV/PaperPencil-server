@@ -31,84 +31,114 @@ class EnrolledCourseUseCase {
       console.log(error);
     }
   }
-  async enrolledCourse (studentId:string){
+  async enrolledCourse(studentId: string) {
     try {
-      const response = await this.enrolledCourseRepo.fetchEnrolledCourse(studentId);
+      const response = await this.enrolledCourseRepo.fetchEnrolledCourse(
+        studentId
+      );
       if (response) {
-        return {status:true,courses:response}
-      }else{
-        return {status:false, message:"failed to fetch"}
+        return { status: true, courses: response };
+      } else {
+        return { status: false, message: "failed to fetch" };
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-  async enrollments(courseId:string){
+  async enrollments(courseId: string) {
     try {
       const response = await this.enrolledCourseRepo.fetchEnrollments(courseId);
       if (response) {
-        return {status:true, enrollments:response}
-      }else{
-        return {status:false, enrollments:response}
+        return { status: true, enrollments: response };
+      } else {
+        return { status: false, enrollments: response };
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
 
-  async getProfit(instructorId:string){
+  async getProfit(instructorId: string) {
     try {
       const response = await this.enrolledCourseRepo.profitCalc(instructorId);
       console.log(response);
-      
+
       const profit = response[0].totalIncome;
-      return {totalIncome : profit}
-      
+      return { totalIncome: profit };
     } catch (error) {
       console.log(error);
-      
     }
   }
 
-  async saveProgress(courseId:string,lessoId:string,studentId:string){
+  async saveProgress(courseId: string, lessoId: string, studentId: string) {
     try {
-      await this.enrolledCourseRepo.saveProgress(courseId,studentId,lessoId);
-      return {status:true}
+      await this.enrolledCourseRepo.saveProgress(courseId, studentId, lessoId);
+      return { status: true };
     } catch (error) {
       console.log(error);
-      
     }
   }
-async checkProgress(studentId:string,courseId:string){
-  try {
-    const response = await this.enrolledCourseRepo.checkProgress(studentId,courseId);
-    if (response) {
-      return {status:true,enrolledCourse:response}
+  async checkProgress(studentId: string, courseId: string) {
+    try {
+      const response = await this.enrolledCourseRepo.checkProgress(
+        studentId,
+        courseId
+      );
+      if (response) {
+        return { status: true, enrolledCourse: response };
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-    
   }
-}
-async createChat(studentId:string, instructorId:string){
-  try {
-    const response = await this.enrolledCourseRepo.createChat(studentId,instructorId);
-    return { status:response, message : "connected"}
-  } catch (error) {
-    console.log(error);
-    
+  async createChat(studentId: string, instructorId: string) {
+    try {
+      const response = await this.enrolledCourseRepo.createChat(
+        studentId,
+        instructorId
+      );
+      return { status: response, message: "connected" };
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
-async fetchMonthlySales(instructorId:string){
-  try {
-    const response = await this.enrolledCourseRepo.fetchMonthlySales(instructorId);
-    return response
-  } catch (error) {
-    console.log(error);
-    
+  async fetchMonthlySales(instructorId: string) {
+    try {
+      const response = await this.enrolledCourseRepo.fetchMonthlySales(
+        instructorId
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
+  async saveCourseProgress(studentId: string, courseId: string, date: Date) {
+    try {
+      await this.enrolledCourseRepo.saveCourseProgress(
+        courseId,
+        studentId,
+        date
+      );
+      return { status: true };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async isCourseCompleted(courseId: string, studentId: string) {
+    try {
+      const response = await this.enrolledCourseRepo.isCourseCompleted(
+        courseId,
+        studentId
+      );
+      if (response) {
+        return {  response };
+      } else {
+        return {  response };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 export default EnrolledCourseUseCase;

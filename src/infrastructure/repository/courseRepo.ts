@@ -7,7 +7,7 @@ class CourseRepo implements Icourse {
     instructor: string
   ): Promise<Boolean> {
     try {
-      console.log(course);
+     
 
       let { name, price, description, image, category } = course;
 
@@ -49,43 +49,42 @@ class CourseRepo implements Icourse {
   ): Promise<Course[] | null> {
     try {
       // Construct the base query
-   
-  
+
       let query: any = {
         approved: true,
         listed: true,
       };
-  
+
       // Apply category filter if category is provided
       if (category) {
         query.category = category;
       }
-  
+
       // Apply search criteria if search is provided
       if (search) {
         query.$or = [
           { name: { $regex: new RegExp(search, "i") } },
-          { description: { $regex: new RegExp(search, "i") } }
+          { description: { $regex: new RegExp(search, "i") } },
         ];
       }
-  
+
       const sortOptions: any = {};
       if (price !== "") {
         sortOptions.price = price === "desc" ? -1 : 1;
       }
-  
+
       // Fetch courses based on the constructed query
       const courses = await courseModel
         .find(query)
         .sort(sortOptions)
         .populate("instructor");
-  
+
       return courses;
     } catch (error) {
       throw error;
     }
   }
-  
+
   async updateById(id: string): Promise<boolean> {
     try {
       let update = await courseModel.findOneAndUpdate(

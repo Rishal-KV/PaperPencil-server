@@ -25,11 +25,20 @@ const enrolledCourseSchema = new Schema<EnrolledCourse>({
       ref: "Chapter",
     },
   ],
-  attendedQuestions :[ {
-    type : String
-  }]
+  attendedQuestions: [
+    {
+      type: String,
+    },
+  ],
 
- 
+  completedDate: {
+    type: Date,
+    default : 0
+  },
+  courseStatus: {
+    type : Boolean,
+    default : false
+  }
 });
 
 const enrolledCourseModel = model<EnrolledCourse>(

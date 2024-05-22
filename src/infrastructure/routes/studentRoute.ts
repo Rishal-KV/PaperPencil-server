@@ -168,4 +168,10 @@ router
 router.post("/answer", studentAuth, (req, res) =>
   questionController.answerToQuestion(req, res)
 );
+
+router.get("/download_certificate/:studentId/:courseId", studentAuth, (req, res) =>
+  enrollController.generateCertificate(req, res)
+);
+
+router.post('/save_courseprogress',studentAuth,(req,res)=>enrollController.courseProgress(req,res))
 export default router;

@@ -20,5 +20,15 @@ class OtpRepo implements IOtp {
       throw error;
     }
   }
+ async  removeOtp(email: string) {
+    try {
+      await otpModel.deleteOne({
+        email : email,
+       
+      })
+    } catch (error) {
+      throw error
+    }
+  }
 }
 export default OtpRepo;

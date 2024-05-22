@@ -4,6 +4,7 @@ import IEnrolled from "../../useCase/interface/IEnrolled";
 import chapterModel from "../database/chapter";
 import enrolledCourseModel from "../database/enrolledCourse";
 import chatModel from "../database/chat";
+import favouriteModel from "../database/favourites";
 import { Types } from "mongoose";
 interface CompleteMonthlySales {
   year: number;
@@ -38,6 +39,12 @@ class EnrolledCourseRepo implements IEnrolled {
           course: courseId,
         });
         if (enroll) {
+          await favouriteModel.findOneAndUpdate(
+            { studentId: studentId },
+            {
+              $pull: { favourites: courseId },
+            }
+          );
           return true;
         } else {
           return false;
@@ -201,7 +208,7 @@ class EnrolledCourseRepo implements IEnrolled {
     return true;
   }
 
-  async  fetchMonthlySales(instructorId: string): Promise<any> {
+  async fetchMonthlySales(instructorId: string): Promise<any> {
     try {
       const monthlySales: MonthlySales[] = await enrolledCourseModel.aggregate([
         {
@@ -222,7 +229,7 @@ class EnrolledCourseRepo implements IEnrolled {
         },
         {
           $match: {
-            "courseDetails.instructor": instructorId
+            "courseDetails.instructor": instructorId,
           },
         },
         {
@@ -243,37 +250,73 @@ class EnrolledCourseRepo implements IEnrolled {
           $sort: { "_id.year": 1, "_id.month": 1 },
         },
       ]);
-  
+
       // Create an array of all months within the year range found in the results
       const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
-      const endDate = new Date(monthlySales[monthlySales.length - 1]._id.year, 11); // End of the last year
-  
+      const endDate = new Date(
+        monthlySales[monthlySales.length - 1]._id.year,
+        11
+      ); // End of the last year
+
       const completeMonthlySales: CompleteMonthlySales[] = [];
       let currentDate = startDate;
-  
+
       while (currentDate <= endDate) {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth() + 1; // getMonth() is zero-based
-  
+
         const monthlySale = monthlySales.find(
           (sale) => sale._id.year === year && sale._id.month === month
         );
-  
+
         completeMonthlySales.push({
           year,
           month,
           totalSales: monthlySale ? monthlySale.totalSales : 0,
           enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
         });
-  
+
         currentDate.setMonth(currentDate.getMonth() + 1);
       }
- 
-  
-   
-      return completeMonthlySales
+
+      return completeMonthlySales;
     } catch (error) {
       console.error("Error fetching monthly sales:", error);
+      throw error;
+    }
+  }
+
+  async saveCourseProgress(
+    courseId: string,
+    studentId: string,
+    date: Date
+  ): Promise<void> {
+    try {
+      const res = await enrolledCourseModel.findOneAndUpdate(
+        { course: courseId, studentId: studentId },
+        { $set: { courseStatus: true,completedDate:date } }
+      );
+      console.log(res, "res");
+    } catch (error) {
+      console.error("Error updating course progress:", error);
+    }
+  }
+  async isCourseCompleted(
+    courseId: string,
+    studentId: string
+  ): Promise<EnrolledCourse | null> {
+    try {
+      const completed = await enrolledCourseModel.findOne({
+        course: courseId,
+        studentId: studentId,
+      }).populate('studentId').populate('course');
+
+      if (completed) {
+        return completed;
+      } else {
+        return null;
+      }
+    } catch (error) {
       throw error;
     }
   }

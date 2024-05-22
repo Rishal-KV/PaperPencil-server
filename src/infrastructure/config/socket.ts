@@ -12,7 +12,6 @@ export const initializeSocket = (server: HttpServer) => {
 
   io.on("connection", (socket) => {
     socket.on("join", ({ userId }) => {
-      console.log(userId, "connected");
       socket.join(userId);
     });
 

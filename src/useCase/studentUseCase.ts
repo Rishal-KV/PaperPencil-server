@@ -10,6 +10,7 @@ import Bcrypt from "../infrastructure/utils/bcrypt";
 import Imailer from "./interface/IMailer";
 import OtpRepo from "../infrastructure/repository/otpRepository";
 import Icourse from "./interface/ICourse";
+import cron from "node-cron";
 
 class StudentUseCase {
   constructor(
@@ -55,6 +56,9 @@ class StudentUseCase {
         };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
+        setTimeout(async()=>{
+          await this.OtpRepo.removeOtp(studentData.email)
+        },60*1000)
         let jwtToken = jwt.sign(payload, process.env.jwt_secret as string, {
           expiresIn: "1m",
         });
@@ -72,11 +76,8 @@ class StudentUseCase {
 
   async authenticate(token: string, otp: string) {
     try {
-      
-      
       let decodeToken = this.Jwt.verifyToken(token);
-   
-      
+
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
 
@@ -142,8 +143,6 @@ class StudentUseCase {
 
       if (studentFound) {
         if (studentFound.is_blocked) {
-        
-           
           return {
             status: false,
             message: `hey ${name} you are blocked by admin`,
@@ -259,15 +258,12 @@ class StudentUseCase {
   async confirmForgotOtp(email: string, otp: string) {
     try {
       console.log(otp);
-      
+
       const response = await this.OtpRepo.getOtpByEmail(email);
-    console.log(response);
-    
-      
+      console.log(response);
+
       if (response) {
         if (response.otp == otp) {
-         
-          
           return { status: true };
         } else {
           return { status: false, message: "incorrect otp!!!" };
