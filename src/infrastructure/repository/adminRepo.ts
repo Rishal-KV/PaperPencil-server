@@ -6,6 +6,9 @@ import student from "../../domain/student";
 import instructorModel from "../database/instructorModel";
 import Course from "../../domain/course";
 import courseModel from "../database/courseModel";
+import { CompleteMonthlySales } from "../../domain/admin";
+import { MonthlySales } from "../../domain/admin";
+import enrolledCourseModel from "../database/enrolledCourse";
 class AdminRepo implements IAdminRepo {
   async findAdminByEmail(email: string): Promise<Admin | null | void> {
     try {
@@ -100,6 +103,79 @@ class AdminRepo implements IAdminRepo {
         return null;
       }
     } catch (error) {
+      throw error;
+    }
+  }
+  async fetchProfit(): Promise<CompleteMonthlySales[]> {
+    try {
+      const monthlySales: MonthlySales[] = await enrolledCourseModel.aggregate([
+        {
+          $addFields: {
+            course: { $toObjectId: "$course" },
+          },
+        },
+        {
+          $lookup: {
+            from: "courses",
+            localField: "course",
+            foreignField: "_id",
+            as: "courseDetails",
+          },
+        },
+        {
+          $unwind: "$courseDetails",
+        },
+        {
+          $project: {
+            year: { $year: "$enrolled" },
+            month: { $month: "$enrolled" },
+            coursePrice: "$courseDetails.price",
+          },
+        },
+        {
+          $group: {
+            _id: { year: "$year", month: "$month" },
+            totalSales: { $sum: "$coursePrice" },
+            enrollmentCount: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 },
+        },
+      ]);
+  
+      // Create an array of all months within the year range found in the results
+      const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
+      const endDate = new Date(
+        monthlySales[monthlySales.length - 1]._id.year,
+        11
+      ); // End of the last year
+  
+      const completeMonthlySales: CompleteMonthlySales[] = [];
+      let currentDate = startDate;
+  
+      while (currentDate <= endDate) {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1; // getMonth() is zero-based
+  
+        const monthlySale = monthlySales.find(
+          (sale) => sale._id.year === year && sale._id.month === month
+        );
+  
+        completeMonthlySales.push({
+          year,
+          month,
+          totalSales: monthlySale ? monthlySale.totalSales : 0,
+          enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
+          profit: monthlySale ? monthlySale.totalSales * 0.20 : 0, // Calculate 20% profit
+        });
+  
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      }
+  
+      return completeMonthlySales;
+    } catch (error) {
+      console.error("Error fetching monthly sales:", error);
       throw error;
     }
   }

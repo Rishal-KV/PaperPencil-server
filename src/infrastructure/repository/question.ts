@@ -3,6 +3,7 @@ import IQuestion from "../../useCase/interface/IQuestion";
 import Question from "../../domain/questions";
 import courseModel from "../database/courseModel";
 import enrolledCourseModel from "../database/enrolledCourse";
+import Course from "../../domain/course";
 class QuestionRepo implements IQuestion {
   async addQuestion(
     question: string,
@@ -66,6 +67,46 @@ class QuestionRepo implements IQuestion {
       } else {
         return false;
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async removeQuestion(
+    questionId: string,
+    courseId: string
+  ): Promise<Course | null> {
+    try {
+      await questionModel.findOneAndDelete({ _id: questionId });
+      const removed = await courseModel.findOneAndUpdate(
+        { _id: courseId },
+        {
+          $pull: { questions: questionId },
+        },
+        { new: true }
+      );
+      return removed;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async editQuestion(
+    questionId: string,
+    question: string,
+    options: string[],
+    correctOption: number,
+  ): Promise<Question | null> {
+    try {
+      const updated = await questionModel.findOneAndUpdate(
+        { _id: questionId },
+        {
+          $set: {
+            question: question,
+            options: options,
+            correctOption: correctOption,
+          },
+        }
+      );
+      return updated;
     } catch (error) {
       throw error;
     }

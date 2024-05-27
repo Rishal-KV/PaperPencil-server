@@ -8,10 +8,10 @@ class ChapterController {
   }
   async addChapter(req: Request, res: Response) {
     try {
-      let { title, id,order } = req.body;
+      let { title, id,order,description } = req.body;
       
       
-      let addedResponse = await this.chapterUseCase.createChapter(title, id,order);
+      let addedResponse = await this.chapterUseCase.createChapter(title, id,order,description);
 
       if (addedResponse) {
         res.status(200).json(addedResponse);

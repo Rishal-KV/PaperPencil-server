@@ -112,6 +112,16 @@ async studentAction(req:Request,res:Response){
             
         }
     }
+
+    async fetchProfit(req:Request,res:Response){
+        try {
+            const response = await this.adminUseCase.fetchProfit();
+            res.status(200).json(response)
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 }
 
 export default adminController

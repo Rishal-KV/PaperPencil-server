@@ -145,16 +145,17 @@ router.get("/profit", instructorAuth, (req, res) =>
 router.get("/get_chat", (req, res) =>
   chatController.fetchInstructorChats(req, res)
 );
-router.get("/get_conversations", (req, res) =>
+router.get("/get_conversations",instructorAuth, (req, res) =>
   chatController.fetchConversation(req, res)
 );
 
-router.get("/sales", (req, res) =>
+router.get("/sales",instructorAuth, (req, res) =>
   enrollController.fetchMonthlySales(req, res)
 );
 
 router
   .route("/question")
   .post(instructorAuth, (req, res) => questionController.addQuestion(req, res)).
-  get(instructorAuth,(req,res)=>questionController.fetchQuestion(req,res));
+  get(instructorAuth,(req,res)=>questionController.fetchQuestion(req,res)).
+  delete(instructorAuth,(req,res)=>questionController.removeQuestion(req,res));
 export default router;

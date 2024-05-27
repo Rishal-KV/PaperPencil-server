@@ -9,7 +9,7 @@ import OtpRepo from "../infrastructure/repository/otpRepository";
 
 class InstructorUseCase {
   private instructorRepo: InstructorRepo;
- 
+
   private jwt: Jwt;
   private generateOtp: GenerateOTP;
   private sendmail: Imailer;
@@ -21,15 +21,14 @@ class InstructorUseCase {
     generateOtp: GenerateOTP,
     sendmail: Imailer,
     bcrypt: Bcrypt,
-    otp: OtpRepo,
- 
+    otp: OtpRepo
   ) {
     this.instructorRepo = instructorRepo;
     this.jwt = jwt;
     this.generateOtp = generateOtp;
     this.sendmail = sendmail;
     this.bcrypt = bcrypt;
-    this.OtpRepo = otp
+    this.OtpRepo = otp;
   }
 
   async signUpAndSendOtp(InstructorData: Instructor) {
@@ -43,6 +42,11 @@ class InstructorUseCase {
       } else {
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+        setTimeout(async () => {
+          console.log("removed");
+
+          await this.OtpRepo.removeOtp(InstructorData.email);
+        }, 60 * 1000);
         this.OtpRepo.createOtpCollection(InstructorData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
         hashedPass ? (InstructorData.password = hashedPass) : "";
@@ -218,9 +222,14 @@ class InstructorUseCase {
   async resendOtp(token: string) {
     const decodeToken = this.jwt.verifyToken(token);
     if (decodeToken && decodeToken.email) {
-      let otp  = this.generateOtp.generateOTP() ;
-      this.OtpRepo.createOtpCollection(decodeToken.email,otp );
-      this.sendmail.sendMail(decodeToken.email,parseInt(otp))
+      let otp = this.generateOtp.generateOTP();
+      this.OtpRepo.createOtpCollection(decodeToken.email, otp);
+      this.sendmail.sendMail(decodeToken.email, parseInt(otp));
+      setTimeout(async () => {
+        console.log("removed");
+
+        await this.OtpRepo.removeOtp(decodeToken.email);
+      }, 60 * 1000);
       return { status: true, message: "otp resend successfully" };
     }
   }

@@ -12,6 +12,7 @@ interface IEnrolled{
     fetchMonthlySales(instructorId:string):Promise <any>
     saveCourseProgress(courseId:string,studentId:string,date:Date):Promise<void>
     isCourseCompleted(courseId:string,stuentId:string):Promise<EnrolledCourse|null>
+    courseData(courseId:string,studentId:string):Promise<EnrolledCourse|null>
 }
 
 export default IEnrolled

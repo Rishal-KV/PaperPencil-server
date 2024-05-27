@@ -1,6 +1,6 @@
 import chapter from "../../domain/chapter"
 interface IChapter{ 
-    createChapter(chapter:string,order:number,id:string):Promise<chapter>
+    createChapter(chapter:string,order:number,id:string,description:string):Promise<chapter>
     getChapterById(id:string):Promise<chapter[] | null>
     insertLesson(id:string,lesson:string):Promise<Boolean>
     findChapterOfCourse(id:string):Promise<chapter[]>

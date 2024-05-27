@@ -80,5 +80,14 @@ class AdminUseCase {
       
     }
   }
+  async fetchProfit() {
+    try {
+      const profit = await this.adminRepo.fetchProfit();
+      return profit
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 export default AdminUseCase;

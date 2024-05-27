@@ -37,23 +37,55 @@ class QuestionController {
     }
   }
 
-  async answerToQuestion(req:Request,res:Response){
+  async answerToQuestion(req: Request, res: Response) {
     try {
       const questionId = req.body.questionId;
-  
 
       const answer = req.body.answer;
       const courseId = req.body.courseId;
-      const studentId = req.body.studentId
-      const response = await this.questionUseCase.answerToQuestion(questionId,answer,courseId,studentId);
+      const studentId = req.body.studentId;
+      const response = await this.questionUseCase.answerToQuestion(
+        questionId,
+        answer,
+        courseId,
+        studentId
+      );
       if (response?.status) {
-        res.status(200).json(response)
-      }else{
-        res.status(200).json(response)
+        res.status(200).json(response);
+      } else {
+        res.status(200).json(response);
       }
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+  async removeQuestion(req: Request, res: Response) {
+    try {
+      const courseId = req.query.courseId as string;
+      const questionId = req.query.questionId as string;
+      const response = await this.questionUseCase.removeQuestion(
+        questionId,
+        courseId
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async editQuestion(req: Request, res: Response) {
+    try {
+      const { questionId, question, options, correctOption } = req.body;
+
+      const response = await this.questionUseCase.updateQuestion(
+        questionId,
+        question,
+        options,
+        correctOption
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
     }
   }
 }

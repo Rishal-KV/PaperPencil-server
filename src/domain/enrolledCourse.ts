@@ -3,7 +3,7 @@ import Student from "./student";
 interface EnrolledCourse {
   course: string;
   studentId: string;
-  enrolled:any;
+  enrolled:Date;
   completedChapters:[]
   completedLessons:[];
   attendedQuestions :[]
@@ -23,3 +23,4 @@ export interface Response {
 export interface IsCourseCompleted {
   response?: Response;
 }
+

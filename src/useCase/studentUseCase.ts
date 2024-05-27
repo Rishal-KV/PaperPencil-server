@@ -57,11 +57,11 @@ class StudentUseCase {
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
         setTimeout(async()=>{
+          console.log("removed");
+          
           await this.OtpRepo.removeOtp(studentData.email)
         },60*1000)
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string, {
-          expiresIn: "1m",
-        });
+        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
         this.OtpRepo.createOtpCollection(studentData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
@@ -218,10 +218,11 @@ class StudentUseCase {
     }
   }
 
-  async get_studentData(token: string) {
+  async get_studentData(studentId:string) {
     try {
-      let encryptedToken = this.Jwt.verifyToken(token);
-      let data = await this.repository.getStudentById(encryptedToken?.id);
+     
+      
+      let data = await this.repository.getStudentById(studentId);
       if (data) {
         return { status: true, student: data };
       }
@@ -273,6 +274,16 @@ class StudentUseCase {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async resendOtp(token: string) {
+    const decodeToken = this.Jwt.verifyToken(token);
+    if (decodeToken && decodeToken.email) {
+      let otp  = this.generateOtp.generateOTP() ;
+      this.OtpRepo.createOtpCollection(decodeToken.email,otp );
+      this.sendmail.sendMail(decodeToken.email,parseInt(otp))
+      return { status: true, message: "otp resend successfully" };
     }
   }
 }

@@ -1,7 +1,10 @@
 import EnrolledCourseUseCase from "../../useCase/enrolledCourse";
 import { Request, Response } from "express";
-import { generateCertificate } from "../../infrastructure/utils/pdfKIT";
-import EnrolledCourse, { IsCourseCompleted } from "../../domain/enrolledCourse";
+import {
+  generateCertificate,
+  generateInvoice,
+} from "../../infrastructure/utils/pdfKIT";
+import { IsCourseCompleted } from "../../domain/enrolledCourse";
 class EnrollController {
   private enrollUseCase: EnrolledCourseUseCase;
   constructor(enrollUseCase: EnrolledCourseUseCase) {
@@ -132,7 +135,6 @@ class EnrollController {
 
   async generateCertificate(req: Request, res: Response) {
     try {
-   
       const courseId = req.params.courseId;
       const studentId = req.params.studentId;
       const isCourseCompleted: IsCourseCompleted =
@@ -140,8 +142,6 @@ class EnrollController {
           courseId,
           studentId
         )) as any;
-
-      console.log(isCourseCompleted,"completed");
 
       if (isCourseCompleted) {
         generateCertificate(
@@ -170,8 +170,6 @@ class EnrollController {
       const courseId = req.body.courseId;
       const date = req.body.date;
 
-      console.log(req.body);
-
       const response = await this.enrollUseCase.saveCourseProgress(
         studentId,
         courseId,
@@ -179,6 +177,37 @@ class EnrollController {
       );
 
       res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async generateInvoice(req: Request, res: Response) {
+    try {
+      const courseId = req.query.courseId as string;
+      const studentId = req.query.studentId as string;
+      const response: any = await this.enrollUseCase.generateInvoice(
+        courseId,
+        studentId
+      );
+      if (response) {
+        console.log(response,"ress");
+        
+        generateInvoice(
+          res,
+          response.studentId.name,
+          response.course.name,
+          response.course.price,
+          response.course.description,
+          response.enrolled
+        );
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=invoice.pdf"
+        );
+        res.setHeader("Content-Type", "application/pdf");
+      } else {
+        res.status(401).json({ message: "course not completed" });
+      }
     } catch (error) {
       console.log(error);
     }

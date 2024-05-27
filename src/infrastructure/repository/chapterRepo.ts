@@ -5,7 +5,8 @@ class ChapterRepo implements Chapter {
   async createChapter(
     chapter: string,
     order: number,
-    id: string
+    id: string,
+    description:string
   ): Promise<chapter> {
     console.log(chapter);
 
@@ -14,6 +15,7 @@ class ChapterRepo implements Chapter {
         title: chapter,
         course: id,
         order: order,
+        description:description
       });
       return chapterAdded;
     } catch (error) {

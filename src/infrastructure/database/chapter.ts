@@ -19,6 +19,10 @@ const ChapterSchema = new Schema<Chapter>({
     type: Number,
     require: true,
   },
+  description : {
+    type:String,
+    require : true
+  },
   createdAt: {
     type: Date,
     default: Date.now,

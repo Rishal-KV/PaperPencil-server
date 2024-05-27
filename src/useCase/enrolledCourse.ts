@@ -140,5 +140,18 @@ class EnrolledCourseUseCase {
       console.log(error);
     }
   }
+  async generateInvoice(courseId:string,studentId:string){
+    try {
+      const purachased = await this.enrolledCourseRepo.courseData(courseId,studentId);
+      if (purachased) {
+        return purachased
+      }else{
+        null
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 export default EnrolledCourseUseCase;

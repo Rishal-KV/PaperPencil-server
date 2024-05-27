@@ -102,7 +102,7 @@ router.post("/setpassword", (req, res) =>
   controller.setForgotPassword(req, res)
 );
 router
-  .route("/profile")
+  .route("/profile/:studentId")
   .get(studentAuth, (req, res) => controller.getStudentData(req, res))
   .patch(studentAuth, (req, res) => controller.updateProfile(req, res));
 
@@ -110,14 +110,14 @@ router.patch("/update_image", studentAuth, upload.single("image"), (req, res) =>
   controller.updateImage(req, res)
 );
 
-router.post("/stripe_payment", (req, res) =>
+router.post("/stripe_payment", studentAuth, (req, res) =>
   courseController.payment(req, res)
 );
 
 router
   .route("/enroll")
-  .post((req, res) => enrollController.enroll(req, res))
-  .get((req, res) => enrollController.checkEnroll(req, res));
+  .post(studentAuth, (req, res) => enrollController.enroll(req, res))
+  .get(studentAuth, (req, res) => enrollController.checkEnroll(req, res));
 
 router.post("/create_chat", studentAuth, (req, res) =>
   enrollController.createChat(req, res)
@@ -148,11 +148,11 @@ router.post("/progress", studentAuth, (req, res) =>
   enrollController.saveProgress(req, res)
 );
 
-router.get("/get_instructor", (req, res) =>
+router.get("/get_instructor", studentAuth, (req, res) =>
   courseController.getInstructor(req, res)
 );
 
-router.get("/get_chatlist", (req, res) =>
+router.get("/get_chatlist", studentAuth, (req, res) =>
   chatController.fetchChatList(req, res)
 );
 
@@ -162,16 +162,25 @@ router.get("/get_conversations", studentAuth, (req, res) =>
 
 router
   .route("/favourite")
-  .post((req, res) => favouriteController.addToFavourite(req, res))
-  .get((req, res) => favouriteController.fetchFavourites(req, res));
+  .post(studentAuth, (req, res) => favouriteController.addToFavourite(req, res))
+  .get(studentAuth, (req, res) =>
+    favouriteController.fetchFavourites(req, res)
+  );
 
 router.post("/answer", studentAuth, (req, res) =>
   questionController.answerToQuestion(req, res)
 );
 
-router.get("/download_certificate/:studentId/:courseId", studentAuth, (req, res) =>
-  enrollController.generateCertificate(req, res)
+router.get(
+  "/download_certificate/:studentId/:courseId",
+  studentAuth,
+  (req, res) => enrollController.generateCertificate(req, res)
 );
-
-router.post('/save_courseprogress',studentAuth,(req,res)=>enrollController.courseProgress(req,res))
+router.post("/resend_otp", (req, res) => controller.resendOtp(req, res));
+router.post("/save_courseprogress", studentAuth, (req, res) =>
+  enrollController.courseProgress(req, res)
+);
+router.get("/invoice", studentAuth, (req, res) =>
+  enrollController.generateInvoice(req, res)
+);
 export default router;

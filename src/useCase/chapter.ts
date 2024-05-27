@@ -6,10 +6,10 @@ class ChapterUseCase {
   constructor(chapter: ChapterRepo) {
     this.chapterRepo = chapter;
   }
-  async createChapter(chapter: string, id: string, order: number) {
-    let chapterSaved = await this.chapterRepo.createChapter(chapter, order, id);
+  async createChapter(chapter: string, id: string, order: number,description:string) {
+    let chapterSaved = await this.chapterRepo.createChapter(chapter, order, id,description);
     if (chapterSaved) {
-      return { status: true, message: "chapter added" };
+      return { chapterSaved, message: "chapter added" };
     } else {
       return { status: false };
     }

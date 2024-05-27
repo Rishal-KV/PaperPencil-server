@@ -294,7 +294,7 @@ class EnrolledCourseRepo implements IEnrolled {
     try {
       const res = await enrolledCourseModel.findOneAndUpdate(
         { course: courseId, studentId: studentId },
-        { $set: { courseStatus: true,completedDate:date } }
+        { $set: { courseStatus: true, completedDate: date } }
       );
       console.log(res, "res");
     } catch (error) {
@@ -306,13 +306,38 @@ class EnrolledCourseRepo implements IEnrolled {
     studentId: string
   ): Promise<EnrolledCourse | null> {
     try {
-      const completed = await enrolledCourseModel.findOne({
-        course: courseId,
-        studentId: studentId,
-      }).populate('studentId').populate('course');
+      const completed = await enrolledCourseModel
+        .findOne({
+          course: courseId,
+          studentId: studentId,
+        })
+        .populate("studentId")
+        .populate("course");
 
       if (completed) {
         return completed;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async courseData(
+    courseId: string,
+    studentId: string
+  ): Promise<EnrolledCourse | null> {
+    try {
+      const course = await enrolledCourseModel
+        .findOne({ course: courseId }, { studentId: studentId })
+        .populate("course")
+        .populate("studentId")
+        .select("enrolled");
+      if (course) {
+        console.log(course, "courseeeeeeeee......");
+
+        return course;
       } else {
         return null;
       }

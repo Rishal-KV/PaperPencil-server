@@ -162,9 +162,9 @@ class StudentController {
   }
   async getStudentData(req: Request, res: Response) {
     try {
-      let token = req.cookies.studentToken as string;
+      let studentId = req.params.studentId as string;
 
-      let student = await this.studentUseCase.get_studentData(token);
+      let student = await this.studentUseCase.get_studentData(studentId);
       res.status(200).json(student);
     } catch (error) {
       console.log(error);
@@ -225,6 +225,20 @@ class StudentController {
         res.status(200).json(response);
       } else {
         res.status(401).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async resendOtp(req: Request, res: Response) {
+    try {
+      let token = req.cookies.studentOtp as string;
+      console.log(token, "token");
+
+      const resposne = await this.studentUseCase.resendOtp(token);
+      if (resposne?.status) {
+        res.status(200).json(resposne);
       }
     } catch (error) {
       console.log(error);

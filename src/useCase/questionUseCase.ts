@@ -34,14 +34,49 @@ class QuestionUseCase {
     }
   }
 
-  async answerToQuestion(questionId:string,answer:number,courseId:string,studentId:string){
+  async answerToQuestion(
+    questionId: string,
+    answer: number,
+    courseId: string,
+    studentId: string
+  ) {
     try {
-      const response = await this.questionRepo.answerTotheQuestion(questionId,answer, courseId,studentId);
+      const response = await this.questionRepo.answerTotheQuestion(
+        questionId,
+        answer,
+        courseId,
+        studentId
+      );
       if (response) {
-        return {status:true, message:'yayy!!!'}
-      }else{
-        return {status:false, message:"oops wrong answer"}
+        return { status: true, message: "yayy!!!" };
+      } else {
+        return { status: false, message: "oops wrong answer" };
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async removeQuestion(questionId: string, courseId: string) {
+    try {
+      const response = await this.questionRepo.removeQuestion(
+        questionId,
+        courseId
+      );
+      return { response };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateQuestion(
+    questionId: string,
+    question: string,
+    options: string[],
+    correctOption: number
+  ) {
+    try {
+      const response = await this.questionRepo.editQuestion(questionId,question,options,correctOption);
+      return {response}
     } catch (error) {
       console.log(error);
       

@@ -20,43 +20,52 @@ const bcypt = new Bcrypt();
 const adminRepo = new AdminRepo();
 const courseRepo = new CourseRepo();
 
-const courseUseCase = new CourseUseCase(courseRepo,jwt)
-const courseController = new CourseController(courseUseCase)
+const courseUseCase = new CourseUseCase(courseRepo, jwt);
+const courseController = new CourseController(courseUseCase);
 const adminUseCase = new AdminUseCase(adminRepo, jwt, bcypt);
 const adminController = new AdminController(adminUseCase);
 const categoryRepo = new CategoryRepo();
 const categoryUseCase = new CategoryUseCase(categoryRepo);
 const categoryController = new CategoryController(categoryUseCase);
-const chapterRepo = new ChapterRepo()
-const chapterUseCase = new ChapterUseCase(chapterRepo)
-const chapterContoller = new ChapterController(chapterUseCase)
+const chapterRepo = new ChapterRepo();
+const chapterUseCase = new ChapterUseCase(chapterRepo);
+const chapterContoller = new ChapterController(chapterUseCase);
 const router = express.Router();
 
 router.post("/login", (req, res) => adminController.adminLogin(req, res));
-router.get("/instructor_details",adminAuth, (req, res) =>
+router.get("/instructor_details", adminAuth, (req, res) =>
   adminController.getInstructorData(req, res)
 );
-router.get("/student_details",adminAuth, (req, res) =>
+router.get("/student_details", adminAuth, (req, res) =>
   adminController.getStudentData(req, res)
 );
-router.patch("/instructor_action", adminAuth,(req, res) =>
+router.patch("/instructor_action", adminAuth, (req, res) =>
   adminController.instructorAction(req, res)
 );
-router.patch("/student_action",adminAuth, (req, res) =>
+router.patch("/student_action", adminAuth, (req, res) =>
   adminController.studentAction(req, res)
 );
-router.post("/add_category",adminAuth, (req, res) =>
+router.post("/add_category", adminAuth, (req, res) =>
   categoryController.addCategory(req, res)
 );
-router.get("/get_category",adminAuth, (req, res) =>
+router.get("/get_category", adminAuth, (req, res) =>
   categoryController.fetchCategory(req, res)
 );
-router.patch("/action_category", adminAuth,(req, res) =>
+router.patch("/action_category", adminAuth, (req, res) =>
   categoryController.actionCategory(req, res)
 );
-router.patch('/edit_category',adminAuth,(req,res) => categoryController.updateCategory(req,res))
-router.get('/chapter',(req,res) => chapterContoller.getChapter(req,res))
-router.route('/course').get(adminAuth,(req,res)=>adminController.fetchCourse(req,res))
-.patch(adminAuth,(req,res)=>courseController.courseAction(req,res));
-router.get('/specific_category',(req,res)=>categoryController.getSpecificCategory(req,res));
+router.patch("/edit_category", adminAuth, (req, res) =>
+  categoryController.updateCategory(req, res)
+);
+router.get("/chapter", (req, res) => chapterContoller.getChapter(req, res));
+router
+  .route("/course")
+  .get(adminAuth, (req, res) => adminController.fetchCourse(req, res))
+  .patch(adminAuth, (req, res) => courseController.courseAction(req, res));
+router.get("/specific_category", adminAuth, (req, res) =>
+  categoryController.getSpecificCategory(req, res)
+);
+router.get("/profit", adminAuth, (req, res) =>
+  adminController.fetchProfit(req, res)
+);
 export default router;
