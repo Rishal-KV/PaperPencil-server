@@ -5,7 +5,7 @@ import Course from "../../domain/course"
 interface IAdminRepo{
     findAdminByEmail(email:string):Promise<Admin | null | void>
     findStudentData(): Promise<student[]>
-    findInstructorData()
+    findInstructorData():Promise<Instructor[]>
     blockInstructor(id:string):Promise<boolean>
     blockStudent(id:string):Promise<boolean>
     fetchCourse():Promise<Course[] | null>

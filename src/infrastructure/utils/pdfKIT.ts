@@ -193,7 +193,7 @@ export function generateInvoice(
     doc
       .fontSize(10)
       .text(c1, 50, y)
-      .text(c2, 150, y)
+      .text(c2, 150, y)  
       .text(c3, 280, y, { width: 90, align: "right" })
       .text(c4, 370, y, { width: 90, align: "right" })
       .text(c5, 0, y, { align: "right" });

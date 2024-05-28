@@ -10,7 +10,7 @@ interface IStudentRepo {
   setForgotPassword(email: string, password: string): Promise<boolean>;
   getStudentById(id:string):Promise<student | null>
   updateProfile(id:string,data:student):Promise<boolean>
-  updateImage(id:string,image):Promise<boolean>
+  updateImage(id:string,image:string):Promise<boolean>
 }
 
 export default IStudentRepo;

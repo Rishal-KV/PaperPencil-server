@@ -9,6 +9,7 @@ import courseModel from "../database/courseModel";
 import { CompleteMonthlySales } from "../../domain/admin";
 import { MonthlySales } from "../../domain/admin";
 import enrolledCourseModel from "../database/enrolledCourse";
+import Instructor from "../../domain/instructor";
 class AdminRepo implements IAdminRepo {
   async findAdminByEmail(email: string): Promise<Admin | null | void> {
     try {
@@ -30,7 +31,7 @@ class AdminRepo implements IAdminRepo {
     }
   }
 
-  async findInstructorData() {
+  async findInstructorData():Promise<Instructor[]> {
     try {
       let instructors = await instructorModel.find();
       return instructors;

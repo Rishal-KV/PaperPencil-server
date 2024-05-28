@@ -4,8 +4,7 @@ import studentRoute from '../routes/studentRoute';
 import instructorRouter from '../routes/instructorRoute';
 import adminRoute from '../routes/adminRoute';
 import cookieParser from 'cookie-parser';
-import {initializeSocket } from './socket';
-import http  from 'http'
+
 
 
 
@@ -18,7 +17,7 @@ export const createServer = () =>{
         app.use(cookieParser())
         
         app.use(cors({
-            origin:'http://localhost:5173',
+            origin:'https://paper-pencil-client.vercel.app',
             methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials:true
         }))
@@ -27,7 +26,7 @@ export const createServer = () =>{
         app.use('/admin',adminRoute);
        
         return app
-    } catch (error:any) {
-         console.log(error.message);
+    } catch (error) {
+         console.log(error);
     }
 }

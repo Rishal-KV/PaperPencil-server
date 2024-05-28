@@ -1,0 +1,53 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const adminUseCase_1 = __importDefault(require("../../useCase/adminUseCase"));
+const Jwt_1 = __importDefault(require("../utils/Jwt"));
+const adminRepo_1 = __importDefault(require("../repository/adminRepo"));
+const adminController_1 = __importDefault(require("../../adaptors/controllers/adminController"));
+const category_1 = __importDefault(require("../../adaptors/controllers/category"));
+const bcrypt_1 = __importDefault(require("../utils/bcrypt"));
+const categoryUseCase_1 = __importDefault(require("../../useCase/categoryUseCase"));
+const categoryRepo_1 = __importDefault(require("../repository/categoryRepo"));
+const courseController_1 = __importDefault(require("../../adaptors/controllers/courseController"));
+const courseUseCase_1 = __importDefault(require("../../useCase/courseUseCase"));
+const courseRepo_1 = __importDefault(require("../repository/courseRepo"));
+const adminAuth_1 = require("../middleware/adminAuth");
+const chapter_1 = __importDefault(require("../../adaptors/controllers/chapter"));
+const chapter_2 = __importDefault(require("../../useCase/chapter"));
+const chapterRepo_1 = __importDefault(require("../repository/chapterRepo"));
+const jwt = new Jwt_1.default();
+const bcypt = new bcrypt_1.default();
+const adminRepo = new adminRepo_1.default();
+const courseRepo = new courseRepo_1.default();
+const courseUseCase = new courseUseCase_1.default(courseRepo, jwt);
+const courseController = new courseController_1.default(courseUseCase);
+const adminUseCase = new adminUseCase_1.default(adminRepo, jwt, bcypt);
+const adminController = new adminController_1.default(adminUseCase);
+const categoryRepo = new categoryRepo_1.default();
+const categoryUseCase = new categoryUseCase_1.default(categoryRepo);
+const categoryController = new category_1.default(categoryUseCase);
+const chapterRepo = new chapterRepo_1.default();
+const chapterUseCase = new chapter_2.default(chapterRepo);
+const chapterContoller = new chapter_1.default(chapterUseCase);
+const router = express_1.default.Router();
+router.post("/login", (req, res) => adminController.adminLogin(req, res));
+router.get("/instructor_details", adminAuth_1.adminAuth, (req, res) => adminController.getInstructorData(req, res));
+router.get("/student_details", adminAuth_1.adminAuth, (req, res) => adminController.getStudentData(req, res));
+router.patch("/instructor_action", adminAuth_1.adminAuth, (req, res) => adminController.instructorAction(req, res));
+router.patch("/student_action", adminAuth_1.adminAuth, (req, res) => adminController.studentAction(req, res));
+router.post("/add_category", adminAuth_1.adminAuth, (req, res) => categoryController.addCategory(req, res));
+router.get("/get_category", adminAuth_1.adminAuth, (req, res) => categoryController.fetchCategory(req, res));
+router.patch("/action_category", adminAuth_1.adminAuth, (req, res) => categoryController.actionCategory(req, res));
+router.patch("/edit_category", adminAuth_1.adminAuth, (req, res) => categoryController.updateCategory(req, res));
+router.get("/chapter", (req, res) => chapterContoller.getChapter(req, res));
+router
+    .route("/course")
+    .get(adminAuth_1.adminAuth, (req, res) => adminController.fetchCourse(req, res))
+    .patch(adminAuth_1.adminAuth, (req, res) => courseController.courseAction(req, res));
+router.get("/specific_category", adminAuth_1.adminAuth, (req, res) => categoryController.getSpecificCategory(req, res));
+router.get("/profit", adminAuth_1.adminAuth, (req, res) => adminController.fetchProfit(req, res));
+exports.default = router;

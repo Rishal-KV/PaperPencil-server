@@ -18,6 +18,8 @@ class StudentController {
           .cookie("studentOtp", resposneFromSignUp.Token, {
             expires: new Date(Date.now() + 25892000000),
             secure: true,
+            sameSite: true,
+            path: "/",
           })
           .status(200)
           .json(resposneFromSignUp);
@@ -45,6 +47,7 @@ class StudentController {
           .cookie("studentToken", response.token, {
             expires: new Date(Date.now() + 25892000000),
             secure: true,
+            sameSite: "none",
           })
           .status(200)
           .json(response);
@@ -70,7 +73,9 @@ class StudentController {
           return res
             .cookie("studentToken", verifiedStudent.token, {
               expires: new Date(Date.now() + 25892000000),
+             sameSite : 'none',
               secure: true,
+              httpOnly: false,
             })
             .status(200)
             .json({
@@ -163,6 +168,8 @@ class StudentController {
   async getStudentData(req: Request, res: Response) {
     try {
       let studentId = req.params.studentId as string;
+      console.log(studentId,"hehehe");
+      
 
       let student = await this.studentUseCase.get_studentData(studentId);
       res.status(200).json(student);

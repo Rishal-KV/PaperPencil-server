@@ -2,11 +2,20 @@ import Otp from "../../domain/otp";
 import IOtp from "../../useCase/interface/IOtp";
 import otpModel from "../database/StudentOtp";
 class OtpRepo implements IOtp {
-  createOtpCollection(email: string, otp: string) {
-    otpModel.create({
-      otp: otp,
-      email: email,
-    });
+  async createOtpCollection(email: string, otp: string): Promise<boolean> {
+    try {
+      const otpCreated = await otpModel.create({
+        otp: otp,
+        email: email,
+      });
+      if (otpCreated) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
   async getOtpByEmail(email: string): Promise<Otp | null> {
     try {
@@ -20,14 +29,18 @@ class OtpRepo implements IOtp {
       throw error;
     }
   }
- async  removeOtp(email: string) {
+  async removeOtp(email: string): Promise<Boolean> {
     try {
-      await otpModel.deleteOne({
-        email : email,
-       
-      })
+      const removed = await otpModel.deleteOne({
+        email: email,
+      });
+      if (removed) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }
