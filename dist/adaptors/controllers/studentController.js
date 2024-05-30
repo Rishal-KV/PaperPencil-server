@@ -122,7 +122,6 @@ class StudentController {
         try {
             let { email } = req.body;
             let response = await this.studentUseCase.forgotPassword(email);
-            console.log(response);
             if (response?.status) {
                 res
                     .cookie("studentOtp", response.student, {

@@ -182,8 +182,11 @@ class StudentUseCase {
   }
   async forgotPassword(email: string) {
     try {
+     
+      
       let student = await this.repository.findStudentByEMail(email);
-
+    
+      
       if (student) {
         const otp = this.generateOtp.generateOTP();
         this.OtpRepo.createOtpCollection(student.email, otp);

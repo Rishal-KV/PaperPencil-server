@@ -7,19 +7,19 @@ class NodeMailer implements Imailer {
     private transporter: nodemailer.Transporter;
 
     constructor() {
-        console.log(process.env.GMAIL)
         this.transporter = nodemailer.createTransport({
-            service: 'gmail',
+            service : 'gmail',
             auth: {
-                user: process.env.GMAIL,
-                pass: process.env.PASSWORD
-            }
+                user:process.env.GMAIL,
+                pass:process.env.PASSWORD
+            },
+           
         });
     }
  
     async sendMail(to: string, otp: number): Promise<any> {
         let mailOptions = {
-            from: process.env.EMAIL,
+            from: "rishkv923@gmail.com",
             to: to,
             subject: 'PaperPencil - OTP for Email verification',
             text: `Yout Otp number is ${otp}.`

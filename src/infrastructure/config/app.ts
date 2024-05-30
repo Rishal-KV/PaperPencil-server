@@ -17,7 +17,7 @@ export const createServer = () =>{
         app.use(cookieParser())
         
         app.use(cors({
-            origin:'https://paper-pencil-client.vercel.app',
+            origin:'http://localhost:5173',
             methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials:true
         }))
