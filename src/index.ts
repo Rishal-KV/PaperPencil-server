@@ -15,7 +15,7 @@ const startServer = async () => {
 
     const server = http.createServer(app);
     const io = initializeSocket(server)
-    server?.listen(4000, () => {
+    server?.listen(3000, () => {
         console.log("server is running");
       });
   } catch (error) {

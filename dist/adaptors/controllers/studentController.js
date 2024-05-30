@@ -65,9 +65,9 @@ class StudentController {
                     return res
                         .cookie("studentToken", verifiedStudent.token, {
                         expires: new Date(Date.now() + 25892000000),
-                        sameSite: 'none',
+                        sameSite : 'none',
                         secure: true,
-                        httpOnly: false,
+                       
                     })
                         .status(200)
                         .json({
@@ -95,6 +95,7 @@ class StudentController {
                     .cookie("studentToken", response.token, {
                     expires: new Date(Date.now() + 25892000000),
                     secure: true,
+                    sameSite : 'none'
                 })
                     .status(200)
                     .json(response);
@@ -127,6 +128,7 @@ class StudentController {
                     .cookie("studentOtp", response.student, {
                     expires: new Date(Date.now() + 25892000000),
                     secure: true,
+                    sameSite:'none'
                 })
                     .status(200)
                     .json(response);
