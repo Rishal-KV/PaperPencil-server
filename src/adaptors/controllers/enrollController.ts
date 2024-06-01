@@ -190,8 +190,8 @@ class EnrollController {
         studentId
       );
       if (response) {
-        console.log(response,"ress");
-        
+        console.log(response, "ress");
+
         generateInvoice(
           res,
           response.studentId.name,

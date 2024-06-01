@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import Imailer from "./interface/IMailer";
 import Bcrypt from "../infrastructure/utils/bcrypt";
 import OtpRepo from "../infrastructure/repository/otpRepository";
-
+import cron from "node-cron";
 class InstructorUseCase {
   private instructorRepo: InstructorRepo;
 
@@ -36,17 +36,46 @@ class InstructorUseCase {
       const instrcutorFound = await this.instructorRepo.findInstructorByEmail(
         InstructorData.email
       );
+    
 
       if (instrcutorFound) {
-        return { status: false, message: "instructor already exist" };
+        if (instrcutorFound && instrcutorFound.is_verified) {
+          return { status: false, message: "instructor already exist" };
+        }
+     
+
+        if (!instrcutorFound.is_verified) {
+          const password = await this.bcrypt.hashPass(instrcutorFound.password);
+          await this.instructorRepo.setInstructor(
+            instrcutorFound.email,
+            password as string
+          );
+          let otp = this.generateOtp.generateOTP();
+          this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+          cron.schedule("* * * * *", async () => {
+            await this.OtpRepo.removeOtp(InstructorData.email);
+          });
+
+          this.OtpRepo.createOtpCollection(InstructorData.email, otp);
+       
+          let payload: {
+            email: string | undefined;
+          } = {
+            email: InstructorData?.email,
+          };
+
+          let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+
+          return { not_verified: true, Token: jwtToken };
+        }
       } else {
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(InstructorData.email, parseInt(otp));
-        setTimeout(async () => {
+        cron.schedule("* * * * *", async () => {
           console.log("removed");
-
           await this.OtpRepo.removeOtp(InstructorData.email);
-        }, 60 * 1000);
+        });
+
         this.OtpRepo.createOtpCollection(InstructorData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
         hashedPass ? (InstructorData.password = hashedPass) : "";
@@ -82,8 +111,6 @@ class InstructorUseCase {
 
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            console.log("yesss");
-
             let instructorToken = this.jwt.createToken(
               instructor?._id,
               "instructor"
@@ -91,7 +118,12 @@ class InstructorUseCase {
             let instructorData = await this.instructorRepo.fetchInstructorData(
               decodeToken.email
             );
-            await this.instructorRepo.verifyInstructor(decodeToken.email);
+
+            const verified = await this.instructorRepo.verifyInstructor(
+              decodeToken.email
+            );
+            console.log(verified, "verifie");
+
             return {
               status: true,
               token: instructorToken,

@@ -11,7 +11,6 @@ import Imailer from "./interface/IMailer";
 import OtpRepo from "../infrastructure/repository/otpRepository";
 import Icourse from "./interface/ICourse";
 import cron from "node-cron";
-
 class StudentUseCase {
   constructor(
     private generateOtp: GenerateOTP,
@@ -35,20 +34,29 @@ class StudentUseCase {
         studentData.email
       );
       if (studentFound) {
+        if (studentFound && studentFound.is_Verified) {
+          return {status:false,message:'user with this email already exist!!!'}
+        }
         if (!studentFound.is_Verified) {
-          this.sendmail.sendVerificationMail(
-            studentFound._id,
-            studentFound.email
-          );
+          const password  = await this.bcrypt.hashPass(studentData.password)
+          await this.repository.setStudent(studentData.email,password as string)
+          let payload: { email: string; role: string } = {
+            email: studentData.email,
+            role: "student",
+          };
+          let otp = this.generateOtp.generateOTP();
+          this.sendmail.sendMail(studentData.email, parseInt(otp));
+          cron.schedule("* * * * *", async () => {
+            await this.OtpRepo.removeOtp(studentData.email);
+          });
+            
+          let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+          await this.OtpRepo.createOtpCollection(studentData.email, otp);
           return {
-            status: false,
-            message: "please check your mail for verifying your account",
+            not_verified: true,
+            token: jwtToken,
           };
         }
-      }
-
-      if (studentFound) {
-        return { status: false, message: "student already exist" };
       } else {
         let payload: { email: string; role: string } = {
           email: studentData.email,
@@ -56,11 +64,10 @@ class StudentUseCase {
         };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
-        setTimeout(async()=>{
-          console.log("removed");
-          
-          await this.OtpRepo.removeOtp(studentData.email)
-        },60*1000)
+        cron.schedule("* * * * *", async () => {
+          await this.OtpRepo.removeOtp(studentData.email);
+        });
+
         let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
         this.OtpRepo.createOtpCollection(studentData.email, otp);
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
@@ -173,20 +180,10 @@ class StudentUseCase {
     }
   }
 
-  async verifyByEMail(id: string) {
-    try {
-      await this.repository.updateById(id);
-    } catch (error) {
-      console.log(error);
-    }
-  }
   async forgotPassword(email: string) {
     try {
-     
-      
       let student = await this.repository.findStudentByEMail(email);
-    
-      
+
       if (student) {
         const otp = this.generateOtp.generateOTP();
         this.OtpRepo.createOtpCollection(student.email, otp);
@@ -221,10 +218,8 @@ class StudentUseCase {
     }
   }
 
-  async get_studentData(studentId:string) {
+  async get_studentData(studentId: string) {
     try {
-     
-      
       let data = await this.repository.getStudentById(studentId);
       if (data) {
         return { status: true, student: data };
@@ -233,13 +228,9 @@ class StudentUseCase {
       console.log(error);
     }
   }
-  async updateProfile(token: string, data: student) {
+  async updateProfile(studentId: string, data: student) {
     try {
-      let decryptedToken = this.Jwt.verifyToken(token);
-      let updated = await this.repository.updateProfile(
-        decryptedToken?.id,
-        data
-      );
+      let updated = await this.repository.updateProfile(studentId, data);
       if (updated) {
         return { status: true, message: "profile updated successfully" };
       }
@@ -283,9 +274,9 @@ class StudentUseCase {
   async resendOtp(token: string) {
     const decodeToken = this.Jwt.verifyToken(token);
     if (decodeToken && decodeToken.email) {
-      let otp  = this.generateOtp.generateOTP() ;
-      this.OtpRepo.createOtpCollection(decodeToken.email,otp );
-      this.sendmail.sendMail(decodeToken.email,parseInt(otp))
+      let otp = this.generateOtp.generateOTP();
+      this.OtpRepo.createOtpCollection(decodeToken.email, otp);
+      this.sendmail.sendMail(decodeToken.email, parseInt(otp));
       return { status: true, message: "otp resend successfully" };
     }
   }

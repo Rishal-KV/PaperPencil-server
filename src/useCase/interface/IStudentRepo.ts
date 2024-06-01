@@ -3,6 +3,7 @@ import student from "../../domain/student";
 interface IStudentRepo {
   findStudentByEMail(email: string): Promise<student | null>;
   saveStudentToDatabase(student: student): Promise<student | void | null>;
+  setStudent(email:string, password:string):Promise<void>
   fetchStudentData(email: string): Promise<student | null>;
   verifyStudent(email: string): Promise<any>;
   saveGoogleAuth(credential: student): Promise<student>;

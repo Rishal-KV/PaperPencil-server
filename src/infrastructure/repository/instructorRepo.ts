@@ -23,6 +23,20 @@ class InstructorRepo implements IInstructorRepo {
       console.log(error);
     }
   };
+
+  async setInstructor(email:string,password:string): Promise<Instructor | null> {
+    try {
+      const saved = await instructorModel.findOneAndUpdate({email:email},{
+        $set : {
+          password : password
+        }
+      })
+      return saved ? saved : null
+    } catch (error) {
+      throw error
+      
+    }
+  }
   async fetchInstructorData(
     email: string | undefined
   ): Promise<Instructor | null> {
@@ -39,9 +53,9 @@ class InstructorRepo implements IInstructorRepo {
   async verifyInstructor(email: string): Promise<any> {
     await instructorModel.findOneAndUpdate(
       { email: email },
-      {
-        is_Verified: true,
-      }
+     {$set :{
+      is_verified : true
+     }}
     );
   }
   async saveGoogleAuth(credential: any): Promise<Instructor> {

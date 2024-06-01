@@ -10,12 +10,14 @@ export const studentAuth = async (
   next: NextFunction
 ) => {
   try {
-    let token = req.cookies.studentToken;
+    let token = req.headers.authorization as string;
+console.log(token,"token");
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
+      console.log(decodeToken, "stundety");
 
       if (decodeToken) {
         if (decodeToken.role !== "student") {
@@ -24,9 +26,11 @@ export const studentAuth = async (
         let studentData = await student.getStudentById(decodeToken.id);
 
         if (studentData && studentData?.is_blocked) {
-          res.status(401).json({ blocked: true ,role : decodeToken.role });
+          res.status(401).json({ blocked: true, role: decodeToken.role });
         } else {
           next();
+        
+          
         }
       }
     }

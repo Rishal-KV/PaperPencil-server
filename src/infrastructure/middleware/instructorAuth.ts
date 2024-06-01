@@ -9,18 +9,13 @@ export const instructorAuth = async (
   res: Response,
   next: NextFunction
 ) => {
-
   try {
-    let token = req.cookies.instructorToken;
-
-
+    let token = req.headers.authorization;
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
-    
-      
 
       if (decodeToken) {
         if (decodeToken.role !== "instructor") {
@@ -29,14 +24,10 @@ export const instructorAuth = async (
         let instructorData = await instructor.findInstructorById(
           decodeToken.id
         );
-        
 
         if (instructor && instructorData?.is_blocked) {
-          
-          
-          res.status(401).json({ blocked: true ,role:decodeToken.role});
+          res.status(401).json({ blocked: true, role: decodeToken.role });
         } else {
-          
           next();
         }
       }

@@ -12,10 +12,7 @@ class adminController{
         
         let foundAdmin = await this.adminUseCase.adminSignIn(data);
         if (foundAdmin?.status) {
-            res.cookie("admin", foundAdmin.token, {
-                expires: new Date(Date.now() + 25892000000),
-                secure: true,
-              }).status(200).json(foundAdmin)
+            res.status(200).json(foundAdmin)
         }else if(!foundAdmin?.status){
           
             

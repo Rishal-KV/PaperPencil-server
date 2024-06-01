@@ -14,7 +14,7 @@ class CourseController {
       let formData = req.body;
       console.log(formData);
 
-      let instructor = req.cookies.instructorToken as string;
+      let instructor = req.headers.authorization as string;
 
       if (req.file) {
         await cloudinary.uploader
@@ -50,7 +50,7 @@ class CourseController {
 
   async fetchINstructorCourse(req: Request, res: Response) {
     try {
-      let token = req.cookies.instructorToken as string;
+      let token = req.headers.authorization as string;
 
       let courseData = await this.courseUseCase?.fetchCourseData(token);
 

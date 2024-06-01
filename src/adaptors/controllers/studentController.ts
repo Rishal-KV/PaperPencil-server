@@ -10,21 +10,15 @@ class StudentController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
+
+      
       let resposneFromSignUp = await this.studentUseCase.signUpAndSendOtp(
         req.body
       );
-      if (resposneFromSignUp.status) {
-        res
-          .cookie("studentOtp", resposneFromSignUp.Token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-            sameSite: true,
-            path: "/",
-          })
-          .status(200)
-          .json(resposneFromSignUp);
+      if (resposneFromSignUp && resposneFromSignUp.status) {
+        res.status(200).json(resposneFromSignUp);
       } else {
-        console.log(resposneFromSignUp);
+      
 
         res.status(401).json(resposneFromSignUp);
       }
@@ -33,29 +27,33 @@ class StudentController {
     }
   }
 
-  async authenticateStudent(req: Request, res: Response) {
+  async authenticateStudent(req: Request, res: Response): Promise<void> {
     try {
-      let token = req.cookies.studentOtp;
+    
+
+      const token: string | undefined = req.headers.authorization;
+
+      if (!token) {
+        res.status(401).json({ error: "Authorization token not provided." });
+        return;
+      }
       console.log(token);
 
-      let response = await this.studentUseCase.authenticate(
-        token,
-        req.body.otp
-      );
+      const otp: string = req.body?.otp;
+      if (!otp) {
+        res.status(400).json({ error: "OTP not provided." });
+        return;
+      }
+
+      const response = await this.studentUseCase.authenticate(token, otp);
       if (response?.status) {
-        res
-          .cookie("studentToken", response.token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-            sameSite: "none",
-          })
-          .status(200)
-          .json(response);
+        res.status(200).json(response);
       } else {
         res.status(401).json(response);
       }
     } catch (error) {
-      throw error;
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error." });
     }
   }
 
@@ -70,19 +68,11 @@ class StudentController {
 
       if (verifiedStudent && verifiedStudent.status) {
         if (verifiedStudent.status) {
-          return res
-            .cookie("studentToken", verifiedStudent.token, {
-              expires: new Date(Date.now() + 25892000000),
-             sameSite : 'none',
-              secure: true,
-              httpOnly: false,
-            })
-            .status(200)
-            .json({
-              verifiedStudent,
-            });
+          return res.status(200).json({
+            verifiedStudent,
+          });
         } else {
-          console.log("hehehe no pass");
+          
 
           res.status(401).json(verifiedStudent);
         }
@@ -95,6 +85,8 @@ class StudentController {
   }
   async googleLogin(req: Request, res: Response) {
     try {
+      console.log(req.body,"body....");
+      
       let response = await this.studentUseCase.googleAuth(req.body);
       if (response?.status) {
         res
@@ -111,23 +103,11 @@ class StudentController {
       console.log(error);
     }
   }
-  async verifyByEmail(req: Request, res: Response) {
-    try {
-      console.log("called");
-
-      let id = req.query.id as string;
-      console.log(id);
-
-      await this.studentUseCase.verifyByEMail(id);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+ 
   async forgotPassword(req: Request, res: Response) {
     try {
       let { email } = req.body;
       let response = await this.studentUseCase.forgotPassword(email);
-    
 
       if (response?.status) {
         res
@@ -168,8 +148,7 @@ class StudentController {
   async getStudentData(req: Request, res: Response) {
     try {
       let studentId = req.params.studentId as string;
-      console.log(studentId,"hehehe");
-      
+      console.log(studentId, "hehehe");
 
       let student = await this.studentUseCase.get_studentData(studentId);
       res.status(200).json(student);
@@ -179,10 +158,10 @@ class StudentController {
   }
   async updateProfile(req: Request, res: Response) {
     try {
-      console.log(req.body);
+     
 
-      let token = req.cookies.studentToken as string;
-      let response = await this.studentUseCase.updateProfile(token, req.body);
+      let studentId = req.params.studentId
+      let response = await this.studentUseCase.updateProfile(studentId, req.body);
       if (response?.status) {
         res.status(200).json(response);
       }
@@ -192,7 +171,8 @@ class StudentController {
   }
   async updateImage(req: Request, res: Response) {
     try {
-      let token = req.cookies.studentToken;
+      let token = req.headers.authorization as string;
+
       let formData = req.body;
       if (req.file) {
         await cloudinary.uploader

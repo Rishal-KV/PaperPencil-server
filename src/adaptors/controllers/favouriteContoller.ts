@@ -11,6 +11,8 @@ class FavouriteController {
       const studentId = req.body.studentId;
     
       
+      
+      
       const courseId = req.body.courseId;
       const response = await this.favourite.addToFavourite(studentId, courseId);
       if (response?.status) {

@@ -1,6 +1,7 @@
 import Instructor from "../../domain/instructor";
 interface IInstructorRepo {
   findInstructorByEmail(email: string): Promise<Instructor | null>;
+  setInstructor(email:string,password:string):Promise<Instructor | null>
   saveInstructorToDatabase(
     instructor: Instructor
   ): Promise<Instructor | null | void>;

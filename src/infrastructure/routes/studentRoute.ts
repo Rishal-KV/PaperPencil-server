@@ -80,7 +80,7 @@ router.post("/login_student", (req, res) => controller.studentLogin(req, res));
 router.post("/signup_student", (req, res) =>
   controller.SignUpAndSendOtp(req, res)
 );
-router.get("/verify_user", (req, res) => controller.verifyByEmail(req, res));
+
 router.post("/verify_otp", (req, res) =>
   controller.authenticateStudent(req, res)
 );

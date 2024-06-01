@@ -24,6 +24,17 @@ class StudentRepo implements IStudentRepo {
       console.log(error);
     }
   }
+  async setStudent(email: string, password: string): Promise<void> {
+    try {
+       await studentModel.findOneAndUpdate({email:email},{
+        $set :{
+          password : password
+        }
+       })
+    } catch (error) {
+      throw error
+    }
+  }
   async fetchStudentData(email: string): Promise<student | null> {
     try {
       let student = await studentModel.findOne(

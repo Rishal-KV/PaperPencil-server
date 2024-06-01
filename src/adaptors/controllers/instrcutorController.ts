@@ -13,17 +13,11 @@ class InstructorController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
-      console.log("ehehhe");
+      
 
       let resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
-      if (resposneFromSignUp.status) {
-        res
-          .cookie("instructorOtpToken", resposneFromSignUp.Token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-          })
-          .status(200)
-          .json(resposneFromSignUp);
+      if (resposneFromSignUp && resposneFromSignUp.status) {
+        res.status(200).json(resposneFromSignUp);
       } else {
         res.status(401).json(resposneFromSignUp);
       }
@@ -33,20 +27,14 @@ class InstructorController {
   }
   async authenticateInstructor(req: Request, res: Response) {
     try {
-      console.log(req.cookies.instructorOtpToken);
-      console.log(req.body);
+      console.log(req.headers);
 
-      let token = req.cookies.instructorOtpToken as string;
+      let token = req.headers.authorization as string;
+
 
       let response = await this.instructor.authenticate(token, req.body.otp);
       if (response?.status) {
-        res
-          .cookie("instructorToken", response.token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-          })
-          .status(200)
-          .json(response);
+        res.status(200).json(response);
       } else {
         res.status(401).json(response);
       }
@@ -61,15 +49,9 @@ class InstructorController {
       let verifiedInstructor = await this.instructor.Login(instructorData);
 
       if (verifiedInstructor.status) {
-        return res
-          .cookie("studentToken", verifiedInstructor.token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-          })
-          .status(200)
-          .json({
-            verifiedInstructor,
-          });
+        res.status(200).json({
+          verifiedInstructor,
+        });
       } else {
         res.status(401).json(verifiedInstructor);
       }
@@ -80,7 +62,7 @@ class InstructorController {
 
   async dashboard(req: Request, res: Response) {
     try {
-      let token = req.cookies.instructorToken;
+      let token = req.headers.authorization as string;
       console.log(token);
       let courses = await this.course.fetchCourseData(token);
 
@@ -93,13 +75,7 @@ class InstructorController {
     try {
       let response = await this.instructor.googleAuth(req.body);
       if (response?.status) {
-        res
-          .cookie("instructorToken", response.token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-          })
-          .status(200)
-          .json(response);
+        res.status(200).json(response);
       } else {
         res.status(401).json(response);
       }
@@ -111,8 +87,9 @@ class InstructorController {
   async fetchProfile(req: Request, res: Response) {
     try {
       const email = req.query.email as string;
+      console.log(email, "mama");
+
       const response = await this.instructor.fetchProfile(email);
-      console.log(response);
 
       res.status(200).json(response);
     } catch (error) {
@@ -141,17 +118,19 @@ class InstructorController {
   }
   async updateImage(req: Request, res: Response) {
     try {
-      const token = req.cookies.instructorToken as string;
-
+      
+      
+      const token = req.headers.authorization as string;
+  
       let image: string = "";
 
+ 
       if (req.file) {
         await cloudinary.uploader
           .upload(req.file?.path, { folder: "profile" })
           .then((res) => {
             if (res.url) {
               image = res.url;
-              console.log(res.url);
 
               fs.unlinkSync("./src/public/" + req.file?.originalname);
             } else {
@@ -174,18 +153,16 @@ class InstructorController {
       console.log(error);
     }
   }
-  async resendOtp(req:Request,res:Response) {
+  async resendOtp(req: Request, res: Response) {
     try {
-      let token = req.cookies.instructorOtpToken as string
+      let token = req.cookies.instructorOtpToken as string;
       const resposne = await this.instructor.resendOtp(token);
       if (resposne?.status) {
-        res.status(200).json(resposne)
+        res.status(200).json(resposne);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-  
 }
 export default InstructorController;
