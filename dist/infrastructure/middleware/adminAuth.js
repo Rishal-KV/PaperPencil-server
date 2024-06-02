@@ -8,7 +8,7 @@ const Jwt_1 = __importDefault(require("../utils/Jwt"));
 let jwt = new Jwt_1.default();
 const adminAuth = async (req, res, next) => {
     try {
-        let token = req.cookies.admin;
+        let token = req.headers.authorization;
         if (!token) {
             res.status(401).json({ status: true, message: "no token found" });
         }
