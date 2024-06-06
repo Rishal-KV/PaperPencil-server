@@ -12,6 +12,7 @@ interface IStudentRepo {
   getStudentById(id:string):Promise<student | null>
   updateProfile(id:string,data:student):Promise<boolean>
   updateImage(id:string,image:string):Promise<boolean>
+  updatePassword(email:string,password:string):Promise<boolean>
 }
 
 export default IStudentRepo;

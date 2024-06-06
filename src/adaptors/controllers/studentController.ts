@@ -10,16 +10,12 @@ class StudentController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
-
-      
       let resposneFromSignUp = await this.studentUseCase.signUpAndSendOtp(
         req.body
       );
       if (resposneFromSignUp && resposneFromSignUp.status) {
         res.status(200).json(resposneFromSignUp);
       } else {
-      
-
         res.status(401).json(resposneFromSignUp);
       }
     } catch (error) {
@@ -29,8 +25,6 @@ class StudentController {
 
   async authenticateStudent(req: Request, res: Response): Promise<void> {
     try {
-    
-
       const token: string | undefined = req.headers.authorization;
 
       if (!token) {
@@ -72,8 +66,6 @@ class StudentController {
             verifiedStudent,
           });
         } else {
-          
-
           res.status(401).json(verifiedStudent);
         }
       } else {
@@ -85,8 +77,8 @@ class StudentController {
   }
   async googleLogin(req: Request, res: Response) {
     try {
-      console.log(req.body,"body....");
-      
+      console.log(req.body, "body....");
+
       let response = await this.studentUseCase.googleAuth(req.body);
       if (response?.status) {
         res
@@ -103,7 +95,7 @@ class StudentController {
       console.log(error);
     }
   }
- 
+
   async forgotPassword(req: Request, res: Response) {
     try {
       let { email } = req.body;
@@ -158,10 +150,11 @@ class StudentController {
   }
   async updateProfile(req: Request, res: Response) {
     try {
-     
-
-      let studentId = req.params.studentId
-      let response = await this.studentUseCase.updateProfile(studentId, req.body);
+      let studentId = req.params.studentId;
+      let response = await this.studentUseCase.updateProfile(
+        studentId,
+        req.body
+      );
       if (response?.status) {
         res.status(200).json(response);
       }
@@ -226,6 +219,26 @@ class StudentController {
       const resposne = await this.studentUseCase.resendOtp(token);
       if (resposne?.status) {
         res.status(200).json(resposne);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updatePassword(req: Request, res: Response) {
+    try {
+      console.log(req.body);
+      
+      const { password, newPassword, email } = req.body;
+      const updated = await this.studentUseCase.changePassword(
+        password,
+        email,
+        newPassword
+      );
+      if (updated) {
+        res.status(200).json(updated);
+      } else {
+        res.status(204).json(updated);
       }
     } catch (error) {
       console.log(error);

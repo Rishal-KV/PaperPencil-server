@@ -119,4 +119,5 @@ router.get("/download_certificate/:studentId/:courseId", studentAuth_1.default, 
 router.post("/resend_otp", (req, res) => controller.resendOtp(req, res));
 router.post("/save_courseprogress", studentAuth_1.default, (req, res) => enrollController.courseProgress(req, res));
 router.get("/invoice", studentAuth_1.default, (req, res) => enrollController.generateInvoice(req, res));
+router.patch('/changepassword', studentAuth_1.default, (req, res) => controller.updatePassword(req, res));
 exports.default = router;

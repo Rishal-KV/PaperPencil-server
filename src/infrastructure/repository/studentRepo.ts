@@ -145,6 +145,21 @@ class StudentRepo implements IStudentRepo {
       throw error
     }
   }
+
+  async updatePassword(email:string,password: string): Promise<boolean> {
+    try {
+      const updatePassword = await studentModel.findOneAndUpdate({email:email},{
+        $set :{password:password}
+      })
+      if (updatePassword) {
+        return true
+      }else{
+        return false
+      }
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default StudentRepo;

@@ -35,11 +35,17 @@ class StudentUseCase {
       );
       if (studentFound) {
         if (studentFound && studentFound.is_Verified) {
-          return {status:false,message:'user with this email already exist!!!'}
+          return {
+            status: false,
+            message: "user with this email already exist!!!",
+          };
         }
         if (!studentFound.is_Verified) {
-          const password  = await this.bcrypt.hashPass(studentData.password)
-          await this.repository.setStudent(studentData.email,password as string)
+          const password = await this.bcrypt.hashPass(studentData.password);
+          await this.repository.setStudent(
+            studentData.email,
+            password as string
+          );
           let payload: { email: string; role: string } = {
             email: studentData.email,
             role: "student",
@@ -49,7 +55,7 @@ class StudentUseCase {
           cron.schedule("* * * * *", async () => {
             await this.OtpRepo.removeOtp(studentData.email);
           });
-            
+
           let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
           await this.OtpRepo.createOtpCollection(studentData.email, otp);
           return {
@@ -278,6 +284,24 @@ class StudentUseCase {
       this.OtpRepo.createOtpCollection(decodeToken.email, otp);
       this.sendmail.sendMail(decodeToken.email, parseInt(otp));
       return { status: true, message: "otp resend successfully" };
+    }
+  }
+
+  async changePassword(password: string, email: string, newPassword: string) {
+    try {
+      const student = await this.repository.findStudentByEMail(email);
+      const verified = await this.bcrypt.encryptPass(
+        password,
+        student?.password
+      );
+      if (verified) {
+        await this.repository.updatePassword(email, newPassword);
+        return { status: true, message: "password has been updated" };
+      } else {
+        return { status: false, message: "current password doesnt match!!!" };
+      }
+    } catch (error) {
+      throw error;
     }
   }
 }

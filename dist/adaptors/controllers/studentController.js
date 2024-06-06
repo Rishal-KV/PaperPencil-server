@@ -213,5 +213,21 @@ class StudentController {
             console.log(error);
         }
     }
+    async updatePassword(req, res) {
+        try {
+            console.log(req.body);
+            const { password, newPassword, email } = req.body;
+            const updated = await this.studentUseCase.changePassword(password, email, newPassword);
+            if (updated) {
+                res.status(200).json(updated);
+            }
+            else {
+                res.status(204).json(updated);
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 }
 exports.default = StudentController;

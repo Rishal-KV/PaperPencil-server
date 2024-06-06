@@ -183,4 +183,6 @@ router.post("/save_courseprogress", studentAuth, (req, res) =>
 router.get("/invoice", studentAuth, (req, res) =>
   enrollController.generateInvoice(req, res)
 );
+
+router.patch('/changepassword',studentAuth,(req,res) => controller.updatePassword(req,res));
 export default router;
