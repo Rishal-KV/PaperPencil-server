@@ -1,4 +1,7 @@
 "use strict";
+
+const { log } = require("console");
+
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -116,7 +119,9 @@ class StudentController {
     }
     async setForgotPassword(req, res) {
         try {
-            let email = req.cookies.studentEmail;
+            console.log(req)
+            let email = req.headers.authorization;
+          
             let password = req.body.password;
             let response = await this.studentUseCase.setForgotPassword(email, password);
             // console.log(response);
@@ -202,8 +207,8 @@ class StudentController {
     }
     async resendOtp(req, res) {
         try {
-            let token = req.cookies.studentOtp;
-            console.log(token, "token");
+            
+          const token = req.body.headers.Authorization;
             const resposne = await this.studentUseCase.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);

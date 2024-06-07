@@ -189,13 +189,20 @@ class StudentUseCase {
   async forgotPassword(email: string) {
     try {
       let student = await this.repository.findStudentByEMail(email);
-
       if (student) {
         const otp = this.generateOtp.generateOTP();
         this.OtpRepo.createOtpCollection(student.email, otp);
         await this.sendmail.sendMail(student.email, parseInt(otp));
+        let payload: { email: string } = {
+          email: email,
+        };
+        const cronjob = cron.schedule("* * * * *", async () => {
+          await this.OtpRepo.removeOtp(email);
+          cronjob.stop();
+        });
+        const token = jwt.sign(payload, process.env.jwt_secret as string);
 
-        return { status: true, student: student.email };
+        return { status: true, student: student.email, token };
       } else {
         return { status: false, message: "no student found" };
       }
@@ -258,8 +265,6 @@ class StudentUseCase {
   }
   async confirmForgotOtp(email: string, otp: string) {
     try {
-      console.log(otp);
-
       const response = await this.OtpRepo.getOtpByEmail(email);
       console.log(response);
 

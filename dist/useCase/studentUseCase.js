@@ -186,7 +186,16 @@ class StudentUseCase {
                 const otp = this.generateOtp.generateOTP();
                 this.OtpRepo.createOtpCollection(student.email, otp);
                 await this.sendmail.sendMail(student.email, parseInt(otp));
-                return { status: true, student: student.email };
+                let payload = {
+                    email: email,
+                };
+                const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
+                    console.log("removed");
+                    await this.OtpRepo.removeOtp(email);
+                    cronjob.stop();
+                });
+                const token = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
+                return { status: true, student: student.email, token };
             }
             else {
                 return { status: false, message: "no student found" };
@@ -200,7 +209,8 @@ class StudentUseCase {
         try {
             let becryptedPassword = await this.bcrypt.hashPass(password);
             if (typeof becryptedPassword == "string") {
-                let updated = await this.repository.setForgotPassword(email, becryptedPassword);
+                const token = this.Jwt.verifyToken(email);
+                let updated = await this.repository.setForgotPassword(token.email, becryptedPassword);
                 if (updated) {
                     return { status: true, message: "password changed successfully" };
                 }
@@ -252,7 +262,6 @@ class StudentUseCase {
     }
     async confirmForgotOtp(email, otp) {
         try {
-            console.log(otp);
             const response = await this.OtpRepo.getOtpByEmail(email);
             console.log(response);
             if (response) {
@@ -277,6 +286,10 @@ class StudentUseCase {
             let otp = this.generateOtp.generateOTP();
             this.OtpRepo.createOtpCollection(decodeToken.email, otp);
             this.sendmail.sendMail(decodeToken.email, parseInt(otp));
+            const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
+                await this.OtpRepo.removeOtp(decodeToken.email);
+                cronjob.stop();
+            });
             return { status: true, message: "otp resend successfully" };
         }
     }
@@ -285,8 +298,7 @@ class StudentUseCase {
             const student = await this.repository.findStudentByEMail(email);
             const verified = await this.bcrypt.encryptPass(password, student?.password);
             if (verified) {
-                const hashedPass = await this.bcrypt.hashPass(newPassword)
-                await this.repository.updatePassword(email, hashedPass);
+                await this.repository.updatePassword(email, newPassword);
                 return { status: true, message: "password has been updated" };
             }
             else {

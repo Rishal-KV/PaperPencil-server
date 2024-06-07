@@ -213,8 +213,7 @@ class StudentController {
 
   async resendOtp(req: Request, res: Response) {
     try {
-      let token = req.cookies.studentOtp as string;
-      console.log(token, "token");
+      let token = req.body.header.Authorization as string;
 
       const resposne = await this.studentUseCase.resendOtp(token);
       if (resposne?.status) {
@@ -228,7 +227,7 @@ class StudentController {
   async updatePassword(req: Request, res: Response) {
     try {
       console.log(req.body);
-      
+
       const { password, newPassword, email } = req.body;
       const updated = await this.studentUseCase.changePassword(
         password,
