@@ -190,7 +190,6 @@ class StudentUseCase {
                     email: email,
                 };
                 const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
-                    console.log("removed");
                     await this.OtpRepo.removeOtp(email);
                     cronjob.stop();
                 });
@@ -207,10 +206,10 @@ class StudentUseCase {
     }
     async setForgotPassword(email, password) {
         try {
+            const decodeToken = this.Jwt.verifyToken(email);
             let becryptedPassword = await this.bcrypt.hashPass(password);
             if (typeof becryptedPassword == "string") {
-                const token = this.Jwt.verifyToken(email);
-                let updated = await this.repository.setForgotPassword(token.email, becryptedPassword);
+                let updated = await this.repository.setForgotPassword(decodeToken?.email, becryptedPassword);
                 if (updated) {
                     return { status: true, message: "password changed successfully" };
                 }
@@ -262,7 +261,8 @@ class StudentUseCase {
     }
     async confirmForgotOtp(email, otp) {
         try {
-            const response = await this.OtpRepo.getOtpByEmail(email);
+            const decodeToken = this.Jwt.verifyToken(email);
+            const response = await this.OtpRepo.getOtpByEmail(decodeToken?.email);
             console.log(response);
             if (response) {
                 if (response.otp == otp) {
@@ -285,11 +285,11 @@ class StudentUseCase {
         if (decodeToken && decodeToken.email) {
             let otp = this.generateOtp.generateOTP();
             this.OtpRepo.createOtpCollection(decodeToken.email, otp);
-            this.sendmail.sendMail(decodeToken.email, parseInt(otp));
             const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
                 await this.OtpRepo.removeOtp(decodeToken.email);
                 cronjob.stop();
             });
+            this.sendmail.sendMail(decodeToken.email, parseInt(otp));
             return { status: true, message: "otp resend successfully" };
         }
     }

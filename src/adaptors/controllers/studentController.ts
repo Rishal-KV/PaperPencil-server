@@ -103,10 +103,7 @@ class StudentController {
 
       if (response?.status) {
         res
-          .cookie("studentOtp", response.student, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-          })
+         
           .status(200)
           .json(response);
       } else {
@@ -119,7 +116,9 @@ class StudentController {
 
   async setForgotPassword(req: Request, res: Response) {
     try {
-      let email = req.cookies.studentEmail as string;
+      
+      let email = req.headers.authorization as string;
+      
 
       let password = req.body.password;
       let response = await this.studentUseCase.setForgotPassword(
@@ -195,8 +194,9 @@ class StudentController {
   }
   async forgotConfirmOtp(req: Request, res: Response) {
     try {
-      const email = req.cookies.studentOtp;
-
+      const email = req.headers.authorization as string;
+    
+         
       const otp = req.body.otp;
 
       const response = await this.studentUseCase.confirmForgotOtp(email, otp);

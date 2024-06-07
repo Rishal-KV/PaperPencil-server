@@ -1,7 +1,4 @@
 "use strict";
-
-const { log } = require("console");
-
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -102,10 +99,6 @@ class StudentController {
             let response = await this.studentUseCase.forgotPassword(email);
             if (response?.status) {
                 res
-                    .cookie("studentOtp", response.student, {
-                    expires: new Date(Date.now() + 25892000000),
-                    secure: true,
-                })
                     .status(200)
                     .json(response);
             }
@@ -119,9 +112,7 @@ class StudentController {
     }
     async setForgotPassword(req, res) {
         try {
-            console.log(req)
             let email = req.headers.authorization;
-          
             let password = req.body.password;
             let response = await this.studentUseCase.setForgotPassword(email, password);
             // console.log(response);
@@ -191,7 +182,7 @@ class StudentController {
     }
     async forgotConfirmOtp(req, res) {
         try {
-            const email = req.cookies.studentOtp;
+            const email = req.headers.authorization;
             const otp = req.body.otp;
             const response = await this.studentUseCase.confirmForgotOtp(email, otp);
             if (response?.status) {
@@ -207,8 +198,7 @@ class StudentController {
     }
     async resendOtp(req, res) {
         try {
-            
-          const token = req.body.headers.Authorization;
+            let token = req.body.header.Authorization;
             const resposne = await this.studentUseCase.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);

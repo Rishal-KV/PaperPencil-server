@@ -212,10 +212,11 @@ class StudentUseCase {
   }
   async setForgotPassword(email: string, password: string) {
     try {
+      const decodeToken = this.Jwt.verifyToken(email);
       let becryptedPassword = await this.bcrypt.hashPass(password);
       if (typeof becryptedPassword == "string") {
         let updated = await this.repository.setForgotPassword(
-          email,
+          decodeToken?.email,
           becryptedPassword
         );
         if (updated) {
@@ -265,7 +266,8 @@ class StudentUseCase {
   }
   async confirmForgotOtp(email: string, otp: string) {
     try {
-      const response = await this.OtpRepo.getOtpByEmail(email);
+      const decodeToken = this.Jwt.verifyToken(email);
+      const response = await this.OtpRepo.getOtpByEmail(decodeToken?.email);
       console.log(response);
 
       if (response) {
@@ -287,6 +289,10 @@ class StudentUseCase {
     if (decodeToken && decodeToken.email) {
       let otp = this.generateOtp.generateOTP();
       this.OtpRepo.createOtpCollection(decodeToken.email, otp);
+      const cronjob = cron.schedule("* * * * *", async () => {
+        await this.OtpRepo.removeOtp(decodeToken.email);
+        cronjob.stop();
+      });
       this.sendmail.sendMail(decodeToken.email, parseInt(otp));
       return { status: true, message: "otp resend successfully" };
     }
