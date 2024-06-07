@@ -198,7 +198,8 @@ class StudentController {
     }
     async resendOtp(req, res) {
         try {
-            let token = req.body.header.Authorization;
+        
+            let token = req.body.headers.Authorization;
             const resposne = await this.studentUseCase.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);
