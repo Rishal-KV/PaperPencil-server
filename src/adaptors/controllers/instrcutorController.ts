@@ -63,7 +63,7 @@ class InstructorController {
   async dashboard(req: Request, res: Response) {
     try {
       let token = req.headers.authorization as string;
-      console.log(token);
+  
       let courses = await this.course.fetchCourseData(token);
 
       res.status(200).json(courses);

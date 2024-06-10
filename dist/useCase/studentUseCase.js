@@ -68,8 +68,9 @@ class StudentUseCase {
                 };
                 let otp = this.generateOtp.generateOTP();
                 this.sendmail.sendMail(studentData.email, parseInt(otp));
-                node_cron_1.default.schedule("* * * * *", async () => {
+                 node_cron_1.default.schedule("*/1 * * * *", async () => {
                     await this.OtpRepo.removeOtp(studentData.email);
+                    
                 });
                 let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 this.OtpRepo.createOtpCollection(studentData.email, otp);

@@ -11,13 +11,12 @@ export const studentAuth = async (
 ) => {
   try {
     let token = req.headers.authorization as string;
-console.log(token,"token");
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });
     } else {
       let decodeToken = jwt.verifyToken(token);
-      console.log(decodeToken, "stundety");
+  
 
       if (decodeToken) {
         if (decodeToken.role !== "student") {

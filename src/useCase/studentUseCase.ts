@@ -306,7 +306,8 @@ class StudentUseCase {
         student?.password
       );
       if (verified) {
-        await this.repository.updatePassword(email, newPassword);
+        const hashedPass = await this.bcrypt.hashPass(newPassword)
+        await this.repository.updatePassword(email, hashedPass as string);
         return { status: true, message: "password has been updated" };
       } else {
         return { status: false, message: "current password doesnt match!!!" };

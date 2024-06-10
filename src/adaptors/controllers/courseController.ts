@@ -52,7 +52,12 @@ class CourseController {
     try {
       let token = req.headers.authorization as string;
 
-      let courseData = await this.courseUseCase?.fetchCourseData(token);
+      const page = req.query.page as string == "0" ? 1 : req.query.page as string
+
+      let courseData = await this.courseUseCase?.fetchCourseData(
+        token,
+        page as string
+      );
 
       res.status(200).json(courseData);
     } catch (error) {
@@ -64,11 +69,19 @@ class CourseController {
     try {
       const search = req.query.search as string;
       const category = req.query.category as string;
-      const price = req.query.price as string
-     console.log(search,"search");
-     
- 
-      let course = await this.courseUseCase?.fetchCourse(search, category,price);
+      const price = req.query.price as string;
+      const page = req.query.page as string;
+      const skip = req.query.skip as string;
+
+      console.log(page, "ppp");
+
+      let course = await this.courseUseCase?.fetchCourse(
+        search,
+        category,
+        price,
+        page,
+        skip
+      );
 
       res.status(200).json({ course: course });
     } catch (error) {
@@ -153,18 +166,16 @@ class CourseController {
       console.log(error);
     }
   }
-async getInstructor(req:Request, res:Response) {
-  try {
-    const courseId = req.query.courseId as string;
-  
-    
-    const response = await this.courseUseCase?.getInstructor(courseId);
-    res.status(200).json(response);
-  } catch (error) {
-    console.log(error);
-    
+  async getInstructor(req: Request, res: Response) {
+    try {
+      const courseId = req.query.courseId as string;
+
+      const response = await this.courseUseCase?.getInstructor(courseId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
- }
 }
 
 export default CourseController;

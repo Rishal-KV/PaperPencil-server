@@ -154,6 +154,7 @@ class StudentController {
         try {
             let token = req.headers.authorization;
             let formData = req.body;
+         
             if (req.file) {
                 await cloudinary_1.default.uploader
                     .upload(req.file?.path, { folder: "profile" })

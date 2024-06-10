@@ -31,12 +31,16 @@ class CourseUseCase {
       throw error;
     }
   }
-  async fetchCourseData(token: string) {
+  async fetchCourseData(token: string,pageNo?:string) {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
-
+       const page = parseInt(pageNo as string)
+       console.log(page,"page");
+       
+       const limit = 3;
+       const skip = (page - 1) * limit
       if (decodeToken) {
-        let courseData = await this.courseRepo.fetchCourseById(decodeToken.id);
+        let courseData = await this.courseRepo.fetchCourseById(decodeToken.id,limit,skip,page);
 
         return courseData;
       }
@@ -45,11 +49,20 @@ class CourseUseCase {
     }
   }
 
-  async fetchCourse(search: string, category: string,price:string) {
+  async fetchCourse(search: string, category: string,price:string,pageNo:string,itemLimit:string) {
     try {
-     
+     //pagination
+     let page = parseInt(pageNo) || 1;
+     let limit = parseInt(itemLimit) || 3
+     if (page < 1)  page = 1;
+     if(limit < 1) limit = 3;
+     const skip =   (page - 1) * limit
 
-      let course = this.courseRepo.fetchCourse(search, category,price);
+
+      let course = await this.courseRepo.fetchCourse(search, category,price,limit,skip,page);
+      console.log(course,"course");
+      
+      
       return course;
     } catch (error) {
       console.log(error);
@@ -58,7 +71,13 @@ class CourseUseCase {
 
   async publishCourse(id: string) {
     try {
+
+    
+
+      
       let chapter = await this.chapterRepo?.findChapterOfCourse(id);
+
+
       if (chapter) {
         if (
           chapter.length > 0 &&

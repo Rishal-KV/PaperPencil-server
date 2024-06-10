@@ -7,8 +7,6 @@ class CourseRepo implements Icourse {
     instructor: string
   ): Promise<Boolean> {
     try {
-     
-
       let { name, price, description, image, category } = course;
 
       let saved = await courseModel.create({
@@ -29,11 +27,30 @@ class CourseRepo implements Icourse {
     }
   }
 
-  async fetchCourseById(id: string): Promise<Course[] | null> {
+  async fetchCourseById(
+    id: string,
+    limit: number,
+    skip: number,
+    page: number
+  ): Promise<{ course: Course[]; page: number; totalPage: number } | null> {
+    console.log(limit, "limit");
+
     try {
-      let course = await courseModel.find({ instructor: id });
+     
+      
+      let course = await courseModel
+        .find({ instructor: id })
+        .limit(limit)
+        .skip(skip);
+      const totalCourse = await courseModel.countDocuments();
+
+
       if (course) {
-        return course;
+        return {
+          course,
+          page,
+          totalPage: Math.ceil(totalCourse / limit),
+        };
       } else {
         return null;
       }
@@ -45,11 +62,13 @@ class CourseRepo implements Icourse {
   async fetchCourse(
     search?: string,
     category?: string,
-    price?: any
-  ): Promise<Course[] | null> {
+    price?: any,
+    limit?: number,
+    skip?: number,
+    page: number = 1
+  ): Promise<{ courses: Course[]; totalPages: number; page: number } | null> {
     try {
       // Construct the base query
-
       let query: any = {
         approved: true,
         listed: true,
@@ -68,18 +87,41 @@ class CourseRepo implements Icourse {
         ];
       }
 
+      // Apply sorting based on price if provided
       const sortOptions: any = {};
       if (price !== "") {
         sortOptions.price = price === "desc" ? -1 : 1;
       }
 
+      // Fetch total number of courses matching the query
+      const totalCourses = await courseModel.countDocuments(query);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalCourses / (limit as number));
+
+      // Ensure the page does not exceed total pages
+      const validatedPage = Math.min(page, totalPages) || 1;
+
+      // Calculate skip value based on validated page and limit
+      const skipValue = (validatedPage - 1) * (limit as number);
+
       // Fetch courses based on the constructed query
       const courses = await courseModel
         .find(query)
         .sort(sortOptions)
-        .populate("instructor");
+        .populate("instructor")
+        .skip(skipValue)
+        .limit(limit as number);
 
-      return courses;
+      if (courses) {
+        return {
+          courses,
+          page: validatedPage,
+          totalPages,
+        };
+      } else {
+        return null;
+      }
     } catch (error) {
       throw error;
     }
