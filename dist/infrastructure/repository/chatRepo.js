@@ -26,6 +26,11 @@ class chatRepo {
             {
                 $unwind: "$instructorDetails",
             },
+            {
+                $sort: {
+                    updatedAt: -1,
+                },
+            },
         ]);
         return chats;
     }
@@ -58,6 +63,11 @@ class chatRepo {
             },
             {
                 $unwind: "$studentDetails",
+            },
+            {
+                $sort: {
+                    updatedAt: -1,
+                },
             },
         ]);
         return chats;

@@ -24,17 +24,22 @@ class InstructorRepo implements IInstructorRepo {
     }
   };
 
-  async setInstructor(email:string,password:string): Promise<Instructor | null> {
+  async setInstructor(
+    email: string,
+    password: string
+  ): Promise<Instructor | null> {
     try {
-      const saved = await instructorModel.findOneAndUpdate({email:email},{
-        $set : {
-          password : password
+      const saved = await instructorModel.findOneAndUpdate(
+        { email: email },
+        {
+          $set: {
+            password: password,
+          },
         }
-      })
-      return saved ? saved : null
+      );
+      return saved ? saved : null;
     } catch (error) {
-      throw error
-      
+      throw error;
     }
   }
   async fetchInstructorData(
@@ -53,9 +58,11 @@ class InstructorRepo implements IInstructorRepo {
   async verifyInstructor(email: string): Promise<any> {
     await instructorModel.findOneAndUpdate(
       { email: email },
-     {$set :{
-      is_verified : true
-     }}
+      {
+        $set: {
+          is_verified: true,
+        },
+      }
     );
   }
   async saveGoogleAuth(credential: any): Promise<Instructor> {
@@ -90,7 +97,7 @@ class InstructorRepo implements IInstructorRepo {
   async updateProfile(
     id: string,
     instructorData: Instructor
-  ): Promise<boolean> {
+  ): Promise<Instructor> {
     try {
       const updated = await instructorModel.findOneAndUpdate(
         { _id: id },
@@ -101,7 +108,7 @@ class InstructorRepo implements IInstructorRepo {
         },
         { new: true }
       );
-      return updated ? true : false;
+      return updated as Instructor;
     } catch (error) {
       throw error;
     }

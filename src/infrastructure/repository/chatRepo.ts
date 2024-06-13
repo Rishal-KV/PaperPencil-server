@@ -23,6 +23,11 @@ class chatRepo implements IChat {
       {
         $unwind: "$instructorDetails",
       },
+      {
+        $sort: {
+          updatedAt: -1, 
+        },
+      },
     ]);
     return chats;
   }
@@ -57,7 +62,13 @@ class chatRepo implements IChat {
       {
         $unwind: "$studentDetails",
       },
+      {
+        $sort: {
+          updatedAt: -1, 
+        },
+      },
     ]);
+    
     return chats;
   }
 }

@@ -98,9 +98,7 @@ class StudentController {
             let { email } = req.body;
             let response = await this.studentUseCase.forgotPassword(email);
             if (response?.status) {
-                res
-                    .status(200)
-                    .json(response);
+                res.status(200).json(response);
             }
             else {
                 res.status(401).json(response);
@@ -141,6 +139,7 @@ class StudentController {
     async updateProfile(req, res) {
         try {
             let studentId = req.params.studentId;
+            console.log(req.body);
             let response = await this.studentUseCase.updateProfile(studentId, req.body);
             if (response?.status) {
                 res.status(200).json(response);
@@ -154,7 +153,6 @@ class StudentController {
         try {
             let token = req.headers.authorization;
             let formData = req.body;
-         
             if (req.file) {
                 await cloudinary_1.default.uploader
                     .upload(req.file?.path, { folder: "profile" })
@@ -199,7 +197,6 @@ class StudentController {
     }
     async resendOtp(req, res) {
         try {
-        
             let token = req.body.headers.Authorization;
             const resposne = await this.studentUseCase.resendOtp(token);
             if (resposne?.status) {

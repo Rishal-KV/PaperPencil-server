@@ -222,12 +222,14 @@ class InstructorUseCase {
   }
   async updateProfile(id: string, instructorData: Instructor) {
     try {
+     
+      
       const response = await this.instructorRepo.updateProfile(
         id,
         instructorData
       );
       return response
-        ? { status: true, message: "updated succesfully" }
+        ? { status: true, message: "updated succesfully",update:response }
         : { status: false, message: "failed to update" };
     } catch (error) {
       console.log(error);

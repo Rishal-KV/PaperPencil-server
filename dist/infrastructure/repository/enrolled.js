@@ -220,23 +220,25 @@ class EnrolledCourseRepo {
                 },
             ]);
             // Create an array of all months within the year range found in the results
-            const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
-            const endDate = new Date(monthlySales[monthlySales.length - 1]._id.year, 11); // End of the last year
-            const completeMonthlySales = [];
-            let currentDate = startDate;
-            while (currentDate <= endDate) {
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth() + 1; // getMonth() is zero-based
-                const monthlySale = monthlySales.find((sale) => sale._id.year === year && sale._id.month === month);
-                completeMonthlySales.push({
-                    year,
-                    month,
-                    totalSales: monthlySale ? monthlySale.totalSales : 0,
-                    enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
-                });
-                currentDate.setMonth(currentDate.getMonth() + 1);
+            if (monthlySales) {
+                const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
+                const endDate = new Date(monthlySales[monthlySales.length - 1]._id.year, 11); // End of the last year
+                const completeMonthlySales = [];
+                let currentDate = startDate;
+                while (currentDate <= endDate) {
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth() + 1; // getMonth() is zero-based
+                    const monthlySale = monthlySales.find((sale) => sale._id.year === year && sale._id.month === month);
+                    completeMonthlySales.push({
+                        year,
+                        month,
+                        totalSales: monthlySale ? monthlySale.totalSales : 0,
+                        enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
+                    });
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                }
+                return completeMonthlySales;
             }
-            return completeMonthlySales;
         }
         catch (error) {
             console.error("Error fetching monthly sales:", error);
@@ -280,7 +282,6 @@ class EnrolledCourseRepo {
                 .populate("studentId")
                 .select("enrolled");
             if (course) {
-                console.log(course, "courseeeeeeeee......");
                 return course;
             }
             else {

@@ -16,7 +16,7 @@ const paymentCheckOut = async (course) => {
         let line_items = [
             {
                 price_data: {
-                    currency: "usd",
+                    currency: "inr",
                     product_data: {
                         name: course.name,
                         images: [course.image],
@@ -31,8 +31,8 @@ const paymentCheckOut = async (course) => {
             line_items: line_items,
             mode: "payment",
             payment_method_types: ["card"],
-            success_url: `https://paper-pencil.vercel.app/enrolledsuccess/${course._id}`,
-            cancel_url: `https://paper-pencil.vercel.app/coursedetails/${course._id}`,
+            success_url: `http://localhost:5173/enrolledsuccess/${course._id}`,
+            cancel_url: `http://localhost:5173/coursedetails/${course._id}`,
         });
         return { sessionId: session.id };
     }

@@ -28,8 +28,8 @@ class InstructorRepo {
         try {
             const saved = await instructorModel_1.default.findOneAndUpdate({ email: email }, {
                 $set: {
-                    password: password
-                }
+                    password: password,
+                },
             });
             return saved ? saved : null;
         }
@@ -47,9 +47,11 @@ class InstructorRepo {
         }
     }
     async verifyInstructor(email) {
-        await instructorModel_1.default.findOneAndUpdate({ email: email }, { $set: {
-                is_verified: true
-            } });
+        await instructorModel_1.default.findOneAndUpdate({ email: email }, {
+            $set: {
+                is_verified: true,
+            },
+        });
     }
     async saveGoogleAuth(credential) {
         console.log(credential);
@@ -88,7 +90,7 @@ class InstructorRepo {
                 phone: instructorData.phone,
                 about: instructorData.about,
             }, { new: true });
-            return updated ? true : false;
+            return updated;
         }
         catch (error) {
             throw error;

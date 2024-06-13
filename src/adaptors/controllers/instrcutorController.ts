@@ -13,8 +13,6 @@ class InstructorController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
-      
-
       let resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
       if (resposneFromSignUp && resposneFromSignUp.status) {
         res.status(200).json(resposneFromSignUp);
@@ -30,7 +28,6 @@ class InstructorController {
       console.log(req.headers);
 
       let token = req.headers.authorization as string;
-
 
       let response = await this.instructor.authenticate(token, req.body.otp);
       if (response?.status) {
@@ -63,7 +60,7 @@ class InstructorController {
   async dashboard(req: Request, res: Response) {
     try {
       let token = req.headers.authorization as string;
-  
+
       let courses = await this.course.fetchCourseData(token);
 
       res.status(200).json(courses);
@@ -100,6 +97,7 @@ class InstructorController {
   async updateProfile(req: Request, res: Response) {
     try {
       const instructorId = req.body.instructorId;
+
       const instructorData = req.body.instructorData;
       console.log(instructorData);
 
@@ -118,21 +116,25 @@ class InstructorController {
   }
   async updateImage(req: Request, res: Response) {
     try {
-      
-      
       const token = req.headers.authorization as string;
-  
-      let image: string = "";
 
- 
+      let image: string = "";
+      console.log(req.file);
+
       if (req.file) {
         await cloudinary.uploader
-          .upload(req.file?.path, { folder: "profile" })
-          .then((res) => {
-            if (res.url) {
-              image = res.url;
+          .upload(req.file?.path, { folder: "profile" ,resource_type:'auto'})
+          .then(async (imageUploaded) => {
+            if (imageUploaded.url) {
+              image = imageUploaded.url;
+              const response = await this.instructor.updateImage(token, image);
 
               fs.unlinkSync("./src/public/" + req.file?.originalname);
+              if (response?.status) {
+                res.status(200).json(response);
+              } else {
+                res.status(401).json(response);
+              }
             } else {
               throw Error("unable to get url");
             }
@@ -140,14 +142,6 @@ class InstructorController {
           .catch((err) => {
             console.log(err);
           });
-      }
-      const response = await this.instructor.updateImage(token, image);
-      console.log(response);
-
-      if (response?.status) {
-        res.status(200).json(response);
-      } else {
-        res.status(401).json(response);
       }
     } catch (error) {
       console.log(error);

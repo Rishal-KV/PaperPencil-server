@@ -48,7 +48,8 @@ class CourseController {
     async fetchINstructorCourse(req, res) {
         try {
             let token = req.headers.authorization;
-            let courseData = await this.courseUseCase?.fetchCourseData(token);
+            const page = req.query.page == "0" ? 1 : req.query.page;
+            let courseData = await this.courseUseCase?.fetchCourseData(token, page);
             res.status(200).json(courseData);
         }
         catch (error) {
@@ -60,8 +61,10 @@ class CourseController {
             const search = req.query.search;
             const category = req.query.category;
             const price = req.query.price;
-            console.log(search, "search");
-            let course = await this.courseUseCase?.fetchCourse(search, category, price);
+            const page = req.query.page;
+            const skip = req.query.skip;
+            console.log(page, "ppp");
+            let course = await this.courseUseCase?.fetchCourse(search, category, price, page, skip);
             res.status(200).json({ course: course });
         }
         catch (error) {

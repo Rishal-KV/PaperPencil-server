@@ -26,11 +26,15 @@ class CourseUseCase {
             throw error;
         }
     }
-    async fetchCourseData(token) {
+    async fetchCourseData(token, pageNo) {
         try {
             let decodeToken = this.Jwt.verifyToken(token);
+            const page = parseInt(pageNo);
+            console.log(page, "page");
+            const limit = 3;
+            const skip = (page - 1) * limit;
             if (decodeToken) {
-                let courseData = await this.courseRepo.fetchCourseById(decodeToken.id);
+                let courseData = await this.courseRepo.fetchCourseById(decodeToken.id, limit, skip, page);
                 return courseData;
             }
         }
@@ -38,9 +42,18 @@ class CourseUseCase {
             throw error;
         }
     }
-    async fetchCourse(search, category, price) {
+    async fetchCourse(search, category, price, pageNo, itemLimit) {
         try {
-            let course = this.courseRepo.fetchCourse(search, category, price);
+            //pagination
+            let page = parseInt(pageNo) || 1;
+            let limit = parseInt(itemLimit) || 3;
+            if (page < 1)
+                page = 1;
+            if (limit < 1)
+                limit = 3;
+            const skip = (page - 1) * limit;
+            let course = await this.courseRepo.fetchCourse(search, category, price, limit, skip, page);
+            console.log(course, "course");
             return course;
         }
         catch (error) {
@@ -103,8 +116,17 @@ class CourseUseCase {
     async fetchSpecificCourse(id) {
         try {
             let specificCourse = await this.courseRepo.fetchSpecificCourse(id);
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
             if (specificCourse) {
-                return { status: true, courses: specificCourse };
+                const shuffledQuestions = shuffleArray(specificCourse.questions);
+                console.log(shuffledQuestions, "shuff");
+                return { status: true, courses: specificCourse, questions: shuffledQuestions };
             }
             else {
                 return { status: false, message: "no course found" };

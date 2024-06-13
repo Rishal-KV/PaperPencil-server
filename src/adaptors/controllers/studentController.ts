@@ -145,6 +145,8 @@ class StudentController {
   async updateProfile(req: Request, res: Response) {
     try {
       let studentId = req.params.studentId;
+      console.log(req.body);
+      
       let response = await this.studentUseCase.updateProfile(
         studentId,
         req.body

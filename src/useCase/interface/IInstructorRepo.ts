@@ -9,7 +9,7 @@ interface IInstructorRepo {
   verifyInstructor(email: string): Promise<any>;
   saveGoogleAuth(credential: Instructor): Promise<Instructor>;
   findInstructorById(id: string): Promise<Instructor | null>;
-  updateProfile(id:string,instructorData:Instructor):Promise<boolean>
+  updateProfile(id:string,instructorData:Instructor):Promise<Instructor>
   updateImage(id:string, imageUrl:string) : Promise<Boolean>
 }
 

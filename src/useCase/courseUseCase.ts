@@ -127,11 +127,21 @@ class CourseUseCase {
   }
   async fetchSpecificCourse(id: string) {
     try {
-      let specificCourse = await this.courseRepo.fetchSpecificCourse(id);
+      let specificCourse:Course = await this.courseRepo.fetchSpecificCourse(id) as Course;
+      function shuffleArray<T>(array: T[]): T[] {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
       
       
       if (specificCourse) {
-        return { status: true, courses: specificCourse };
+        const shuffledQuestions = shuffleArray(specificCourse.questions);
+        console.log(shuffledQuestions,"shuff");
+        
+        return { status: true, courses: specificCourse,questions:shuffledQuestions };
       } else {
         return { status: false, message: "no course found" };
       }

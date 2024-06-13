@@ -27,11 +27,20 @@ class CourseRepo {
             throw error;
         }
     }
-    async fetchCourseById(id) {
+    async fetchCourseById(id, limit, skip, page) {
+        console.log(limit, "limit");
         try {
-            let course = await courseModel_1.default.find({ instructor: id });
+            let course = await courseModel_1.default
+                .find({ instructor: id })
+                .limit(limit)
+                .skip(skip);
+            const totalCourse = await courseModel_1.default.countDocuments();
             if (course) {
-                return course;
+                return {
+                    course,
+                    page,
+                    totalPage: Math.ceil(totalCourse / limit),
+                };
             }
             else {
                 return null;
@@ -41,7 +50,7 @@ class CourseRepo {
             throw error;
         }
     }
-    async fetchCourse(search, category, price) {
+    async fetchCourse(search, category, price, limit, skip, page = 1) {
         try {
             // Construct the base query
             let query = {
@@ -59,16 +68,36 @@ class CourseRepo {
                     { description: { $regex: new RegExp(search, "i") } },
                 ];
             }
+            // Apply sorting based on price if provided
             const sortOptions = {};
             if (price !== "") {
                 sortOptions.price = price === "desc" ? -1 : 1;
             }
+            // Fetch total number of courses matching the query
+            const totalCourses = await courseModel_1.default.countDocuments(query);
+            // Calculate total pages
+            const totalPages = Math.ceil(totalCourses / limit);
+            // Ensure the page does not exceed total pages
+            const validatedPage = Math.min(page, totalPages) || 1;
+            // Calculate skip value based on validated page and limit
+            const skipValue = (validatedPage - 1) * limit;
             // Fetch courses based on the constructed query
             const courses = await courseModel_1.default
                 .find(query)
                 .sort(sortOptions)
-                .populate("instructor");
-            return courses;
+                .populate("instructor")
+                .skip(skipValue)
+                .limit(limit);
+            if (courses) {
+                return {
+                    courses,
+                    page: validatedPage,
+                    totalPages,
+                };
+            }
+            else {
+                return null;
+            }
         }
         catch (error) {
             throw error;

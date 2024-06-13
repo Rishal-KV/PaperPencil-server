@@ -11,13 +11,11 @@ let student = new studentRepo_1.default();
 const studentAuth = async (req, res, next) => {
     try {
         let token = req.headers.authorization;
-        console.log(token, "token");
         if (!token) {
             res.status(401).json({ status: false, message: "no token found!!!" });
         }
         else {
             let decodeToken = jwt.verifyToken(token);
-            console.log(decodeToken, "stundety");
             if (decodeToken) {
                 if (decodeToken.role !== "student") {
                     return { status: false, message: "No access" };

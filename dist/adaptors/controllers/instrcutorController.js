@@ -61,7 +61,6 @@ class InstructorController {
     async dashboard(req, res) {
         try {
             let token = req.headers.authorization;
-            console.log(token);
             let courses = await this.course.fetchCourseData(token);
             res.status(200).json(courses);
         }
@@ -115,13 +114,21 @@ class InstructorController {
         try {
             const token = req.headers.authorization;
             let image = "";
+            console.log(req.file);
             if (req.file) {
                 await cloudinary_1.default.uploader
-                    .upload(req.file?.path, { folder: "profile" })
-                    .then((res) => {
-                    if (res.url) {
-                        image = res.url;
+                    .upload(req.file?.path, { folder: "profile", resource_type: 'auto' })
+                    .then(async (imageUploaded) => {
+                    if (imageUploaded.url) {
+                        image = imageUploaded.url;
+                        const response = await this.instructor.updateImage(token, image);
                         fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        if (response?.status) {
+                            res.status(200).json(response);
+                        }
+                        else {
+                            res.status(401).json(response);
+                        }
                     }
                     else {
                         throw Error("unable to get url");
@@ -131,14 +138,6 @@ class InstructorController {
                     console.log(err);
                 });
             }
-            const response = await this.instructor.updateImage(token, image);
-            console.log(response);
-            if (response?.status) {
-                res.status(200).json(response);
-            }
-            else {
-                res.status(401).json(response);
-            }
         }
         catch (error) {
             console.log(error);
@@ -146,8 +145,7 @@ class InstructorController {
     }
     async resendOtp(req, res) {
         try {
-            
-            let token = req.body.headers.Authorization;
+            let token = req.cookies.instructorOtpToken;
             const resposne = await this.instructor.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);

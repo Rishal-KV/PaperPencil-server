@@ -68,9 +68,8 @@ class StudentUseCase {
                 };
                 let otp = this.generateOtp.generateOTP();
                 this.sendmail.sendMail(studentData.email, parseInt(otp));
-                 node_cron_1.default.schedule("*/1 * * * *", async () => {
+                node_cron_1.default.schedule("* * * * *", async () => {
                     await this.OtpRepo.removeOtp(studentData.email);
-                    
                 });
                 let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 this.OtpRepo.createOtpCollection(studentData.email, otp);
@@ -299,7 +298,8 @@ class StudentUseCase {
             const student = await this.repository.findStudentByEMail(email);
             const verified = await this.bcrypt.encryptPass(password, student?.password);
             if (verified) {
-                await this.repository.updatePassword(email, newPassword);
+                const hashedPass = await this.bcrypt.hashPass(newPassword);
+                await this.repository.updatePassword(email, hashedPass);
                 return { status: true, message: "password has been updated" };
             }
             else {
