@@ -32,10 +32,10 @@ class InstructorUseCase {
                     await this.instructorRepo.setInstructor(instrcutorFound.email, password);
                     let otp = this.generateOtp.generateOTP();
                     this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+                    await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
                     node_cron_1.default.schedule("* * * * *", async () => {
                         await this.OtpRepo.removeOtp(InstructorData.email);
                     });
-                    this.OtpRepo.createOtpCollection(InstructorData.email, otp);
                     let payload = {
                         email: InstructorData?.email,
                     };
@@ -46,16 +46,20 @@ class InstructorUseCase {
             else {
                 let otp = this.generateOtp.generateOTP();
                 this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+                await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
                 node_cron_1.default.schedule("* * * * *", async () => {
                     console.log("removed");
                     await this.OtpRepo.removeOtp(InstructorData.email);
                 });
-                this.OtpRepo.createOtpCollection(InstructorData.email, otp);
+                // setTimeout(async()=>{
+                //   await this.OtpRepo.removeOtp(InstructorData.email);
+                // })
                 let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
                 hashedPass ? (InstructorData.password = hashedPass) : "";
                 let savedInstructor = await this.instructorRepo.saveInstructorToDatabase(InstructorData);
                 let payload = {
                     email: savedInstructor?.email,
+                    id: savedInstructor?._id
                 };
                 let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 return { status: true, Token: jwtToken };
@@ -207,6 +211,23 @@ class InstructorUseCase {
                 await this.OtpRepo.removeOtp(decodeToken.email);
             }, 60 * 1000);
             return { status: true, message: "otp resend successfully" };
+        }
+    }
+    async changePassword(password, email, newPassword) {
+        try {
+            const student = await this.instructorRepo.findInstructorByEmail(email);
+            const verified = await this.bcrypt.encryptPass(password, student?.password);
+            if (verified) {
+                const hashedPass = await this.bcrypt.hashPass(newPassword);
+                await this.instructorRepo.updatePassword(email, hashedPass);
+                return { status: true, message: "password has been updated" };
+            }
+            else {
+                return { status: false, message: "current password doesnt match!!!" };
+            }
+        }
+        catch (error) {
+            throw error;
         }
     }
 }

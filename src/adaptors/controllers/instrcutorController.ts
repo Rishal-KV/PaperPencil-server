@@ -158,5 +158,24 @@ class InstructorController {
       console.log(error);
     }
   }
+  async updatePassword(req: Request, res: Response) {
+    try {
+      console.log(req.body);
+
+      const { password, newPassword, email } = req.body;
+      const updated = await this.instructor.changePassword(
+        password,
+        email,
+        newPassword
+      );
+      if (updated) {
+        res.status(200).json(updated);
+      } else {
+        res.status(204).json(updated);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 export default InstructorController;

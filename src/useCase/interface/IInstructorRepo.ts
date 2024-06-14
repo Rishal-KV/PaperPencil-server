@@ -11,6 +11,7 @@ interface IInstructorRepo {
   findInstructorById(id: string): Promise<Instructor | null>;
   updateProfile(id:string,instructorData:Instructor):Promise<Instructor>
   updateImage(id:string, imageUrl:string) : Promise<Boolean>
+  updatePassword(email:string,password:string):Promise<boolean>
 }
 
 export default IInstructorRepo;

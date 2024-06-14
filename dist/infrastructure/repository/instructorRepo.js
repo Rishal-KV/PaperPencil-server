@@ -112,5 +112,21 @@ class InstructorRepo {
             throw error;
         }
     }
+    async updatePassword(email, password) {
+        try {
+            const updatePassword = await instructorModel_1.default.findOneAndUpdate({ email: email }, {
+                $set: { password: password }
+            });
+            if (updatePassword) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }
 exports.default = InstructorRepo;

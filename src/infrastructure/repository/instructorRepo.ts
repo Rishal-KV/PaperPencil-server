@@ -132,6 +132,22 @@ class InstructorRepo implements IInstructorRepo {
       throw error;
     }
   }
+ async updatePassword(email: string, password: string): Promise<boolean> {
+  try {
+    const updatePassword = await instructorModel.findOneAndUpdate({email:email},{
+      $set :{password:password}
+    })
+    if (updatePassword) {
+      return true
+    }else{
+      return false
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+  
 }
 
 export default InstructorRepo;

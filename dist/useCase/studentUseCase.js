@@ -50,13 +50,13 @@ class StudentUseCase {
                         _id: studentFound._id,
                     };
                     let otp = this.generateOtp.generateOTP();
+                    await this.OtpRepo.createOtpCollection(studentData.email, otp);
                     this.sendmail.sendMail(studentData.email, parseInt(otp));
                     const job = node_cron_1.default.schedule("* * * * *", async () => {
                         await this.OtpRepo.removeOtp(studentData.email);
                         job.stop();
                     });
                     let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
-                    await this.OtpRepo.createOtpCollection(studentData.email, otp);
                     return {
                         not_verified: true,
                         token: jwtToken,
@@ -74,6 +74,7 @@ class StudentUseCase {
                 };
                 let otp = this.generateOtp.generateOTP();
                 this.sendmail.sendMail(studentData.email, parseInt(otp));
+                await this.OtpRepo.createOtpCollection(studentData.email, otp);
                 //   setTimeout(async () => {
                 //     await this.OtpRepo.removeOtp(studentData.email);
                 // }, 60000); // 60,000 milliseconds = 1 minute
@@ -84,7 +85,6 @@ class StudentUseCase {
                 // cron.schedule("* * * * *", async () => {
                 // });
                 let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
-                this.OtpRepo.createOtpCollection(studentData.email, otp);
                 return { status: true, Token: jwtToken };
             }
         }

@@ -160,6 +160,6 @@ router
   .delete(instructorAuth, (req, res) =>
     questionController.removeQuestion(req, res)
   );
-
+router.post('/change-password',instructorAuth,(req,res)=>instrcutorController.updatePassword(req,res))
 
 export default router;

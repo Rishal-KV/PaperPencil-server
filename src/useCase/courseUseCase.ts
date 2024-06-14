@@ -52,6 +52,8 @@ class CourseUseCase {
   async fetchCourse(search: string, category: string,price:string,pageNo:string,itemLimit:string) {
     try {
      //pagination
+   
+     
      let page = parseInt(pageNo) || 1;
      let limit = parseInt(itemLimit) || 3
      if (page < 1)  page = 1;
