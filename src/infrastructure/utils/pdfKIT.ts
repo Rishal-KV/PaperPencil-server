@@ -139,10 +139,10 @@ export function generateInvoice(
   doc
     .image("src/public/ppBlue.png", 50, 45, { width: 100 })
     .fillColor("#444444")
-    .fontSize(20)
-    .fontSize(10)
-    .text("123 Main Street", 200, 65, { align: "right" })
-    .text("New York, NY, 10025", 200, 80, { align: "right" })
+    // .fontSize(20)
+    // .fontSize(10)
+    // .text("123 Main Street", 200, 65, { align: "right" })
+    // .text("New York, NY, 10025", 200, 80, { align: "right" })
     .moveDown();
 
   // Generate customer information
@@ -164,13 +164,13 @@ export function generateInvoice(
     "Amount"
   );
   doc.font("Helvetica");
-
+const descrip = `${description.substring(0,5)}...`
   // Generate invoice table
   let invoiceTableTop = 330;
   generateTableRow(
     invoiceTableTop,
     courseName,
-    description,
+    descrip,
     price.toString(),
     "1",
     price.toString()
