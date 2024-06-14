@@ -27,13 +27,13 @@ export const initializeSocket = (server: HttpServer) => {
     });
     socket.on("sendMessage", async ({ text, sender, receiver }) => {
       try {
-        console.log(sender, "okk", receiver);
+     
         const conversation = await chatModel.findOneAndUpdate(
-          { members: { $all: [sender, receiver] } },
-          { updatedAt: new Date() },
-          { new: true } // Return the updated document
+          { members: { $all: [sender, receiver] } }, // Filter criteria
+          { $set: { updatedAt: new Date(), latestMessage: text } }, // Update object
+          { new: true } // Options to return the updated document
         );
-
+        
         if (conversation) {
           const newMessage = await messageModel.create({
             to: receiver,

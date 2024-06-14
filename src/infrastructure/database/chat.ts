@@ -4,7 +4,14 @@ import Chat from "../../domain/chat";
 const chatSchema = new Schema(
   {
     members: [{type: Types.ObjectId, require: true }],
+    latestMessage : {
+      type : String,
+      default : ""
+    }
   },
+  
+ 
+
   { timestamps: true }
 );
 

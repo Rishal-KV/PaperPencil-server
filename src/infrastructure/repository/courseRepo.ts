@@ -42,7 +42,8 @@ class CourseRepo implements Icourse {
         .find({ instructor: id })
         .limit(limit)
         .skip(skip);
-      const totalCourse = await courseModel.countDocuments();
+      const totalCourse = await courseModel.countDocuments({instructor:id});
+
 
 
       if (course) {

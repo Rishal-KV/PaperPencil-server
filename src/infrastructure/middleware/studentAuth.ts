@@ -11,6 +11,7 @@ export const studentAuth = async (
 ) => {
   try {
     let token = req.headers.authorization as string;
+console.log(token,"tokennn");
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });

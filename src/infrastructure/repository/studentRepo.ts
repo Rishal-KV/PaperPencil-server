@@ -24,10 +24,11 @@ class StudentRepo implements IStudentRepo {
       console.log(error);
     }
   }
-  async setStudent(email: string, password: string): Promise<void> {
+  async setStudent(name:string,email: string, password: string): Promise<void> {
     try {
        await studentModel.findOneAndUpdate({email:email},{
         $set :{
+          name : name,
           password : password
         }
        })

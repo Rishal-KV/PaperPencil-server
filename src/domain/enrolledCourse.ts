@@ -3,6 +3,7 @@ import Student from "./student";
 interface EnrolledCourse {
   course: string;
   studentId: string;
+
   enrolled:Date;
   completedChapters:[]
   completedLessons:[];

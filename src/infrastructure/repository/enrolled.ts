@@ -350,6 +350,8 @@ class EnrolledCourseRepo implements IEnrolled {
       throw error;
     }
   }
+
+
 }
 
 export default EnrolledCourseRepo;

@@ -100,7 +100,7 @@ router.get("/get_conversations", instructorAuth_1.default, (req, res) => chatCon
 router.get("/sales", instructorAuth_1.default, (req, res) => enrollController.fetchMonthlySales(req, res));
 router
     .route("/question")
-    .post(instructorAuth_1.default, (req, res) => questionController.addQuestion(req, res)).
-    get(instructorAuth_1.default, (req, res) => questionController.fetchQuestion(req, res)).
-    delete(instructorAuth_1.default, (req, res) => questionController.removeQuestion(req, res));
+    .post(instructorAuth_1.default, (req, res) => questionController.addQuestion(req, res))
+    .get(instructorAuth_1.default, (req, res) => questionController.fetchQuestion(req, res))
+    .delete(instructorAuth_1.default, (req, res) => questionController.removeQuestion(req, res));
 exports.default = router;

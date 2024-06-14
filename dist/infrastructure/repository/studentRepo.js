@@ -25,10 +25,11 @@ class StudentRepo {
             console.log(error);
         }
     }
-    async setStudent(email, password) {
+    async setStudent(name, email, password) {
         try {
             await studentModel_1.default.findOneAndUpdate({ email: email }, {
                 $set: {
+                    name: name,
                     password: password
                 }
             });

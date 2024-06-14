@@ -11,6 +11,7 @@ let student = new studentRepo_1.default();
 const studentAuth = async (req, res, next) => {
     try {
         let token = req.headers.authorization;
+        console.log(token, "tokennn");
         if (!token) {
             res.status(401).json({ status: false, message: "no token found!!!" });
         }

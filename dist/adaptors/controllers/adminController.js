@@ -69,7 +69,8 @@ class adminController {
         try {
             let { id } = req.body;
             console.log(id);
-            let actionStatus = this.adminUseCase.blockStudent(id);
+            let actionStatus = await this.adminUseCase.blockStudent(id);
+            console.log(actionStatus);
             if (actionStatus) {
                 res.status(200).json({ success: actionStatus });
             }

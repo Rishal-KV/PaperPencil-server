@@ -30,9 +30,9 @@ class StudentUseCase {
   }
   async signUpAndSendOtp(studentData: student) {
     try {
-      const studentFound = await this.repository.findStudentByEMail(
+      const studentFound: student = (await this.repository.findStudentByEMail(
         studentData.email
-      );
+      )) as student;
       if (studentFound) {
         if (studentFound && studentFound.is_Verified) {
           return {
@@ -43,17 +43,20 @@ class StudentUseCase {
         if (!studentFound.is_Verified) {
           const password = await this.bcrypt.hashPass(studentData.password);
           await this.repository.setStudent(
+            studentData.name,
             studentData.email,
             password as string
           );
-          let payload: { email: string; role: string } = {
+          let payload: { email: string; role: string; _id: string } = {
             email: studentData.email,
             role: "student",
+            _id: studentFound._id,
           };
           let otp = this.generateOtp.generateOTP();
           this.sendmail.sendMail(studentData.email, parseInt(otp));
-          cron.schedule("* * * * *", async () => {
+          const job = cron.schedule("* * * * *", async () => {
             await this.OtpRepo.removeOtp(studentData.email);
+            job.stop();
           });
 
           let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
@@ -64,22 +67,34 @@ class StudentUseCase {
           };
         }
       } else {
-        let payload: { email: string; role: string } = {
+        let hashedPass = await this.bcrypt.hashPass(studentData.password);
+        hashedPass ? (studentData.password = hashedPass) : "";
+        const newStudent = await this.repository.saveStudentToDatabase(
+          studentData
+        );
+        let payload: { email: string; role: string; _id: string } = {
           email: studentData.email,
           role: "student",
+          _id: newStudent?._id as string,
         };
         let otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
-        cron.schedule("* * * * *", async () => {
+
+        //   setTimeout(async () => {
+        //     await this.OtpRepo.removeOtp(studentData.email);
+        // }, 60000); // 60,000 milliseconds = 1 minute
+        const cronjob = cron.schedule("* * * * *", async () => {
           await this.OtpRepo.removeOtp(studentData.email);
+          cronjob.stop();
         });
+        // cron.schedule("* * * * *", async () => {
+
+        // });
 
         let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
         this.OtpRepo.createOtpCollection(studentData.email, otp);
-        let hashedPass = await this.bcrypt.hashPass(studentData.password);
-        hashedPass ? (studentData.password = hashedPass) : "";
+      
 
-        await this.repository.saveStudentToDatabase(studentData);
         return { status: true, Token: jwtToken };
       }
     } catch (error) {
@@ -256,6 +271,9 @@ class StudentUseCase {
   async updateImage(token: string, image: any) {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
+
+      console.log(decodeToken, "hmm");
+
       let response = await this.repository.updateImage(decodeToken?.id, image);
       if (response) {
         return { status: true, message: "image updated successfully" };
@@ -299,14 +317,18 @@ class StudentUseCase {
   }
 
   async changePassword(password: string, email: string, newPassword: string) {
+    
+    
     try {
       const student = await this.repository.findStudentByEMail(email);
       const verified = await this.bcrypt.encryptPass(
         password,
         student?.password
       );
+      
+      
       if (verified) {
-        const hashedPass = await this.bcrypt.hashPass(newPassword)
+        const hashedPass = await this.bcrypt.hashPass(newPassword);
         await this.repository.updatePassword(email, hashedPass as string);
         return { status: true, message: "password has been updated" };
       } else {

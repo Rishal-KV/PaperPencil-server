@@ -31,7 +31,6 @@ class StudentController {
                 res.status(401).json({ error: "Authorization token not provided." });
                 return;
             }
-            console.log(token);
             const otp = req.body?.otp;
             if (!otp) {
                 res.status(400).json({ error: "OTP not provided." });
@@ -153,13 +152,15 @@ class StudentController {
         try {
             let token = req.headers.authorization;
             let formData = req.body;
+            console.log(formData, "formm");
             if (req.file) {
                 await cloudinary_1.default.uploader
-                    .upload(req.file?.path, { folder: "profile" })
+                    .upload(req.file?.path, { folder: "profile", resource_type: "auto" })
                     .then((res) => {
                     if (res.url) {
                         formData.image = res.url;
                         console.log(res.url);
+                        console.log(formData, "inside");
                         fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
                     }
                     else {
@@ -171,6 +172,7 @@ class StudentController {
                 });
             }
             let response = await this.studentUseCase.updateImage(token, formData);
+            console.log(response, "images response");
             if (response?.status) {
                 res.status(200).json(response);
             }

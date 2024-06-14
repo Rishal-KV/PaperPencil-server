@@ -37,7 +37,7 @@ class chatRepo {
     async fetchConversation(converstaionId) {
         const conversations = await message_1.default.find({
             conversationId: converstaionId,
-        });
+        }).sort({ createdAt: 1 });
         if (conversations) {
             return conversations;
         }

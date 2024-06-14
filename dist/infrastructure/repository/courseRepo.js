@@ -34,7 +34,7 @@ class CourseRepo {
                 .find({ instructor: id })
                 .limit(limit)
                 .skip(skip);
-            const totalCourse = await courseModel_1.default.countDocuments();
+            const totalCourse = await courseModel_1.default.countDocuments({ instructor: id });
             if (course) {
                 return {
                     course,

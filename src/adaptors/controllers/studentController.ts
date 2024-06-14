@@ -25,13 +25,12 @@ class StudentController {
 
   async authenticateStudent(req: Request, res: Response): Promise<void> {
     try {
-      const token: string | undefined = req.headers.authorization;
+      const token: string = req.headers.authorization as string;
 
       if (!token) {
         res.status(401).json({ error: "Authorization token not provided." });
         return;
       }
-      console.log(token);
 
       const otp: string = req.body?.otp;
       if (!otp) {
@@ -146,7 +145,7 @@ class StudentController {
     try {
       let studentId = req.params.studentId;
       console.log(req.body);
-      
+
       let response = await this.studentUseCase.updateProfile(
         studentId,
         req.body
@@ -161,15 +160,18 @@ class StudentController {
   async updateImage(req: Request, res: Response) {
     try {
       let token = req.headers.authorization as string;
-     
+
       let formData = req.body;
+      console.log(formData, "formm");
+
       if (req.file) {
         await cloudinary.uploader
-          .upload(req.file?.path, { folder: "profile" })
+          .upload(req.file?.path, { folder: "profile", resource_type: "auto" })
           .then((res) => {
             if (res.url) {
               formData.image = res.url;
               console.log(res.url);
+              console.log(formData, "inside");
 
               fs.unlinkSync("./src/public/" + req.file?.originalname);
             } else {
@@ -182,6 +184,8 @@ class StudentController {
       }
 
       let response = await this.studentUseCase.updateImage(token, formData);
+      console.log(response, "images response");
+
       if (response?.status) {
         res.status(200).json(response);
       }
@@ -209,8 +213,6 @@ class StudentController {
 
   async resendOtp(req: Request, res: Response) {
     try {
-    
-      
       let token = req.body.headers.Authorization as string;
 
       const resposne = await this.studentUseCase.resendOtp(token);

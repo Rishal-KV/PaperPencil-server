@@ -35,7 +35,7 @@ class chatRepo implements IChat {
   async fetchConversation(converstaionId: string): Promise<Message[] | null> {
     const conversations = await messageModel.find({
       conversationId: converstaionId,
-    });
+    }).sort({createdAt : 1});
     if (conversations) {
       return conversations;
     } else {

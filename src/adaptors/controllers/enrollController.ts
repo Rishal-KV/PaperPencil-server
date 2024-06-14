@@ -212,5 +212,7 @@ class EnrollController {
       console.log(error);
     }
   }
+
+
 }
 export default EnrollController;
