@@ -41,7 +41,6 @@ const bcrypt = new Bcrypt();
 const sendMail = new NodeMailer();
 const OtpRep = new OtpRepo();
 const courseuseCase = new CourseUseCase(courseRepo, jwt);
-const courseController = new CourseController(courseuseCase);
 const chapterRepo = new ChapterRepo();
 const chapterUseCase = new ChapterUseCase(chapterRepo);
 const chapterController = new ChapterController(chapterUseCase);
@@ -63,6 +62,7 @@ const studentUseCase = new StudentUseCase(
   OtpRep,
   courseRepo
 );
+const courseController = new CourseController(courseuseCase,enrollUseCase);
 
 const controller = new studentController(studentUseCase);
 const favouriteRepo = new FavouriteRepo();

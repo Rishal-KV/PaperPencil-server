@@ -21,6 +21,23 @@ interface MonthlySales {
   enrollmentCount: number;
 }
 class EnrolledCourseRepo implements IEnrolled {
+  async checkPayment(studentId: string, courseId: string) {
+    try {
+      const checkPayment = await enrolledCourseModel.findOne({
+        studentId,
+        course: courseId,
+        payment: true,
+      });
+
+      if (checkPayment) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
   async purchaseCourse(
     studentId: string,
     courseId: string
@@ -37,6 +54,7 @@ class EnrolledCourseRepo implements IEnrolled {
         const enroll = await enrolledCourseModel.create({
           studentId: studentId,
           course: courseId,
+          payment: true,
         });
         if (enroll) {
           await favouriteModel.findOneAndUpdate(
@@ -54,6 +72,7 @@ class EnrolledCourseRepo implements IEnrolled {
       throw error;
     }
   }
+
   async checkEnroll(studentId: string, courseId: string): Promise<boolean> {
     try {
       const enrolled = await enrolledCourseModel.findOne({
@@ -250,9 +269,9 @@ class EnrolledCourseRepo implements IEnrolled {
           $sort: { "_id.year": 1, "_id.month": 1 },
         },
       ]);
- 
+
       // Create an array of all months within the year range found in the results
-     
+
       if (monthlySales) {
         const startDate = new Date(monthlySales[0]._id.year, 0); // Start of the first year
         const endDate = new Date(
@@ -261,30 +280,27 @@ class EnrolledCourseRepo implements IEnrolled {
         ); // End of the last year
         const completeMonthlySales: CompleteMonthlySales[] = [];
         let currentDate = startDate;
-  
+
         while (currentDate <= endDate) {
           const year = currentDate.getFullYear();
           const month = currentDate.getMonth() + 1; // getMonth() is zero-based
-  
+
           const monthlySale = monthlySales.find(
             (sale) => sale._id.year === year && sale._id.month === month
           );
-  
+
           completeMonthlySales.push({
             year,
             month,
             totalSales: monthlySale ? monthlySale.totalSales : 0,
             enrollmentCount: monthlySale ? monthlySale.enrollmentCount : 0,
           });
-  
+
           currentDate.setMonth(currentDate.getMonth() + 1);
         }
-  
+
         return completeMonthlySales;
       }
-    
-
-    
     } catch (error) {
       console.error("Error fetching monthly sales:", error);
       throw error;
@@ -340,8 +356,6 @@ class EnrolledCourseRepo implements IEnrolled {
         .populate("studentId")
         .select("enrolled");
       if (course) {
-       
-
         return course;
       } else {
         return null;
@@ -350,8 +364,6 @@ class EnrolledCourseRepo implements IEnrolled {
       throw error;
     }
   }
-
-
 }
 
 export default EnrolledCourseRepo;

@@ -13,7 +13,7 @@ class InstructorController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
-      let resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
+      const resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
       if (resposneFromSignUp && resposneFromSignUp.status) {
         res.status(200).json(resposneFromSignUp);
       } else {
@@ -27,7 +27,7 @@ class InstructorController {
     try {
       console.log(req.headers);
 
-      let token = req.headers.authorization as string;
+      const token = req.headers.authorization as string;
 
       let response = await this.instructor.authenticate(token, req.body.otp);
       if (response?.status) {
@@ -149,7 +149,9 @@ class InstructorController {
   }
   async resendOtp(req: Request, res: Response) {
     try {
-      let token = req.cookies.instructorOtpToken as string;
+      console.log(req.body);
+      
+      let token = req.body.headers.Authorization as string;
       const resposne = await this.instructor.resendOtp(token);
       if (resposne?.status) {
         res.status(200).json(resposne);

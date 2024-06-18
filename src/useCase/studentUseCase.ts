@@ -33,6 +33,8 @@ class StudentUseCase {
       const studentFound: student = (await this.repository.findStudentByEMail(
         studentData.email
       )) as student;
+      console.log(studentFound,"hhhh");
+      
       if (studentFound) {
         if (studentFound && studentFound.is_Verified) {
           return {
@@ -47,12 +49,12 @@ class StudentUseCase {
             studentData.email,
             password as string
           );
-          let payload: { email: string; role: string; _id: string } = {
+          const payload: { email: string; role: string; _id: string } = {
             email: studentData.email,
             role: "student",
             _id: studentFound._id,
           };
-          let otp = this.generateOtp.generateOTP();
+          const otp = this.generateOtp.generateOTP();
           await this.OtpRepo.createOtpCollection(studentData.email, otp);
           this.sendmail.sendMail(studentData.email, parseInt(otp));
           const job = cron.schedule("* * * * *", async () => {
@@ -60,7 +62,7 @@ class StudentUseCase {
             job.stop();
           });
 
-          let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+          const jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
          
           return {
             not_verified: true,
@@ -68,17 +70,19 @@ class StudentUseCase {
           };
         }
       } else {
+        console.log("new student");
+        
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
         const newStudent = await this.repository.saveStudentToDatabase(
           studentData
         );
-        let payload: { email: string; role: string; _id: string } = {
+        const payload: { email: string; role: string; _id: string } = {
           email: studentData.email,
           role: "student",
           _id: newStudent?._id as string,
         };
-        let otp = this.generateOtp.generateOTP();
+        const otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(studentData.email, parseInt(otp));
         await this.OtpRepo.createOtpCollection(studentData.email, otp);
         //   setTimeout(async () => {
@@ -92,7 +96,7 @@ class StudentUseCase {
 
         // });
 
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+        const jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
         
       
 
@@ -105,15 +109,15 @@ class StudentUseCase {
 
   async authenticate(token: string, otp: string) {
     try {
-      let decodeToken = this.Jwt.verifyToken(token);
+      const decodeToken = this.Jwt.verifyToken(token);
 
       if (decodeToken) {
         let fetchOtp = await this.OtpRepo.getOtpByEmail(decodeToken.email);
 
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            let studentToken = this.Jwt.createToken(decodeToken._id, "student");
-            let studentData = await this.repository.fetchStudentData(
+            const studentToken = this.Jwt.createToken(decodeToken._id, "student");
+            const studentData = await this.repository.fetchStudentData(
               decodeToken.email
             );
             await this.repository.verifyStudent(decodeToken.email);
@@ -134,13 +138,13 @@ class StudentUseCase {
     }
   }
   async loginStudent(email: string, password: string) {
-    let studentFound = await this.repository.findStudentByEMail(email);
+    const studentFound = await this.repository.findStudentByEMail(email);
     if (studentFound) {
       let student = await this.repository.fetchStudentData(email);
       if (!studentFound.is_Verified) {
         return { status: false, message: "Account is not verified!!" };
       }
-      let verified = await this.bcrypt.encryptPass(
+      const verified = await this.bcrypt.encryptPass(
         password,
         studentFound.password
       );

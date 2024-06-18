@@ -3,10 +3,16 @@ import { Request, Response } from "express";
 import cloudinary from "../../infrastructure/utils/cloudinary";
 import { paymentCheckOut } from "../../infrastructure/utils/stripe";
 import fs from "fs";
+import EnrolledCourseUseCase from "../../useCase/enrolledCourse";
 class CourseController {
   private courseUseCase?: CourseUseCase;
-  constructor(courseUseCase?: CourseUseCase) {
+  private enrolledUseCase?: EnrolledCourseUseCase;
+  constructor(
+    courseUseCase?: CourseUseCase,
+    enrollUseCase?: EnrolledCourseUseCase
+  ) {
     this.courseUseCase = courseUseCase;
+    this.enrolledUseCase = enrollUseCase;
   }
 
   async addCourse(req: Request, res: Response) {
@@ -52,7 +58,8 @@ class CourseController {
     try {
       let token = req.headers.authorization as string;
 
-      const page = req.query.page as string == "0" ? 1 : req.query.page as string
+      const page =
+        (req.query.page as string) == "0" ? 1 : (req.query.page as string);
 
       let courseData = await this.courseUseCase?.fetchCourseData(
         token,
@@ -144,8 +151,21 @@ class CourseController {
   }
   async payment(req: Request, res: Response) {
     try {
-      let sessionId = await paymentCheckOut(req.body);
-      res.status(200).json(sessionId);
+   
+      
+      let paid = await this.enrolledUseCase?.checkPayment(
+        req.body.studentId,
+        req.body.course._id
+      );
+    
+      
+      if (paid) {
+      
+        res.json({ paid: true, message: "already paid for this course" });
+      } else {
+        let sessionId = await paymentCheckOut(req.body.course);
+        res.status(200).json(sessionId);
+      }
     } catch (error) {
       console.log(error);
     }

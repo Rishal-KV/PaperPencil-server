@@ -38,7 +38,14 @@ const enrolledCourseSchema = new Schema<EnrolledCourse>({
   courseStatus: {
     type : Boolean,
     default : false
+  },
+  payment : {
+    type : Boolean,
+    default : true
+
   }
+
+
 });
 
 const enrolledCourseModel = model<EnrolledCourse>(

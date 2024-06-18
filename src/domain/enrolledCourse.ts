@@ -10,6 +10,7 @@ interface EnrolledCourse {
   attendedQuestions :[]
   completedDate : Date
   courseStatus:boolean
+  payment : boolean
   
 }
 export default EnrolledCourse;

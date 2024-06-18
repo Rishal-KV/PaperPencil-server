@@ -51,7 +51,7 @@ class InstructorUseCase {
             password as string
           );
           let otp =  this.generateOtp.generateOTP();
-          this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+          await this.sendmail.sendMail(InstructorData.email, parseInt(otp));
           await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
           cron.schedule("* * * * *", async () => {
             await this.OtpRepo.removeOtp(InstructorData.email);
@@ -59,7 +59,7 @@ class InstructorUseCase {
 
         
        
-          let payload: {
+          const payload: {
             email: string | undefined;
           } = {
             email: InstructorData?.email,
@@ -70,7 +70,7 @@ class InstructorUseCase {
           return { not_verified: true, Token: jwtToken };
         }
       } else {
-        let otp = this.generateOtp.generateOTP();
+        const otp = this.generateOtp.generateOTP();
         this.sendmail.sendMail(InstructorData.email, parseInt(otp));
         await  this.OtpRepo.createOtpCollection(InstructorData.email, otp);
         cron.schedule("* * * * *", async () => {
@@ -81,11 +81,11 @@ class InstructorUseCase {
         //   await this.OtpRepo.removeOtp(InstructorData.email);
         // })
   
-        let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
+        const hashedPass = await this.bcrypt.hashPass(InstructorData.password);
         hashedPass ? (InstructorData.password = hashedPass) : "";
         let savedInstructor =
           await this.instructorRepo.saveInstructorToDatabase(InstructorData);
-        let payload: {
+        const payload: {
           email: string | undefined;
           id:string
         } = {
@@ -93,7 +93,7 @@ class InstructorUseCase {
           id:savedInstructor?._id as string
         };
 
-        let jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
+        const jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
 
         return { status: true, Token: jwtToken };
       }
@@ -147,6 +147,7 @@ class InstructorUseCase {
       throw error;
     }
   }
+
   async Login(instructorData: { email: string; password: string }) {
     let instructorDB = await this.instructorRepo.findInstructorByEmail(
       instructorData.email
