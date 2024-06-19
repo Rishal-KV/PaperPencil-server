@@ -9,6 +9,24 @@ const chat_1 = __importDefault(require("../database/chat"));
 const favourites_1 = __importDefault(require("../database/favourites"));
 const mongoose_1 = require("mongoose");
 class EnrolledCourseRepo {
+    async checkPayment(studentId, courseId) {
+        try {
+            const checkPayment = await enrolledCourse_1.default.findOne({
+                studentId,
+                course: courseId,
+                payment: true,
+            });
+            if (checkPayment) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async purchaseCourse(studentId, courseId) {
         try {
             const enrolled = await enrolledCourse_1.default.findOne({
@@ -22,6 +40,7 @@ class EnrolledCourseRepo {
                 const enroll = await enrolledCourse_1.default.create({
                     studentId: studentId,
                     course: courseId,
+                    payment: true,
                 });
                 if (enroll) {
                     await favourites_1.default.findOneAndUpdate({ studentId: studentId }, {

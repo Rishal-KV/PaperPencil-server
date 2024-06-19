@@ -31,12 +31,12 @@ class InstructorUseCase {
                     const password = await this.bcrypt.hashPass(instrcutorFound.password);
                     await this.instructorRepo.setInstructor(instrcutorFound.email, password);
                     let otp = this.generateOtp.generateOTP();
-                    this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+                    await this.sendmail.sendMail(InstructorData.email, parseInt(otp));
                     await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
                     node_cron_1.default.schedule("* * * * *", async () => {
                         await this.OtpRepo.removeOtp(InstructorData.email);
                     });
-                    let payload = {
+                    const payload = {
                         email: InstructorData?.email,
                     };
                     let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
@@ -44,7 +44,7 @@ class InstructorUseCase {
                 }
             }
             else {
-                let otp = this.generateOtp.generateOTP();
+                const otp = this.generateOtp.generateOTP();
                 this.sendmail.sendMail(InstructorData.email, parseInt(otp));
                 await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
                 node_cron_1.default.schedule("* * * * *", async () => {
@@ -54,14 +54,14 @@ class InstructorUseCase {
                 // setTimeout(async()=>{
                 //   await this.OtpRepo.removeOtp(InstructorData.email);
                 // })
-                let hashedPass = await this.bcrypt.hashPass(InstructorData.password);
+                const hashedPass = await this.bcrypt.hashPass(InstructorData.password);
                 hashedPass ? (InstructorData.password = hashedPass) : "";
                 let savedInstructor = await this.instructorRepo.saveInstructorToDatabase(InstructorData);
-                let payload = {
+                const payload = {
                     email: savedInstructor?.email,
                     id: savedInstructor?._id
                 };
-                let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
+                const jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 return { status: true, Token: jwtToken };
             }
         }

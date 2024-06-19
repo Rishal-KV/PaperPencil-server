@@ -8,8 +8,10 @@ const stripe_1 = require("../../infrastructure/utils/stripe");
 const fs_1 = __importDefault(require("fs"));
 class CourseController {
     courseUseCase;
-    constructor(courseUseCase) {
+    enrolledUseCase;
+    constructor(courseUseCase, enrollUseCase) {
         this.courseUseCase = courseUseCase;
+        this.enrolledUseCase = enrollUseCase;
     }
     async addCourse(req, res) {
         try {
@@ -129,8 +131,14 @@ class CourseController {
     }
     async payment(req, res) {
         try {
-            let sessionId = await (0, stripe_1.paymentCheckOut)(req.body);
-            res.status(200).json(sessionId);
+            let paid = await this.enrolledUseCase?.checkPayment(req.body.studentId, req.body.course._id);
+            if (paid) {
+                res.json({ paid: true, message: "already paid for this course" });
+            }
+            else {
+                let sessionId = await (0, stripe_1.paymentCheckOut)(req.body.course);
+                res.status(200).json(sessionId);
+            }
         }
         catch (error) {
             console.log(error);

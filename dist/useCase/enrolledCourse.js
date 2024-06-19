@@ -5,6 +5,19 @@ class EnrolledCourseUseCase {
     constructor(enrolledCourseRepo) {
         this.enrolledCourseRepo = enrolledCourseRepo;
     }
+    async checkPayment(studentId, courseId) {
+        try {
+            const response = await this.enrolledCourseRepo.checkPayment(studentId, courseId);
+            if (response) {
+                return response;
+            }
+            else {
+                return response;
+            }
+        }
+        catch (error) {
+        }
+    }
     async enrollCourse(courseId, StudentId) {
         try {
             let response = await this.enrolledCourseRepo.purchaseCourse(StudentId, courseId);

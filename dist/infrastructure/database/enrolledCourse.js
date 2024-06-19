@@ -38,6 +38,10 @@ const enrolledCourseSchema = new mongoose_1.Schema({
     courseStatus: {
         type: Boolean,
         default: false
+    },
+    payment: {
+        type: Boolean,
+        default: true
     }
 });
 const enrolledCourseModel = (0, mongoose_1.model)("enrolledcourse", enrolledCourseSchema);
