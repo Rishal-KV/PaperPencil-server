@@ -31,8 +31,8 @@ const paymentCheckOut = async (course) => {
             line_items: line_items,
             mode: "payment",
             payment_method_types: ["card"],
-            success_url: `http://localhost:5173/enrolledsuccess/${course._id}`,
-            cancel_url: `http://localhost:5173/coursedetails/${course._id}`,
+            success_url: `https://paper-pencil.vercel.app/enrolledsuccess/${course._id}`,
+            cancel_url: `https://paper-pencil.vercel.app/coursedetails/${course._id}`,
         });
         return { sessionId: session.id };
     }
