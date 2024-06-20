@@ -24,7 +24,7 @@ class OtpRepo {
     }
     async getOtpByEmail(email) {
         try {
-            let otp = await StudentOtp_1.default.findOne({ email: email });
+            const otp = await StudentOtp_1.default.findOne({ email: email });
             if (otp) {
                 return otp;
             }

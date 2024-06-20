@@ -25,7 +25,7 @@ class CourseController {
                     if (res.url) {
                         formData.image = res.url;
                         console.log(res.url);
-                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
                     }
                     else {
                         throw Error("unable to get url");
@@ -105,19 +105,16 @@ class CourseController {
     }
     async courseList(req, res) {
         try {
-            let { id } = req.body;
-            console.log(id);
-            let response = await this.courseUseCase?.listCourse(id);
-            console.log(response);
+            const { id } = req.body;
+            const response = await this.courseUseCase?.listCourse(id);
             res.status(200).json(response);
         }
         catch (error) { }
     }
     async fetchSpecificCourse(req, res) {
         try {
-            let id = req.query.id;
-            console.log(id);
-            let courses = await this.courseUseCase?.fetchSpecificCourse(id);
+            const id = req.query.id;
+            const courses = await this.courseUseCase?.fetchSpecificCourse(id);
             if (courses?.status) {
                 res.status(200).json(courses);
             }
@@ -131,7 +128,7 @@ class CourseController {
     }
     async payment(req, res) {
         try {
-            let paid = await this.enrolledUseCase?.checkPayment(req.body.studentId, req.body.course._id);
+            const paid = await this.enrolledUseCase?.checkPayment(req.body.studentId, req.body.course._id);
             if (paid) {
                 res.json({ paid: true, message: "already paid for this course" });
             }

@@ -122,7 +122,7 @@ class InstructorController {
                     if (imageUploaded.url) {
                         image = imageUploaded.url;
                         const response = await this.instructor.updateImage(token, image);
-                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
                         if (response?.status) {
                             res.status(200).json(response);
                         }
@@ -145,8 +145,7 @@ class InstructorController {
     }
     async resendOtp(req, res) {
         try {
-            console.log(req.body);
-            let token = req.body.headers.Authorization;
+            const token = req.body.headers.Authorization;
             const resposne = await this.instructor.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);

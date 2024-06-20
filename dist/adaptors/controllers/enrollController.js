@@ -8,8 +8,8 @@ class EnrollController {
     }
     async enroll(req, res) {
         try {
-            let { courseId, studentId } = req.body;
-            let response = await this.enrollUseCase.enrollCourse(courseId, studentId);
+            const { courseId, studentId } = req.body;
+            const response = await this.enrollUseCase.enrollCourse(courseId, studentId);
             if (response) {
                 res.status(200).json(response);
             }
@@ -23,8 +23,8 @@ class EnrollController {
     }
     async checkEnroll(req, res) {
         try {
-            let courseId = req.query.courseId;
-            let studentId = req.query.studentId;
+            const courseId = req.query.courseId;
+            const studentId = req.query.studentId;
             let enrolled = await this.enrollUseCase.checkEnroll(studentId, courseId);
             if (enrolled?.enrolled) {
                 res.status(200).json(enrolled);

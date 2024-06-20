@@ -19,7 +19,7 @@ class OtpRepo implements IOtp {
   }
   async getOtpByEmail(email: string): Promise<Otp | null> {
     try {
-      let otp = await otpModel.findOne({ email: email });
+      const otp = await otpModel.findOne({ email: email });
       if (otp) {
         return otp;
       } else {

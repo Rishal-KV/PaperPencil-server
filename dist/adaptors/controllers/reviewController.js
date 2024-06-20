@@ -7,8 +7,8 @@ class ReviewController {
     }
     async addReview(req, res) {
         try {
-            let review = req.body.review;
-            let studentId = req.body.studentId;
+            const review = req.body.review;
+            const studentId = req.body.studentId;
             const response = await this.review.review(review, studentId);
             if (response?.status) {
                 res.status(200).json(response);

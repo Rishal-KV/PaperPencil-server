@@ -149,9 +149,9 @@ class InstructorController {
   }
   async resendOtp(req: Request, res: Response) {
     try {
-      console.log(req.body);
       
-      let token = req.body.headers.Authorization as string;
+      
+      const token = req.body.headers.Authorization as string;
       const resposne = await this.instructor.resendOtp(token);
       if (resposne?.status) {
         res.status(200).json(resposne);

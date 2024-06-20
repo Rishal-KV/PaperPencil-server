@@ -12,7 +12,7 @@ class StudentController {
     }
     async SignUpAndSendOtp(req, res) {
         try {
-            let resposneFromSignUp = await this.studentUseCase.signUpAndSendOtp(req.body);
+            const resposneFromSignUp = await this.studentUseCase.signUpAndSendOtp(req.body);
             if (resposneFromSignUp && resposneFromSignUp.status) {
                 res.status(200).json(resposneFromSignUp);
             }
@@ -52,7 +52,7 @@ class StudentController {
     async studentLogin(req, res) {
         try {
             const { email, password } = req.body;
-            let verifiedStudent = await this.studentUseCase.loginStudent(email, password);
+            const verifiedStudent = await this.studentUseCase.loginStudent(email, password);
             if (verifiedStudent && verifiedStudent.status) {
                 if (verifiedStudent.status) {
                     return res.status(200).json({
@@ -73,8 +73,7 @@ class StudentController {
     }
     async googleLogin(req, res) {
         try {
-            console.log(req.body, "body....");
-            let response = await this.studentUseCase.googleAuth(req.body);
+            const response = await this.studentUseCase.googleAuth(req.body);
             if (response?.status) {
                 res
                     .cookie("studentToken", response.token, {
@@ -94,8 +93,8 @@ class StudentController {
     }
     async forgotPassword(req, res) {
         try {
-            let { email } = req.body;
-            let response = await this.studentUseCase.forgotPassword(email);
+            const { email } = req.body;
+            const response = await this.studentUseCase.forgotPassword(email);
             if (response?.status) {
                 res.status(200).json(response);
             }
@@ -109,7 +108,7 @@ class StudentController {
     }
     async setForgotPassword(req, res) {
         try {
-            let email = req.headers.authorization;
+            const email = req.headers.authorization;
             let password = req.body.password;
             let response = await this.studentUseCase.setForgotPassword(email, password);
             // console.log(response);
@@ -126,9 +125,8 @@ class StudentController {
     }
     async getStudentData(req, res) {
         try {
-            let studentId = req.params.studentId;
-            console.log(studentId, "hehehe");
-            let student = await this.studentUseCase.get_studentData(studentId);
+            const studentId = req.params.studentId;
+            const student = await this.studentUseCase.get_studentData(studentId);
             res.status(200).json(student);
         }
         catch (error) {
@@ -137,9 +135,9 @@ class StudentController {
     }
     async updateProfile(req, res) {
         try {
-            let studentId = req.params.studentId;
+            const studentId = req.params.studentId;
             console.log(req.body);
-            let response = await this.studentUseCase.updateProfile(studentId, req.body);
+            const response = await this.studentUseCase.updateProfile(studentId, req.body);
             if (response?.status) {
                 res.status(200).json(response);
             }
@@ -150,9 +148,8 @@ class StudentController {
     }
     async updateImage(req, res) {
         try {
-            let token = req.headers.authorization;
+            const token = req.headers.authorization;
             let formData = req.body;
-            console.log(formData, "formm");
             if (req.file) {
                 await cloudinary_1.default.uploader
                     .upload(req.file?.path, { folder: "profile", resource_type: "auto" })
@@ -161,7 +158,7 @@ class StudentController {
                         formData.image = res.url;
                         console.log(res.url);
                         console.log(formData, "inside");
-                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
                     }
                     else {
                         throw Error("unable to get url");
@@ -171,8 +168,7 @@ class StudentController {
                     console.log(err);
                 });
             }
-            let response = await this.studentUseCase.updateImage(token, formData);
-            console.log(response, "images response");
+            const response = await this.studentUseCase.updateImage(token, formData);
             if (response?.status) {
                 res.status(200).json(response);
             }
@@ -199,7 +195,7 @@ class StudentController {
     }
     async resendOtp(req, res) {
         try {
-            let token = req.body.headers.Authorization;
+            const token = req.body.headers.Authorization;
             const resposne = await this.studentUseCase.resendOtp(token);
             if (resposne?.status) {
                 res.status(200).json(resposne);
@@ -211,7 +207,6 @@ class StudentController {
     }
     async updatePassword(req, res) {
         try {
-            console.log(req.body);
             const { password, newPassword, email } = req.body;
             const updated = await this.studentUseCase.changePassword(password, email, newPassword);
             if (updated) {

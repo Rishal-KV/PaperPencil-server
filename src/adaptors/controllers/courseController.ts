@@ -125,21 +125,21 @@ class CourseController {
   }
   async courseList(req: Request, res: Response) {
     try {
-      let { id } = req.body;
-      console.log(id);
+      const { id } = req.body;
+     
 
-      let response = await this.courseUseCase?.listCourse(id);
-      console.log(response);
+      const response = await this.courseUseCase?.listCourse(id);
+      
 
       res.status(200).json(response);
     } catch (error) {}
   }
   async fetchSpecificCourse(req: Request, res: Response) {
     try {
-      let id = req.query.id as string;
-      console.log(id);
+      const id = req.query.id as string;
+      
 
-      let courses = await this.courseUseCase?.fetchSpecificCourse(id);
+      const courses = await this.courseUseCase?.fetchSpecificCourse(id);
       if (courses?.status) {
         res.status(200).json(courses);
       } else {
@@ -153,7 +153,7 @@ class CourseController {
     try {
    
       
-      let paid = await this.enrolledUseCase?.checkPayment(
+      const paid = await this.enrolledUseCase?.checkPayment(
         req.body.studentId,
         req.body.course._id
       );

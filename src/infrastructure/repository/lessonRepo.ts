@@ -4,7 +4,7 @@ import lessonModel from "../database/lessons";
 class LessonRepo implements Ilesson {
   addLesson(lessonUrl: string, title: string): Promise<Lesson> {
     try {
-      let saveLesson = lessonModel.create({
+      const saveLesson = lessonModel.create({
         title: title,
         videoUrl: lessonUrl,
       });

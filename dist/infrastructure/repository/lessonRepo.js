@@ -7,7 +7,7 @@ const lessons_1 = __importDefault(require("../database/lessons"));
 class LessonRepo {
     addLesson(lessonUrl, title) {
         try {
-            let saveLesson = lessons_1.default.create({
+            const saveLesson = lessons_1.default.create({
                 title: title,
                 videoUrl: lessonUrl,
             });
