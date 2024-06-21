@@ -30,8 +30,8 @@ class ChapterController {
     async updateChapter(req, res) {
         try {
             console.log(req.body);
-            const { title, order, id } = req.body;
-            const response = await this.chapterUseCase.updateChapter(id, title, order);
+            const { title, order, _id } = req.body;
+            const response = await this.chapterUseCase.updateChapter(_id, title, order);
             if (response?.status) {
                 res.status(200).json(response);
             }

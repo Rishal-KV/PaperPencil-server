@@ -25,7 +25,7 @@ class CourseController {
                     if (res.url) {
                         formData.image = res.url;
                         console.log(res.url);
-                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
                     }
                     else {
                         throw Error("unable to get url");
@@ -145,6 +145,7 @@ class CourseController {
         try {
             const courseId = req.body.courseId;
             const course = req.body.courseData;
+            console.log(courseId, "courseId");
             const response = await this.courseUseCase?.updateCourse(courseId, course);
             if (response?.status) {
                 res.status(200).json(response);

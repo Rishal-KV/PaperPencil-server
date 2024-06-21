@@ -45,12 +45,16 @@ class InstructorUseCase {
             }
             else {
                 const otp = this.generateOtp.generateOTP();
-                this.sendmail.sendMail(InstructorData.email, parseInt(otp));
+                await this.sendmail.sendMail(InstructorData.email, parseInt(otp));
                 await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
-                node_cron_1.default.schedule("* * * * *", async () => {
-                    console.log("removed");
+                // cron.schedule("* * * * *", async () => {
+                //   console.log("removed");
+                //   await this.OtpRepo.removeOtp(InstructorData.email);
+                // });
+                await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
+                setTimeout(async () => {
                     await this.OtpRepo.removeOtp(InstructorData.email);
-                });
+                }, 60000); // 60,000 milliseconds = 1 minute
                 // setTimeout(async()=>{
                 //   await this.OtpRepo.removeOtp(InstructorData.email);
                 // })
@@ -204,8 +208,8 @@ class InstructorUseCase {
         const decodeToken = this.jwt.verifyToken(token);
         if (decodeToken && decodeToken.email) {
             let otp = this.generateOtp.generateOTP();
-            this.OtpRepo.createOtpCollection(decodeToken.email, otp);
-            this.sendmail.sendMail(decodeToken.email, parseInt(otp));
+            await this.OtpRepo.createOtpCollection(decodeToken.email, otp);
+            await this.sendmail.sendMail(decodeToken.email, parseInt(otp));
             setTimeout(async () => {
                 console.log("removed");
                 await this.OtpRepo.removeOtp(decodeToken.email);

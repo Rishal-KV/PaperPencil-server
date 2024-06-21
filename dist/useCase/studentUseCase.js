@@ -52,7 +52,7 @@ class StudentUseCase {
                     };
                     const otp = this.generateOtp.generateOTP();
                     await this.OtpRepo.createOtpCollection(studentData.email, otp);
-                    this.sendmail.sendMail(studentData.email, parseInt(otp));
+                    await this.sendmail.sendMail(studentData.email, parseInt(otp));
                     const job = node_cron_1.default.schedule("* * * * *", async () => {
                         await this.OtpRepo.removeOtp(studentData.email);
                         job.stop();
@@ -75,15 +75,16 @@ class StudentUseCase {
                     _id: newStudent?._id,
                 };
                 const otp = this.generateOtp.generateOTP();
-                this.sendmail.sendMail(studentData.email, parseInt(otp));
+                await this.sendmail.sendMail(studentData.email, parseInt(otp));
                 await this.OtpRepo.createOtpCollection(studentData.email, otp);
-                //   setTimeout(async () => {
-                //     await this.OtpRepo.removeOtp(studentData.email);
-                // }, 60000); // 60,000 milliseconds = 1 minute
-                const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
+                setTimeout(async () => {
                     await this.OtpRepo.removeOtp(studentData.email);
-                    cronjob.stop();
-                });
+                    console.log("removed");
+                }, 60000); // 60,000 milliseconds = 1 minute
+                // const cronjob = cron.schedule("* * * * *", async () => {
+                //   await this.OtpRepo.removeOtp(studentData.email);
+                //   cronjob.stop();
+                // });
                 // cron.schedule("* * * * *", async () => {
                 // });
                 const jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
@@ -200,10 +201,14 @@ class StudentUseCase {
                 let payload = {
                     email: email,
                 };
-                const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
-                    await this.OtpRepo.removeOtp(email);
-                    cronjob.stop();
-                });
+                // const cronjob = cron.schedule("* * * * *", async () => {
+                //   await this.OtpRepo.removeOtp(email);
+                //   cronjob.stop();
+                // });
+                await this.OtpRepo.createOtpCollection(student.email, otp);
+                setTimeout(async () => {
+                    await this.OtpRepo.removeOtp(student?.email);
+                }, 60000); // 60,000 milliseconds = 1 minute
                 const token = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 return { status: true, student: student.email, token };
             }
@@ -297,11 +302,15 @@ class StudentUseCase {
         if (decodeToken && decodeToken.email) {
             let otp = this.generateOtp.generateOTP();
             this.OtpRepo.createOtpCollection(decodeToken.email, otp);
-            const cronjob = node_cron_1.default.schedule("* * * * *", async () => {
+            // const cronjob = cron.schedule("* * * * *", async () => {
+            //   await this.OtpRepo.removeOtp(decodeToken.email);
+            //   cronjob.stop();
+            // });
+            await this.OtpRepo.createOtpCollection(decodeToken.email, otp);
+            setTimeout(async () => {
                 await this.OtpRepo.removeOtp(decodeToken.email);
-                cronjob.stop();
-            });
-            this.sendmail.sendMail(decodeToken.email, parseInt(otp));
+            }, 60000); // 60,000 milliseconds = 1 minute
+            await this.sendmail.sendMail(decodeToken.email, parseInt(otp));
             return { status: true, message: "otp resend successfully" };
         }
     }

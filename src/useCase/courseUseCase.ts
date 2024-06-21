@@ -154,6 +154,8 @@ class CourseUseCase {
 
   async updateCourse(courseId: string, course: Course) {
     try {
+      console.log(courseId, "---->", course);
+      
       const response = await this.courseRepo.updateCourse(courseId, course);
       if (response) {
         return { status: true, message: "course updated successfully" };

@@ -77,6 +77,7 @@ router
     .patch(instructorAuth_1.default, (req, res) => courseController.courseList(req, res));
 router.get("/dashboard", instructorAuth_1.default, (req, res) => instrcutorController.dashboard(req, res));
 router.post("/googleAuth", (req, res) => instrcutorController.googleLogin(req, res));
+router.patch('/update_course', instructorAuth_1.default, (req, res) => courseController.updateCourse(req, res));
 router
     .route("/chapter")
     .post(instructorAuth_1.default, (req, res) => chapterController.addChapter(req, res))

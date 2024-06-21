@@ -175,6 +175,7 @@ class CourseController {
     try {
       const courseId = req.body.courseId;
       const course = req.body.courseData;
+console.log(courseId,"courseId");
 
       const response = await this.courseUseCase?.updateCourse(courseId, course);
       if (response?.status) {
