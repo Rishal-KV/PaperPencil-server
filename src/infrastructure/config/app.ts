@@ -14,7 +14,7 @@ export const createServer = () => {
 
     app.use(
       cors({
-        origin: "http://paper-pencil.vercel.app",
+        origin: "http://localhost:5173",
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })

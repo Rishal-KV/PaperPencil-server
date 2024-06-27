@@ -67,7 +67,7 @@ class CourseUseCase {
       console.log("called");
 
       let page = parseInt(pageNo) || 1;
-      let limit = parseInt(itemLimit) || 3;
+      let limit = parseInt(itemLimit) || 10;
       if (page < 1) page = 1;
       if (limit < 1) limit = 3;
       const skip = (page - 1) * limit;
