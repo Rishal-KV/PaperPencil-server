@@ -186,8 +186,10 @@ class StudentController {
       const response = await this.studentUseCase.updateImage(token, formData);
       
 
-      if (response?.status) {
+      if (response) {
         res.status(200).json(response);
+      }else{
+        res.status(400).json(response)
       }
     } catch (error) {
       console.log(error);

@@ -32,6 +32,10 @@ const studentSchema = new mongoose_1.Schema({
     },
     googleId: {
         type: String
+    },
+    googleAuth: {
+        type: Boolean,
+        default: false
     }
 });
 const studentModel = (0, mongoose_1.model)('student', studentSchema);

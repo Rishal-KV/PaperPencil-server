@@ -45,6 +45,10 @@ const courseSchema = new mongoose_1.Schema({
             ref: "question",
         },
     ],
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 const courseModel = (0, mongoose_1.model)("course", courseSchema);
 exports.default = courseModel;

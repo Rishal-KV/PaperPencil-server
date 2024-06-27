@@ -10,8 +10,8 @@ interface IStudentRepo {
   updateById(id: string): Promise<void>;
   setForgotPassword(email: string, password: string): Promise<boolean>;
   getStudentById(id:string):Promise<student | null>
-  updateProfile(id:string,data:student):Promise<boolean>
-  updateImage(id:string,image:string):Promise<boolean>
+  updateProfile(id:string,data:student):Promise<student | null>
+  updateImage(id:string,image:string):Promise<student | null>
   updatePassword(email:string,password:string):Promise<boolean>
 }
 

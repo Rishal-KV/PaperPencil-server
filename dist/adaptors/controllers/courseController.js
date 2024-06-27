@@ -60,12 +60,12 @@ class CourseController {
     }
     async fetchCourse(req, res) {
         try {
+            console.log("called controller");
             const search = req.query.search;
             const category = req.query.category;
             const price = req.query.price;
             const page = req.query.page;
             const skip = req.query.skip;
-            console.log(page, "ppp");
             let course = await this.courseUseCase?.fetchCourse(search, category, price, page, skip);
             res.status(200).json({ course: course });
         }
@@ -143,15 +143,31 @@ class CourseController {
     }
     async updateCourse(req, res) {
         try {
-            const courseId = req.body.courseId;
-            const course = req.body.courseData;
-            console.log(courseId, "courseId");
-            const response = await this.courseUseCase?.updateCourse(courseId, course);
-            if (response?.status) {
-                res.status(200).json(response);
-            }
-            else {
-                res.status(401).json(response);
+            console.log(req.body, "okkk");
+            const formData = req.body;
+            if (req.file) {
+                await cloudinary_1.default.uploader
+                    .upload(req.file?.path, { folder: "courses" })
+                    .then((res) => {
+                    if (res.url) {
+                        formData.image = res.url;
+                        console.log(res.url);
+                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                    }
+                    else {
+                        throw Error("unable to get url");
+                    }
+                })
+                    .catch((err) => {
+                    console.log(err);
+                });
+                const response = await this.courseUseCase?.updateCourse(formData.courseId, formData);
+                if (response?.status) {
+                    res.status(200).json(response);
+                }
+                else {
+                    res.status(401).json(response);
+                }
             }
         }
         catch (error) {

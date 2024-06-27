@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import Instructor from "../../domain/instructor";
-const instructorShema = new Schema({
+const instructorShema = new Schema<Instructor>({
   name: {
     type: String,
     require: true,
@@ -32,6 +32,10 @@ const instructorShema = new Schema({
   googleId: {
     type: String,
   },
+  googleAuth : {
+    type : Boolean,
+    default : false
+  }
 });
 
 const instructorModel = mongoose.model<Instructor>(

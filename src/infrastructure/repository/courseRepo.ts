@@ -33,18 +33,15 @@ class CourseRepo implements Icourse {
     skip: number,
     page: number
   ): Promise<{ course: Course[]; page: number; totalPage: number } | null> {
-    console.log(limit, "limit");
+   
 
     try {
-     
-      
       let course = await courseModel
         .find({ instructor: id })
         .limit(limit)
-        .skip(skip);
-      const totalCourse = await courseModel.countDocuments({instructor:id});
-
-
+        .skip(skip)
+        .sort({ createdAt: -1 });
+      const totalCourse = await courseModel.countDocuments({ instructor: id });
 
       if (course) {
         return {
@@ -200,6 +197,7 @@ class CourseRepo implements Icourse {
   }
   async updateCourse(courseId: string, course: Course): Promise<boolean> {
     try {
+      const image = await courseModel.findById(course._id)
       const updated = await courseModel.findOneAndUpdate(
         { _id: courseId },
         {
@@ -207,6 +205,7 @@ class CourseRepo implements Icourse {
           price: course.price,
           category: course.category,
           description: course.description,
+          image : course.image ? course.image : image?.image
         },
         { new: true }
       );

@@ -1,3 +1,4 @@
+import Instructor from "../../domain/instructor";
 import student from "../../domain/student";
 import IStudentRepo from "../../useCase/interface/IStudentRepo";
 import studentModel from "../database/studentModel";
@@ -40,7 +41,7 @@ class StudentRepo implements IStudentRepo {
     try {
       let student = await studentModel.findOne(
         { email },
-        { email: 1, name: 1, profileImage:1 }
+        { email: 1, name: 1, profileImage:1,googleAuth : 1 }
       );
       return student;
     } catch (error) {
@@ -65,6 +66,7 @@ class StudentRepo implements IStudentRepo {
         profileImage: credential.picture,
         about: "",
         number: "",
+        googleAuth : true
       });
       return saved;
     } catch (error) {
@@ -111,7 +113,7 @@ class StudentRepo implements IStudentRepo {
       throw error;
     }
   }
-  async updateProfile(id: string, data: student): Promise<boolean> {
+  async updateProfile(id: string, data: student): Promise<student | null> {
     try {
       let updated = await studentModel.findOneAndUpdate(
         { _id: id },
@@ -119,28 +121,35 @@ class StudentRepo implements IStudentRepo {
           name: data.name,
           number: data.number,
           about: data.about,
-          profileImage: data.profileImage,
+          
         },
         { new: true }
       );
-      if (updated) {
-        return true;
-      } else {
-        return false;
-      }
+     if (updated) {
+      return updated
+     }else{
+      return null
+     }
     } catch (error) {
       throw error;
     }
   }
-  async updateImage(id: string, image: any): Promise<boolean> {
+  async updateImage(id: string, image: any): Promise<student | null > {
     try {
-      let updates = await studentModel.findOneAndUpdate({_id:id},{
-        profileImage : image.image
-      })
+      let updates = await studentModel.findOneAndUpdate(
+        { _id: id },
+        { profileImage: image.image },
+        {
+          new: true,           // Return the modified document rather than the original
+          select: '-password'  // Exclude the password field
+        }
+      );
+      
+      
       if (updates) {
-        return true
+        return updates
       }else{
-        return false
+        return null
       }
     } catch (error) {
       throw error

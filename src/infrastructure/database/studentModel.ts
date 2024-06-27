@@ -35,8 +35,13 @@ const studentSchema: Schema<student> = new Schema({
     },
     googleId:{
         type : String
-    }
+    },
+    
+googleAuth : {
+    type : Boolean,
+    default : false
 
+}
 })
 
 const studentModel = model<student>('student', studentSchema);

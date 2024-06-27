@@ -33,8 +33,8 @@ class StudentUseCase {
       const studentFound: student = (await this.repository.findStudentByEMail(
         studentData.email
       )) as student;
-      console.log(studentFound,"hhhh");
-      
+      console.log(studentFound, "hhhh");
+
       if (studentFound) {
         if (studentFound && studentFound.is_Verified) {
           return {
@@ -56,14 +56,14 @@ class StudentUseCase {
           };
           const otp = this.generateOtp.generateOTP();
           await this.OtpRepo.createOtpCollection(studentData.email, otp);
-         await  this.sendmail.sendMail(studentData.email, parseInt(otp));
+          await this.sendmail.sendMail(studentData.email, parseInt(otp));
           const job = cron.schedule("* * * * *", async () => {
             await this.OtpRepo.removeOtp(studentData.email);
             job.stop();
           });
 
           const jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
-         
+
           return {
             not_verified: true,
             token: jwtToken,
@@ -71,7 +71,7 @@ class StudentUseCase {
         }
       } else {
         console.log("new student");
-        
+
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
         const newStudent = await this.repository.saveStudentToDatabase(
@@ -85,10 +85,9 @@ class StudentUseCase {
         const otp = this.generateOtp.generateOTP();
         await this.sendmail.sendMail(studentData.email, parseInt(otp));
         await this.OtpRepo.createOtpCollection(studentData.email, otp);
-          setTimeout(async () => {
-            await this.OtpRepo.removeOtp(studentData.email);
-            console.log("removed");
-            
+        setTimeout(async () => {
+          await this.OtpRepo.removeOtp(studentData.email);
+          console.log("removed");
         }, 60000); // 60,000 milliseconds = 1 minute
         // const cronjob = cron.schedule("* * * * *", async () => {
         //   await this.OtpRepo.removeOtp(studentData.email);
@@ -99,8 +98,6 @@ class StudentUseCase {
         // });
 
         const jwtToken = jwt.sign(payload, process.env.jwt_secret as string);
-        
-      
 
         return { status: true, Token: jwtToken };
       }
@@ -118,7 +115,10 @@ class StudentUseCase {
 
         if (fetchOtp) {
           if (fetchOtp.otp == otp) {
-            const studentToken = this.Jwt.createToken(decodeToken._id, "student");
+            const studentToken = this.Jwt.createToken(
+              decodeToken._id,
+              "student"
+            );
             const studentData = await this.repository.fetchStudentData(
               decodeToken.email
             );
@@ -225,7 +225,7 @@ class StudentUseCase {
         await this.OtpRepo.createOtpCollection(student.email, otp);
         setTimeout(async () => {
           await this.OtpRepo.removeOtp(student?.email as string);
-      }, 60000); // 60,000 milliseconds = 1 minute
+        }, 60000); // 60,000 milliseconds = 1 minute
         const token = jwt.sign(payload, process.env.jwt_secret as string);
 
         return { status: true, student: student.email, token };
@@ -272,7 +272,7 @@ class StudentUseCase {
     try {
       let updated = await this.repository.updateProfile(studentId, data);
       if (updated) {
-        return { status: true, message: "profile updated successfully" };
+        return { status: true, message: "profile updated successfully",updated };
       }
     } catch (error) {
       console.log(error);
@@ -283,11 +283,11 @@ class StudentUseCase {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
 
-      console.log(decodeToken, "hmm");
-
       let response = await this.repository.updateImage(decodeToken?.id, image);
       if (response) {
-        return { status: true, message: "image updated successfully" };
+        return { updated: response, message: "profile updated successfully!!" };
+      } else {
+        return { updated: response, message: "failed to update!!!" };
       }
     } catch (error) {
       console.log(error);
@@ -325,23 +325,20 @@ class StudentUseCase {
       await this.OtpRepo.createOtpCollection(decodeToken.email, otp);
       setTimeout(async () => {
         await this.OtpRepo.removeOtp(decodeToken.email);
-    }, 60000); // 60,000 milliseconds = 1 minute
-     await  this.sendmail.sendMail(decodeToken.email, parseInt(otp));
+      }, 60000); // 60,000 milliseconds = 1 minute
+      await this.sendmail.sendMail(decodeToken.email, parseInt(otp));
       return { status: true, message: "otp resend successfully" };
     }
   }
 
   async changePassword(password: string, email: string, newPassword: string) {
-    
-    
     try {
       const student = await this.repository.findStudentByEMail(email);
       const verified = await this.bcrypt.encryptPass(
         password,
         student?.password
       );
-      
-      
+
       if (verified) {
         const hashedPass = await this.bcrypt.hashPass(newPassword);
         await this.repository.updatePassword(email, hashedPass as string);

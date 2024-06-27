@@ -48,7 +48,7 @@ class InstructorRepo implements IInstructorRepo {
     try {
       let instructor = await instructorModel.findOne(
         { email },
-        { email: 1, name: 1, about: 1, imageUrl: 1, phone: 1 }
+        { email: 1, name: 1, about: 1, imageUrl: 1, phone: 1, googleAuth: 1 }
       );
       return instructor;
     } catch (error) {
@@ -75,6 +75,7 @@ class InstructorRepo implements IInstructorRepo {
         is_Verified: true,
         googleId: credential.sub,
         imageUrl: credential.picture,
+        googleAuth : true
       });
       return saved;
     } catch (error) {
@@ -114,7 +115,7 @@ class InstructorRepo implements IInstructorRepo {
     }
   }
 
-  async updateImage(id: string, imageUrl: string): Promise<Boolean> {
+  async updateImage(id: string, imageUrl: string): Promise<Instructor | null> {
     try {
       const update = await instructorModel.findOneAndUpdate(
         { _id: id },
@@ -124,6 +125,23 @@ class InstructorRepo implements IInstructorRepo {
         { new: true }
       );
       if (update) {
+        return update;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updatePassword(email: string, password: string): Promise<boolean> {
+    try {
+      const updatePassword = await instructorModel.findOneAndUpdate(
+        { email: email },
+        {
+          $set: { password: password },
+        }
+      );
+      if (updatePassword) {
         return true;
       } else {
         return false;
@@ -132,22 +150,6 @@ class InstructorRepo implements IInstructorRepo {
       throw error;
     }
   }
- async updatePassword(email: string, password: string): Promise<boolean> {
-  try {
-    const updatePassword = await instructorModel.findOneAndUpdate({email:email},{
-      $set :{password:password}
-    })
-    if (updatePassword) {
-      return true
-    }else{
-      return false
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-  
 }
 
 export default InstructorRepo;

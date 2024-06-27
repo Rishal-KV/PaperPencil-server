@@ -40,7 +40,7 @@ class StudentRepo {
     }
     async fetchStudentData(email) {
         try {
-            let student = await studentModel_1.default.findOne({ email }, { email: 1, name: 1, profileImage: 1 });
+            let student = await studentModel_1.default.findOne({ email }, { email: 1, name: 1, profileImage: 1, googleAuth: 1 });
             return student;
         }
         catch (error) {
@@ -62,6 +62,7 @@ class StudentRepo {
                 profileImage: credential.picture,
                 about: "",
                 number: "",
+                googleAuth: true
             });
             return saved;
         }
@@ -113,13 +114,12 @@ class StudentRepo {
                 name: data.name,
                 number: data.number,
                 about: data.about,
-                profileImage: data.profileImage,
             }, { new: true });
             if (updated) {
-                return true;
+                return updated;
             }
             else {
-                return false;
+                return null;
             }
         }
         catch (error) {
@@ -128,14 +128,15 @@ class StudentRepo {
     }
     async updateImage(id, image) {
         try {
-            let updates = await studentModel_1.default.findOneAndUpdate({ _id: id }, {
-                profileImage: image.image
+            let updates = await studentModel_1.default.findOneAndUpdate({ _id: id }, { profileImage: image.image }, {
+                new: true, // Return the modified document rather than the original
+                select: '-password' // Exclude the password field
             });
             if (updates) {
-                return true;
+                return updates;
             }
             else {
-                return false;
+                return null;
             }
         }
         catch (error) {

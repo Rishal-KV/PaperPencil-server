@@ -39,7 +39,7 @@ class InstructorRepo {
     }
     async fetchInstructorData(email) {
         try {
-            let instructor = await instructorModel_1.default.findOne({ email }, { email: 1, name: 1, about: 1, imageUrl: 1, phone: 1 });
+            let instructor = await instructorModel_1.default.findOne({ email }, { email: 1, name: 1, about: 1, imageUrl: 1, phone: 1, googleAuth: 1 });
             return instructor;
         }
         catch (error) {
@@ -62,6 +62,7 @@ class InstructorRepo {
                 is_Verified: true,
                 googleId: credential.sub,
                 imageUrl: credential.picture,
+                googleAuth: true
             });
             return saved;
         }
@@ -102,10 +103,10 @@ class InstructorRepo {
                 imageUrl: imageUrl,
             }, { new: true });
             if (update) {
-                return true;
+                return update;
             }
             else {
-                return false;
+                return null;
             }
         }
         catch (error) {
@@ -115,7 +116,7 @@ class InstructorRepo {
     async updatePassword(email, password) {
         try {
             const updatePassword = await instructorModel_1.default.findOneAndUpdate({ email: email }, {
-                $set: { password: password }
+                $set: { password: password },
             });
             if (updatePassword) {
                 return true;

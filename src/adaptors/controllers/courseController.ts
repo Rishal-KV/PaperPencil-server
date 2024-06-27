@@ -73,14 +73,17 @@ class CourseController {
   }
 
   async fetchCourse(req: Request, res: Response) {
+   
     try {
+      console.log("called controller");
+      
       const search = req.query.search as string;
       const category = req.query.category as string;
       const price = req.query.price as string;
       const page = req.query.page as string;
       const skip = req.query.skip as string;
 
-      console.log(page, "ppp");
+  
 
       let course = await this.courseUseCase?.fetchCourse(
         search,
@@ -173,16 +176,43 @@ class CourseController {
 
   async updateCourse(req: Request, res: Response) {
     try {
-      const courseId = req.body.courseId;
-      const course = req.body.courseData;
-console.log(courseId,"courseId");
+      console.log(req.body,"okkk");
+      
+      const formData = req.body
+      
+      
 
-      const response = await this.courseUseCase?.updateCourse(courseId, course);
-      if (response?.status) {
-        res.status(200).json(response);
-      } else {
-        res.status(401).json(response);
+      if (req.file) {
+        await cloudinary.uploader
+          .upload(req.file?.path, { folder: "courses" })
+          .then((res) => {
+            if (res.url) {
+              formData.image = res.url;
+              console.log(res.url);
+
+              fs.unlinkSync("./src/public/" + req.file?.originalname);
+            } else {
+              throw Error("unable to get url");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+          const response = await this.courseUseCase?.updateCourse(formData.courseId, formData);
+        if (response?.status) {
+          res.status(200).json(response);
+        } else {
+          res.status(401).json(response);
+        }
       }
+     
+     
+
+
+
+    
+    
     } catch (error) {
       console.log(error);
     }

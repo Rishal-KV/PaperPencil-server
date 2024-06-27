@@ -77,7 +77,7 @@ router
     .patch(instructorAuth_1.default, (req, res) => courseController.courseList(req, res));
 router.get("/dashboard", instructorAuth_1.default, (req, res) => instrcutorController.dashboard(req, res));
 router.post("/googleAuth", (req, res) => instrcutorController.googleLogin(req, res));
-router.patch('/update_course', instructorAuth_1.default, (req, res) => courseController.updateCourse(req, res));
+router.patch('/update_course', instructorAuth_1.default, multer_1.default.single('image'), (req, res) => courseController.updateCourse(req, res));
 router
     .route("/chapter")
     .post(instructorAuth_1.default, (req, res) => chapterController.addChapter(req, res))
@@ -105,4 +105,5 @@ router
     .get(instructorAuth_1.default, (req, res) => questionController.fetchQuestion(req, res))
     .delete(instructorAuth_1.default, (req, res) => questionController.removeQuestion(req, res));
 router.post('/change-password', instructorAuth_1.default, (req, res) => instrcutorController.updatePassword(req, res));
+router.post('/generate_token', (req, res) => instrcutorController.generateToken(req, res));
 exports.default = router;

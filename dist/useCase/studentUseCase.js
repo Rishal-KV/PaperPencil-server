@@ -256,7 +256,7 @@ class StudentUseCase {
         try {
             let updated = await this.repository.updateProfile(studentId, data);
             if (updated) {
-                return { status: true, message: "profile updated successfully" };
+                return { status: true, message: "profile updated successfully", updated };
             }
         }
         catch (error) {
@@ -266,10 +266,12 @@ class StudentUseCase {
     async updateImage(token, image) {
         try {
             let decodeToken = this.Jwt.verifyToken(token);
-            console.log(decodeToken, "hmm");
             let response = await this.repository.updateImage(decodeToken?.id, image);
             if (response) {
-                return { status: true, message: "image updated successfully" };
+                return { updated: response, message: "profile updated successfully!!" };
+            }
+            else {
+                return { updated: response, message: "failed to update!!!" };
             }
         }
         catch (error) {

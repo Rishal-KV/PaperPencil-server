@@ -9,5 +9,6 @@ interface Instructor {
   imageUrl:string
   about: string;
   googleId: string;
+  googleAuth : boolean
 }
 export default Instructor;

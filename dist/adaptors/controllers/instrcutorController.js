@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cloudinary_1 = __importDefault(require("../../infrastructure/utils/cloudinary"));
 const fs_1 = __importDefault(require("fs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class InstructorController {
     instructor;
     course;
@@ -117,13 +118,13 @@ class InstructorController {
             console.log(req.file);
             if (req.file) {
                 await cloudinary_1.default.uploader
-                    .upload(req.file?.path, { folder: "profile", resource_type: 'auto' })
+                    .upload(req.file?.path, { folder: "profile", resource_type: "auto" })
                     .then(async (imageUploaded) => {
                     if (imageUploaded.url) {
                         image = imageUploaded.url;
                         const response = await this.instructor.updateImage(token, image);
                         fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
-                        if (response?.status) {
+                        if (response) {
                             res.status(200).json(response);
                         }
                         else {
@@ -165,6 +166,25 @@ class InstructorController {
             }
             else {
                 res.status(204).json(updated);
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async generateToken(req, res) {
+        try {
+            const { roomId, recipientId, senderId } = req.body;
+            let payload = {
+                roomId,
+                recipientId,
+                senderId
+            };
+            const token = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret, {
+                expiresIn: "1h",
+            });
+            if (token) {
+                res.json({ token });
             }
         }
         catch (error) {

@@ -3,6 +3,7 @@ import { Request, Response, json } from "express";
 import CourseUseCase from "../../useCase/courseUseCase";
 import cloudinary from "../../infrastructure/utils/cloudinary";
 import fs from "fs";
+import jwt from "jsonwebtoken";
 class InstructorController {
   private instructor: InstructorUseCase;
   private course: CourseUseCase;
@@ -13,7 +14,9 @@ class InstructorController {
 
   async SignUpAndSendOtp(req: Request, res: Response) {
     try {
-      const resposneFromSignUp = await this.instructor.signUpAndSendOtp(req.body);
+      const resposneFromSignUp = await this.instructor.signUpAndSendOtp(
+        req.body
+      );
       if (resposneFromSignUp && resposneFromSignUp.status) {
         res.status(200).json(resposneFromSignUp);
       } else {
@@ -123,14 +126,14 @@ class InstructorController {
 
       if (req.file) {
         await cloudinary.uploader
-          .upload(req.file?.path, { folder: "profile" ,resource_type:'auto'})
+          .upload(req.file?.path, { folder: "profile", resource_type: "auto" })
           .then(async (imageUploaded) => {
             if (imageUploaded.url) {
               image = imageUploaded.url;
               const response = await this.instructor.updateImage(token, image);
 
               fs.unlinkSync("./src/public/" + req.file?.originalname);
-              if (response?.status) {
+              if (response) {
                 res.status(200).json(response);
               } else {
                 res.status(401).json(response);
@@ -149,8 +152,6 @@ class InstructorController {
   }
   async resendOtp(req: Request, res: Response) {
     try {
-      
-      
       const token = req.body.headers.Authorization as string;
       const resposne = await this.instructor.resendOtp(token);
       if (resposne?.status) {
@@ -174,6 +175,24 @@ class InstructorController {
         res.status(200).json(updated);
       } else {
         res.status(204).json(updated);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async generateToken(req: Request, res: Response) {
+    try {
+      const { roomId, recipientId,senderId } = req.body;
+      let payload = {
+        roomId,
+        recipientId,
+        senderId
+      };
+      const token = jwt.sign(payload, process.env.jwt_secret as string, {
+        expiresIn: "1h",
+      });
+      if (token) {
+        res.json({ token });
       }
     } catch (error) {
       console.log(error);

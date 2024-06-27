@@ -9,6 +9,7 @@ interface student {
     about: string,
     googleId:string
     profileImage:string
+    googleAuth : boolean
 
 }
 export default student

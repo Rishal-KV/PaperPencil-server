@@ -1,4 +1,4 @@
-import mongoose, { model, Schema, Types } from "mongoose";
+import mongoose, { model, now, Schema, Types } from "mongoose";
 import Course from "../../domain/course";
 const courseSchema = new Schema<Course>({
   instructor: {
@@ -46,7 +46,10 @@ const courseSchema = new Schema<Course>({
       ref: "question",
     },
   ],
-  
+  createdAt : {
+    type : Date,
+    default : Date.now
+  }
 });
 const courseModel = model<Course>("course", courseSchema);
 export default courseModel;

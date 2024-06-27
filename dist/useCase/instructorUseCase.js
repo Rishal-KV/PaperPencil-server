@@ -63,7 +63,7 @@ class InstructorUseCase {
                 let savedInstructor = await this.instructorRepo.saveInstructorToDatabase(InstructorData);
                 const payload = {
                     email: savedInstructor?.email,
-                    id: savedInstructor?._id
+                    id: savedInstructor?._id,
                 };
                 const jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                 return { status: true, Token: jwtToken };
@@ -191,13 +191,12 @@ class InstructorUseCase {
     async updateImage(id, imageUrl) {
         try {
             const decodeToken = this.jwt.verifyToken(id);
-            console.log(decodeToken);
             const response = await this.instructorRepo.updateImage(decodeToken?.id, imageUrl);
             if (response) {
-                return { status: true, message: "profile photo updated" };
+                return { updated: response, message: "profile photo updated" };
             }
             else {
-                return { status: false, message: "failed to update" };
+                return response;
             }
         }
         catch (error) {

@@ -31,16 +31,21 @@ class CourseUseCase {
       throw error;
     }
   }
-  async fetchCourseData(token: string,pageNo?:string) {
+  async fetchCourseData(token: string, pageNo?: string) {
     try {
       let decodeToken = this.Jwt.verifyToken(token);
-       const page = parseInt(pageNo as string)
-       console.log(page,"page");
-       
-       const limit = 3;
-       const skip = (page - 1) * limit
+      const page = parseInt(pageNo as string);
+      console.log(page, "page");
+
+      const limit = 10;
+      const skip = (page - 1) * limit;
       if (decodeToken) {
-        let courseData = await this.courseRepo.fetchCourseById(decodeToken.id,limit,skip,page);
+        let courseData = await this.courseRepo.fetchCourseById(
+          decodeToken.id,
+          limit,
+          skip,
+          page
+        );
 
         return courseData;
       }
@@ -49,22 +54,34 @@ class CourseUseCase {
     }
   }
 
-  async fetchCourse(search: string, category: string,price:string,pageNo:string,itemLimit:string) {
+  async fetchCourse(
+    search: string,
+    category: string,
+    price: string,
+    pageNo: string,
+    itemLimit: string
+  ) {
     try {
-     //pagination
-   
-     
-     let page = parseInt(pageNo) || 1;
-     let limit = parseInt(itemLimit) || 3
-     if (page < 1)  page = 1;
-     if(limit < 1) limit = 3;
-     const skip =   (page - 1) * limit
+      //pagination
 
+      console.log("called");
 
-      let course = await this.courseRepo.fetchCourse(search, category,price,limit,skip,page);
-      console.log(course,"course");
-      
-      
+      let page = parseInt(pageNo) || 1;
+      let limit = parseInt(itemLimit) || 3;
+      if (page < 1) page = 1;
+      if (limit < 1) limit = 3;
+      const skip = (page - 1) * limit;
+      console.log(page, "pagge");
+
+      let course = await this.courseRepo.fetchCourse(
+        search,
+        category,
+        price,
+        limit,
+        skip,
+        page
+      );
+
       return course;
     } catch (error) {
       console.log(error);
@@ -73,12 +90,7 @@ class CourseUseCase {
 
   async publishCourse(id: string) {
     try {
-
-    
-
-      
       let chapter = await this.chapterRepo?.findChapterOfCourse(id);
-
 
       if (chapter) {
         if (
@@ -129,7 +141,9 @@ class CourseUseCase {
   }
   async fetchSpecificCourse(id: string) {
     try {
-      let specificCourse:Course = await this.courseRepo.fetchSpecificCourse(id) as Course;
+      let specificCourse: Course = (await this.courseRepo.fetchSpecificCourse(
+        id
+      )) as Course;
       function shuffleArray<T>(array: T[]): T[] {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -137,13 +151,16 @@ class CourseUseCase {
         }
         return array;
       }
-      
-      
+
       if (specificCourse) {
         const shuffledQuestions = shuffleArray(specificCourse.questions);
-        console.log(shuffledQuestions,"shuff");
-        
-        return { status: true, courses: specificCourse,questions:shuffledQuestions };
+        console.log(shuffledQuestions, "shuff");
+
+        return {
+          status: true,
+          courses: specificCourse,
+          questions: shuffledQuestions,
+        };
       } else {
         return { status: false, message: "no course found" };
       }
@@ -152,10 +169,10 @@ class CourseUseCase {
     }
   }
 
-  async updateCourse(courseId: string, course: Course) {
+  async updateCourse(courseId:string, course: Course) {
     try {
-      console.log(courseId, "---->", course);
       
+
       const response = await this.courseRepo.updateCourse(courseId, course);
       if (response) {
         return { status: true, message: "course updated successfully" };

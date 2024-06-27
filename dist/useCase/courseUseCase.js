@@ -31,7 +31,7 @@ class CourseUseCase {
             let decodeToken = this.Jwt.verifyToken(token);
             const page = parseInt(pageNo);
             console.log(page, "page");
-            const limit = 3;
+            const limit = 10;
             const skip = (page - 1) * limit;
             if (decodeToken) {
                 let courseData = await this.courseRepo.fetchCourseById(decodeToken.id, limit, skip, page);
@@ -45,6 +45,7 @@ class CourseUseCase {
     async fetchCourse(search, category, price, pageNo, itemLimit) {
         try {
             //pagination
+            console.log("called");
             let page = parseInt(pageNo) || 1;
             let limit = parseInt(itemLimit) || 3;
             if (page < 1)
@@ -52,8 +53,8 @@ class CourseUseCase {
             if (limit < 1)
                 limit = 3;
             const skip = (page - 1) * limit;
+            console.log(page, "pagge");
             let course = await this.courseRepo.fetchCourse(search, category, price, limit, skip, page);
-            console.log(course, "course");
             return course;
         }
         catch (error) {
@@ -115,7 +116,7 @@ class CourseUseCase {
     }
     async fetchSpecificCourse(id) {
         try {
-            let specificCourse = await this.courseRepo.fetchSpecificCourse(id);
+            let specificCourse = (await this.courseRepo.fetchSpecificCourse(id));
             function shuffleArray(array) {
                 for (let i = array.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -126,7 +127,11 @@ class CourseUseCase {
             if (specificCourse) {
                 const shuffledQuestions = shuffleArray(specificCourse.questions);
                 console.log(shuffledQuestions, "shuff");
-                return { status: true, courses: specificCourse, questions: shuffledQuestions };
+                return {
+                    status: true,
+                    courses: specificCourse,
+                    questions: shuffledQuestions,
+                };
             }
             else {
                 return { status: false, message: "no course found" };
@@ -138,7 +143,6 @@ class CourseUseCase {
     }
     async updateCourse(courseId, course) {
         try {
-            console.log(courseId, "---->", course);
             const response = await this.courseRepo.updateCourse(courseId, course);
             if (response) {
                 return { status: true, message: "course updated successfully" };

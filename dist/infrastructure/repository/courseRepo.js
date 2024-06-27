@@ -28,12 +28,12 @@ class CourseRepo {
         }
     }
     async fetchCourseById(id, limit, skip, page) {
-        console.log(limit, "limit");
         try {
             let course = await courseModel_1.default
                 .find({ instructor: id })
                 .limit(limit)
-                .skip(skip);
+                .skip(skip)
+                .sort({ createdAt: -1 });
             const totalCourse = await courseModel_1.default.countDocuments({ instructor: id });
             if (course) {
                 return {
@@ -172,11 +172,13 @@ class CourseRepo {
     }
     async updateCourse(courseId, course) {
         try {
+            const image = await courseModel_1.default.findById(course._id);
             const updated = await courseModel_1.default.findOneAndUpdate({ _id: courseId }, {
                 name: course.name,
                 price: course.price,
                 category: course.category,
                 description: course.description,
+                image: course.image ? course.image : image?.image
             }, { new: true });
             if (updated) {
                 return true;

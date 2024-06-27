@@ -56,6 +56,10 @@ const instructorShema = new mongoose_1.Schema({
     googleId: {
         type: String,
     },
+    googleAuth: {
+        type: Boolean,
+        default: false
+    }
 });
 const instructorModel = mongoose_1.default.model("instructor", instructorShema);
 exports.default = instructorModel;
