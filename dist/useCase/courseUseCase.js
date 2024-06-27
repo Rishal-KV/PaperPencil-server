@@ -47,7 +47,7 @@ class CourseUseCase {
             //pagination
             console.log("called");
             let page = parseInt(pageNo) || 1;
-            let limit = parseInt(itemLimit) || 3;
+            let limit = parseInt(itemLimit) || 10;
             if (page < 1)
                 page = 1;
             if (limit < 1)

@@ -12,7 +12,7 @@ const doc = new pdfkit_1.default({
 });
 function generateCertificate(stream, name, course, date) {
     doc.pipe(stream);
-    const logoPath = "public/ppBlue.png";
+    const logoPath = "src/public/ppBlue.png";
     // Adding a light blue border
     const borderWidth = 2;
     const borderPadding = 10;
@@ -110,7 +110,7 @@ function generateInvoice(stream, studentName, courseName, price, description, da
     doc.pipe(stream);
     // Generate header
     doc
-        .image("public/ppBlue.png", 50, 45, { width: 100 })
+        .image("src/public/ppBlue.png", 50, 45, { width: 100 })
         .fillColor("#444444")
         // .fontSize(20)
         // .fontSize(10)
