@@ -87,7 +87,7 @@ class CourseRepo {
                 .sort(sortOptions)
                 .populate("instructor")
                 .skip(skipValue)
-                .limit(limit);
+                .limit(limit).populate('category');
             if (courses) {
                 return {
                     courses,

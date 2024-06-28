@@ -109,7 +109,7 @@ class CourseRepo implements Icourse {
         .sort(sortOptions)
         .populate("instructor")
         .skip(skipValue)
-        .limit(limit as number);
+        .limit(limit as number).populate('category');
 
       if (courses) {
         return {

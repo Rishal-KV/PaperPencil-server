@@ -18,24 +18,27 @@ class AdminRepo {
             console.log(error);
         }
     }
-    async findStudentData() {
+    async findStudentData(limit, skip, page) {
         try {
-            let students = await studentModel_1.default.find();
-            return students;
+            const totalCourse = await courseModel_1.default.countDocuments();
+            let students = await studentModel_1.default.find().skip(skip).limit(limit);
+            ;
+            return { student: students, page, totalPage: Math.floor(totalCourse / limit) };
         }
         catch (error) {
             console.log(error);
-            return [];
+            return null;
         }
     }
-    async findInstructorData() {
+    async findInstructorData(limit, skip, page) {
         try {
-            let instructors = await instructorModel_1.default.find();
-            return instructors;
+            const totalCourse = await courseModel_1.default.countDocuments({ publish: true });
+            let instructors = await instructorModel_1.default.find().skip(skip).limit(limit);
+            return { instructor: instructors, page, totalPage: Math.floor(totalCourse / limit) };
         }
         catch (error) {
             console.log(error);
-            return [];
+            return null;
         }
     }
     async blockInstructor(id) {
@@ -78,13 +81,14 @@ class AdminRepo {
             return false;
         }
     }
-    async fetchCourse() {
+    async fetchCourse(limit, skip, page) {
         try {
+            const totalCourse = await courseModel_1.default.countDocuments({ publish: true });
             let course = await courseModel_1.default
-                .find({ publish: true })
+                .find({ publish: true }).sort({ createdAt: -1 }).skip(skip).limit(limit)
                 .populate("instructor");
             if (course) {
-                return course;
+                return { course, page, totalPage: Math.floor(totalCourse / limit) };
             }
             else {
                 return null;

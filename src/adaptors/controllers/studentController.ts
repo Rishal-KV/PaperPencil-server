@@ -173,7 +173,7 @@ class StudentController {
               console.log(res.url);
               console.log(formData, "inside");
 
-              fs.unlinkSync("./src/public/" + req.file?.originalname);
+              fs.unlinkSync("public/" + req.file?.originalname);
             } else {
               throw Error("unable to get url");
             }

@@ -40,7 +40,7 @@ class StudentRepo {
     }
     async fetchStudentData(email) {
         try {
-            let student = await studentModel_1.default.findOne({ email }, { email: 1, name: 1, profileImage: 1, googleAuth: 1 });
+            let student = await studentModel_1.default.findOne({ email }, { email: 1, name: 1, profileImage: 1, googleAuth: 1, about: 1 });
             return student;
         }
         catch (error) {

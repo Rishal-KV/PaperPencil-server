@@ -20,24 +20,27 @@ class AdminRepo implements IAdminRepo {
     }
   }
 
-  async findStudentData(): Promise<student[]> {
+  async findStudentData(limit:number,skip:number,page:number): Promise<{student:student[],page:number,totalPage:number} | null> {
     try {
-      let students = await studentModel.find();
-      return students;
+      const totalCourse = await courseModel.countDocuments();
+      let students = await studentModel.find().skip(skip).limit(limit);;
+      return {student:students,page, totalPage:Math.floor(totalCourse / limit)}
     } catch (error) {
       console.log(error);
 
-      return [];
+      return null;
     }
   }
 
-  async findInstructorData():Promise<Instructor[]> {
+  async findInstructorData(limit:number,skip:number,page:number):Promise<{instructor:Instructor[],page:number,totalPage:number} | null> {
     try {
-      let instructors = await instructorModel.find();
-      return instructors;
+      const totalCourse = await courseModel.countDocuments({publish:true});
+      let instructors = await instructorModel.find().skip(skip).limit(limit);
+       return {instructor:instructors,page, totalPage:Math.floor(totalCourse / limit)}
+      
     } catch (error) {
       console.log(error);
-      return [];
+      return null;
     }
   }
 
@@ -93,13 +96,16 @@ class AdminRepo implements IAdminRepo {
       return false;
     }
   }
-  async fetchCourse(): Promise<Course[] | null> {
+  async fetchCourse(limit:number,skip:number,page:number): Promise<{course:Course[], page:number, totalPage:number} | null> {
     try {
+      const totalCourse = await courseModel.countDocuments({publish:true});
+     
+      
       let course = await courseModel
-        .find({ publish: true })
+        .find({ publish: true }).sort({createdAt:-1}).skip(skip).limit(limit)
         .populate("instructor");
       if (course) {
-        return course;
+        return  {course, page, totalPage:Math.floor(totalCourse / limit)};
       } else {
         return null;
       }

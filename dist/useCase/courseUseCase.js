@@ -45,7 +45,6 @@ class CourseUseCase {
     async fetchCourse(search, category, price, pageNo, itemLimit) {
         try {
             //pagination
-            console.log("called");
             let page = parseInt(pageNo) || 1;
             let limit = parseInt(itemLimit) || 10;
             if (page < 1)

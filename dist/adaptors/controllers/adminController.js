@@ -14,7 +14,9 @@ class adminController {
                 res.status(200).json(foundAdmin);
             }
             else if (!foundAdmin?.status) {
-                res.status(401).json({ status: foundAdmin?.status, message: "invalid password" });
+                res
+                    .status(401)
+                    .json({ status: foundAdmin?.status, message: "invalid password" });
             }
             else {
                 res.json(404).json({ noAdminFound: foundAdmin.adminFound });
@@ -26,7 +28,8 @@ class adminController {
     }
     async getInstructorData(req, res) {
         try {
-            let userData = await this.adminUseCase.getInstructorData();
+            const page = req.query.page == "0" ? 1 : req.query.page;
+            let userData = await this.adminUseCase.getInstructorData(page);
             if (userData) {
                 res.status(200).json(userData);
             }
@@ -40,7 +43,8 @@ class adminController {
     }
     async getStudentData(req, res) {
         try {
-            let studentData = await this.adminUseCase.getStudentData();
+            const page = req.query.page == "0" ? 1 : req.query.page;
+            let studentData = await this.adminUseCase.getStudentData(page);
             if (studentData) {
                 res.status(200).json(studentData);
             }
@@ -48,8 +52,7 @@ class adminController {
                 res.status(401).json({ message: "undable to fetch" });
             }
         }
-        catch (error) {
-        }
+        catch (error) { }
     }
     async instructorAction(req, res) {
         try {
@@ -81,7 +84,8 @@ class adminController {
     }
     async fetchCourse(req, res) {
         try {
-            let courses = await this.adminUseCase.fetchCourse();
+            const page = req.query.page == "0" ? 1 : req.query.page;
+            let courses = await this.adminUseCase.fetchCourse(page);
             res.status(200).json(courses);
         }
         catch (error) {

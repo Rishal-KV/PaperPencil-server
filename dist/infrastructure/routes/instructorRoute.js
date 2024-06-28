@@ -104,6 +104,6 @@ router
     .post(instructorAuth_1.default, (req, res) => questionController.addQuestion(req, res))
     .get(instructorAuth_1.default, (req, res) => questionController.fetchQuestion(req, res))
     .delete(instructorAuth_1.default, (req, res) => questionController.removeQuestion(req, res));
-router.post('/change-password', instructorAuth_1.default, (req, res) => instrcutorController.updatePassword(req, res));
+router.patch('/change-password', instructorAuth_1.default, (req, res) => instrcutorController.updatePassword(req, res));
 router.post('/generate_token', (req, res) => instrcutorController.generateToken(req, res));
 exports.default = router;

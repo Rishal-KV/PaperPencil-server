@@ -158,7 +158,7 @@ class StudentController {
                         formData.image = res.url;
                         console.log(res.url);
                         console.log(formData, "inside");
-                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
                     }
                     else {
                         throw Error("unable to get url");

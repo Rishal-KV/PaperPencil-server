@@ -18,7 +18,7 @@ class CategoryRepo {
     }
     async fetchCategory() {
         try {
-            let category = categoryModel_1.default.find({ is_blocked: false });
+            let category = categoryModel_1.default.find();
             return category;
         }
         catch (error) {

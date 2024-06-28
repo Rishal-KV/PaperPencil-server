@@ -5,15 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateInvoice = exports.generateCertificate = void 0;
 const pdfkit_1 = __importDefault(require("pdfkit"));
-
+const doc = new pdfkit_1.default({
+    size: "A4",
+    margin: 50,
+    layout: "portrait",
+});
 function generateCertificate(stream, name, course, date) {
-    const doc = new pdfkit_1.default({
-        size: "A4",
-        margin: 50,
-        layout: "portrait",
-    });
     doc.pipe(stream);
-    const logoPath = "public/ppBlue.png";
+    const logoPath = "src/public/ppBlue.png";
     // Adding a light blue border
     const borderWidth = 2;
     const borderPadding = 10;
@@ -111,7 +110,7 @@ function generateInvoice(stream, studentName, courseName, price, description, da
     doc.pipe(stream);
     // Generate header
     doc
-        .image("public/ppBlue.png", 50, 45, { width: 100 })
+        .image("src/public/ppBlue.png", 50, 45, { width: 100 })
         .fillColor("#444444")
         // .fontSize(20)
         // .fontSize(10)

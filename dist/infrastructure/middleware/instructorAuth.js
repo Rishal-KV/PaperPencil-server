@@ -11,6 +11,7 @@ let instructor = new instructorRepo_1.default();
 const instructorAuth = async (req, res, next) => {
     try {
         let token = req.headers.authorization;
+        console.log(token, "token");
         if (!token) {
             res.status(401).json({ status: false, message: "no token found!!!" });
         }

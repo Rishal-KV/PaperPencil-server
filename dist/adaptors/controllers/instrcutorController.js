@@ -123,7 +123,7 @@ class InstructorController {
                     if (imageUploaded.url) {
                         image = imageUploaded.url;
                         const response = await this.instructor.updateImage(token, image);
-                        fs_1.default.unlinkSync("./src/public/" + req.file?.originalname);
+                        fs_1.default.unlinkSync("public/" + req.file?.originalname);
                         if (response) {
                             res.status(200).json(response);
                         }

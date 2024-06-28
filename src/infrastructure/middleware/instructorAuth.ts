@@ -11,6 +11,7 @@ export const instructorAuth = async (
 ) => {
   try {
     let token = req.headers.authorization;
+console.log(token,"token");
 
     if (!token) {
       res.status(401).json({ status: false, message: "no token found!!!" });

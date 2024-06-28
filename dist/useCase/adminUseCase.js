@@ -31,17 +31,23 @@ class AdminUseCase {
             console.log(error);
         }
     }
-    async getInstructorData() {
+    async getInstructorData(pageNo) {
         try {
-            let instructorData = await this.adminRepo.findInstructorData();
+            const page = parseInt(pageNo);
+            const limit = 5;
+            const skip = (page - 1) * limit;
+            let instructorData = await this.adminRepo.findInstructorData(limit, skip, page);
             return instructorData;
         }
         catch (error) {
             console.log(error.message);
         }
     }
-    async getStudentData() {
-        let studentData = await this.adminRepo.findStudentData();
+    async getStudentData(pageNo) {
+        const page = parseInt(pageNo);
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        let studentData = await this.adminRepo.findStudentData(limit, skip, page);
         return studentData;
     }
     async blockInstructor(id) {
@@ -62,11 +68,14 @@ class AdminUseCase {
             console.log(error);
         }
     }
-    async fetchCourse() {
+    async fetchCourse(pageNo) {
         try {
-            let course = await this.adminRepo.fetchCourse();
+            const page = parseInt(pageNo);
+            const limit = 5;
+            const skip = (page - 1) * limit;
+            let course = await this.adminRepo.fetchCourse(limit, skip, page);
             if (course) {
-                return { course: course };
+                return course;
             }
             else {
                 throw new Error('no course found');
