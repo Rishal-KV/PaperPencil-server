@@ -22,7 +22,7 @@ class AdminRepo implements IAdminRepo {
 
   async findStudentData(limit:number,skip:number,page:number): Promise<{student:student[],page:number,totalPage:number} | null> {
     try {
-      const totalCourse = await courseModel.countDocuments();
+      const totalCourse = await studentModel.countDocuments();
       let students = await studentModel.find().skip(skip).limit(limit);;
       return {student:students,page, totalPage:Math.floor(totalCourse / limit)}
     } catch (error) {
@@ -34,7 +34,7 @@ class AdminRepo implements IAdminRepo {
 
   async findInstructorData(limit:number,skip:number,page:number):Promise<{instructor:Instructor[],page:number,totalPage:number} | null> {
     try {
-      const totalCourse = await courseModel.countDocuments({publish:true});
+      const totalCourse = await instructorModel.countDocuments();
       let instructors = await instructorModel.find().skip(skip).limit(limit);
        return {instructor:instructors,page, totalPage:Math.floor(totalCourse / limit)}
       

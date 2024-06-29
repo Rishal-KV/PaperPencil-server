@@ -42,8 +42,10 @@ class InstructorUseCase {
                     let jwtToken = jsonwebtoken_1.default.sign(payload, process.env.jwt_secret);
                     return { not_verified: true, Token: jwtToken };
                 }
+                console.log("no suer found");
             }
             else {
+                console.log("no user");
                 const otp = this.generateOtp.generateOTP();
                 await this.sendmail.sendMail(InstructorData.email, parseInt(otp));
                 await this.OtpRepo.createOtpCollection(InstructorData.email, otp);

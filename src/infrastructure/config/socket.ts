@@ -15,6 +15,8 @@ export const initializeSocket = (server: HttpServer) => {
   io.on("connection", (socket) => {
     socket.on("join", ({ userId }) => {
       socket.join(userId);
+      console.log(userId,"user joined");
+      
     });
     socket.on("onlineStatus", (userId) => {
       console.log("onlineStatus emitted by:", userId);
@@ -27,12 +29,14 @@ export const initializeSocket = (server: HttpServer) => {
     });
     socket.on("sendMessage", async ({ text, sender, receiver }) => {
       try {
+     console.log(text,"text");
      
         const conversation = await chatModel.findOneAndUpdate(
           { members: { $all: [sender, receiver] } }, // Filter criteria
           { $set: { updatedAt: new Date(), latestMessage: text } }, // Update object
           { new: true } // Options to return the updated document
         );
+    
         
         if (conversation) {
           const newMessage = await messageModel.create({
@@ -43,6 +47,8 @@ export const initializeSocket = (server: HttpServer) => {
           });
 
           if (newMessage) {
+            console.log(newMessage,"neww");
+            
             io.to(sender).emit("newMessage", { newMessage });
             io.to(receiver).emit("newMessage", { newMessage });
           }

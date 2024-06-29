@@ -20,7 +20,7 @@ class AdminRepo {
     }
     async findStudentData(limit, skip, page) {
         try {
-            const totalCourse = await courseModel_1.default.countDocuments();
+            const totalCourse = await studentModel_1.default.countDocuments();
             let students = await studentModel_1.default.find().skip(skip).limit(limit);
             ;
             return { student: students, page, totalPage: Math.floor(totalCourse / limit) };
@@ -32,7 +32,7 @@ class AdminRepo {
     }
     async findInstructorData(limit, skip, page) {
         try {
-            const totalCourse = await courseModel_1.default.countDocuments({ publish: true });
+            const totalCourse = await instructorModel_1.default.countDocuments();
             let instructors = await instructorModel_1.default.find().skip(skip).limit(limit);
             return { instructor: instructors, page, totalPage: Math.floor(totalCourse / limit) };
         }

@@ -7,15 +7,31 @@ const StudentOtp_1 = __importDefault(require("../database/StudentOtp"));
 class OtpRepo {
     async createOtpCollection(email, otp) {
         try {
-            const otpCreated = await StudentOtp_1.default.create({
-                otp: otp,
-                email: email,
-            });
-            if (otpCreated) {
-                return true;
+            const otpIsthere = await StudentOtp_1.default.findOne({ email: email });
+            if (otpIsthere) {
+                const otpFount = await StudentOtp_1.default.findOneAndUpdate({ email: email }, {
+                    $set: {
+                        otp: otp,
+                    },
+                });
+                if (otpFount) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             else {
-                return false;
+                const otpCreated = await StudentOtp_1.default.create({
+                    otp: otp,
+                    email: email,
+                });
+                if (otpCreated) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         }
         catch (error) {

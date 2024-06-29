@@ -88,6 +88,10 @@ class QuestionController {
       console.log(error);
     }
   }
+  //for testing
+  async sample(req:Request,res:Response){
+    
+  }
 }
 
 export default QuestionController;

@@ -4,14 +4,31 @@ import otpModel from "../database/StudentOtp";
 class OtpRepo implements IOtp {
   async createOtpCollection(email: string, otp: string): Promise<boolean> {
     try {
-      const otpCreated = await otpModel.create({
-        otp: otp,
-        email: email,
-      });
-      if (otpCreated) {
-        return true;
+      const otpIsthere = await otpModel.findOne({ email: email });
+      if (otpIsthere) {
+        const otpFount = await otpModel.findOneAndUpdate(
+          { email: email },
+          {
+            $set: {
+              otp: otp,
+            },
+          }
+        );
+        if (otpFount) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        const otpCreated = await otpModel.create({
+          otp: otp,
+          email: email,
+        });
+        if (otpCreated) {
+          return true;
+        } else {
+          return false;
+        }
       }
     } catch (error) {
       throw error;
