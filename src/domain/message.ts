@@ -3,6 +3,6 @@ interface Message {
   to: string;
   from: string;
   text: string;
-  conversationId : string
+  conversationId: string;
 }
-export default Message
+export default Message;

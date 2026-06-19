@@ -52,7 +52,7 @@ class CategoryUseCase {
   async editCategory(catId: string, cat: string) {
     try {
       const response = await this.CategoryRepo.updateCategory(catId, cat);
-  
+
       if (response) {
         return { status: true, message: "updated succesfully" };
       } else {

@@ -75,11 +75,15 @@ class QuestionUseCase {
     correctOption: number
   ) {
     try {
-      const response = await this.questionRepo.editQuestion(questionId,question,options,correctOption);
-      return {response}
+      const response = await this.questionRepo.editQuestion(
+        questionId,
+        question,
+        options,
+        correctOption
+      );
+      return { response };
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

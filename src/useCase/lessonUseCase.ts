@@ -29,9 +29,12 @@ class LessonUseCase {
     try {
       let deleted = await this.lessonRepo.deleteLesson(lessonId);
       if (deleted) {
-        let deletedChapter = await this.chapterRepo.deleteLesson(chapterId, lessonId);
+        let deletedChapter = await this.chapterRepo.deleteLesson(
+          chapterId,
+          lessonId
+        );
         if (deletedChapter) {
-          return {status:true, message:"chapter deleted successfully"};
+          return { status: true, message: "chapter deleted successfully" };
         }
       }
     } catch (error) {

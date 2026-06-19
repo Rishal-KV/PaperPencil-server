@@ -66,10 +66,9 @@ class InstructorUseCase {
           return { not_verified: true, Token: jwtToken };
         }
         console.log("no suer found");
-        
       } else {
         console.log("no user");
-        
+
         const otp = this.generateOtp.generateOTP();
         await this.sendmail.sendMail(InstructorData.email, parseInt(otp));
         await this.OtpRepo.createOtpCollection(InstructorData.email, otp);
@@ -183,9 +182,8 @@ class InstructorUseCase {
   async googleAuth(credential: any) {
     try {
       let { name, email } = credential;
-      let instrcutorFound = await this.instructorRepo.findInstructorByEmail(
-        email
-      );
+      let instrcutorFound =
+        await this.instructorRepo.findInstructorByEmail(email);
       if (instrcutorFound) {
         if (instrcutorFound.is_blocked) {
           console.log("blocked");
@@ -195,9 +193,8 @@ class InstructorUseCase {
             message: `hey ${name} you are blocked by admin`,
           };
         } else {
-          let instructorData = await this.instructorRepo.fetchInstructorData(
-            email
-          );
+          let instructorData =
+            await this.instructorRepo.fetchInstructorData(email);
           let token = this.jwt.createToken(instrcutorFound._id, "instructor");
           return {
             status: true,

@@ -5,17 +5,18 @@ class EnrolledCourseUseCase {
     this.enrolledCourseRepo = enrolledCourseRepo;
   }
 
-  async checkPayment (studentId:string,courseId:string){
+  async checkPayment(studentId: string, courseId: string) {
     try {
-      const response = await this.enrolledCourseRepo.checkPayment(studentId,courseId);
+      const response = await this.enrolledCourseRepo.checkPayment(
+        studentId,
+        courseId
+      );
       if (response) {
-        return response
-      }else{
-        return response
+        return response;
+      } else {
+        return response;
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
   async enrollCourse(courseId: string, StudentId: string) {
     try {
@@ -46,9 +47,8 @@ class EnrolledCourseUseCase {
   }
   async enrolledCourse(studentId: string) {
     try {
-      const response = await this.enrolledCourseRepo.fetchEnrolledCourse(
-        studentId
-      );
+      const response =
+        await this.enrolledCourseRepo.fetchEnrolledCourse(studentId);
       if (response) {
         return { status: true, courses: response };
       } else {
@@ -117,9 +117,8 @@ class EnrolledCourseUseCase {
   }
   async fetchMonthlySales(instructorId: string) {
     try {
-      const response = await this.enrolledCourseRepo.fetchMonthlySales(
-        instructorId
-      );
+      const response =
+        await this.enrolledCourseRepo.fetchMonthlySales(instructorId);
       return response;
     } catch (error) {
       console.log(error);
@@ -145,28 +144,28 @@ class EnrolledCourseUseCase {
         studentId
       );
       if (response) {
-        return {  response };
+        return { response };
       } else {
-        return {  response };
+        return { response };
       }
     } catch (error) {
       console.log(error);
     }
   }
-  async generateInvoice(courseId:string,studentId:string){
+  async generateInvoice(courseId: string, studentId: string) {
     try {
-      const purachased = await this.enrolledCourseRepo.courseData(courseId,studentId);
+      const purachased = await this.enrolledCourseRepo.courseData(
+        courseId,
+        studentId
+      );
       if (purachased) {
-        return purachased
-      }else{
-        null
+        return purachased;
+      } else {
+        null;
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
-
-
 }
 export default EnrolledCourseUseCase;

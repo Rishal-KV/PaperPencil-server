@@ -22,9 +22,8 @@ class AdminUseCase {
           adminFound.password
         );
         if (verifyPassword) {
-         
-          let token = this.Jwt.createToken(adminFound._id,"admin");
-          return { status: true, token: token,admin : adminFound.email };
+          let token = this.Jwt.createToken(adminFound._id, "admin");
+          return { status: true, token: token, admin: adminFound.email };
         } else {
           return { status: false };
         }
@@ -36,27 +35,29 @@ class AdminUseCase {
     }
   }
 
-  async getInstructorData(pageNo:string) {
+  async getInstructorData(pageNo: string) {
     try {
       const page = parseInt(pageNo as string);
-     
 
       const limit = 5;
       const skip = (page - 1) * limit;
-      let instructorData = await this.adminRepo.findInstructorData(limit,skip,page);
+      let instructorData = await this.adminRepo.findInstructorData(
+        limit,
+        skip,
+        page
+      );
       return instructorData;
     } catch (error: any) {
       console.log(error.message);
     }
   }
 
-  async getStudentData(pageNo:string) {
+  async getStudentData(pageNo: string) {
     const page = parseInt(pageNo as string);
-     
 
     const limit = 5;
     const skip = (page - 1) * limit;
-    let studentData = await this.adminRepo.findStudentData(limit,skip,page);
+    let studentData = await this.adminRepo.findStudentData(limit, skip, page);
     return studentData;
   }
 
@@ -77,31 +78,28 @@ class AdminUseCase {
       console.log(error);
     }
   }
-  async fetchCourse(pageNo:string){
+  async fetchCourse(pageNo: string) {
     try {
       const page = parseInt(pageNo as string);
-     
 
       const limit = 5;
       const skip = (page - 1) * limit;
-      let course = await this.adminRepo.fetchCourse(limit,skip,page);
+      let course = await this.adminRepo.fetchCourse(limit, skip, page);
       if (course) {
-        return course
-      }else{
-        throw new Error('no course found')
+        return course;
+      } else {
+        throw new Error("no course found");
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
   async fetchProfit() {
     try {
       const profit = await this.adminRepo.fetchProfit();
-      return profit
+      return profit;
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

@@ -4,17 +4,15 @@ interface EnrolledCourse {
   course: string;
   studentId: string;
 
-  enrolled:Date;
-  completedChapters:[]
-  completedLessons:[];
-  attendedQuestions :[]
-  completedDate : Date
-  courseStatus:boolean
-  payment : boolean
-  
+  enrolled: Date;
+  completedChapters: [];
+  completedLessons: [];
+  attendedQuestions: [];
+  completedDate: Date;
+  courseStatus: boolean;
+  payment: boolean;
 }
 export default EnrolledCourse;
-
 
 export interface Response {
   studentId: Student;
@@ -25,4 +23,3 @@ export interface Response {
 export interface IsCourseCompleted {
   response?: Response;
 }
-

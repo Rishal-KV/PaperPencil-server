@@ -1,5 +1,5 @@
-interface Chat{
-    members : string[]
+interface Chat {
+  members: string[];
 }
 
-export default Chat
+export default Chat;

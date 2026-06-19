@@ -29,8 +29,7 @@ class ReviewUseCase {
       // console.log("check review");
 
       let reviewAdded = await this.reviewRepo.checkReview(studentId, courseId);
-    
-      
+
       if (reviewAdded) {
         return { status: true };
       } else {
@@ -44,7 +43,7 @@ class ReviewUseCase {
     try {
       const response = await this.reviewRepo.fetchReview(courseId);
       console.log(response);
-      
+
       if (response) {
         return response;
       } else {

@@ -1,7 +1,7 @@
-interface Category{
-    _id : string,
-    name : string,
-    is_blocked : boolean
+interface Category {
+  _id: string;
+  name: string;
+  is_blocked: boolean;
 }
 
-export default Category
+export default Category;

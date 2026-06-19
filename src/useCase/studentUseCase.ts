@@ -74,9 +74,8 @@ class StudentUseCase {
 
         let hashedPass = await this.bcrypt.hashPass(studentData.password);
         hashedPass ? (studentData.password = hashedPass) : "";
-        const newStudent = await this.repository.saveStudentToDatabase(
-          studentData
-        );
+        const newStudent =
+          await this.repository.saveStudentToDatabase(studentData);
         const payload: { email: string; role: string; _id: string } = {
           email: studentData.email,
           role: "student",
@@ -272,7 +271,11 @@ class StudentUseCase {
     try {
       let updated = await this.repository.updateProfile(studentId, data);
       if (updated) {
-        return { status: true, message: "profile updated successfully",updated };
+        return {
+          status: true,
+          message: "profile updated successfully",
+          updated,
+        };
       }
     } catch (error) {
       console.log(error);

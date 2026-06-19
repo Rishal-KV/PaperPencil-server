@@ -1,6 +1,6 @@
 interface Favourites {
-    studentId:string,
-    favourites : string[]
+  studentId: string;
+  favourites: string[];
 }
 
-export default Favourites
+export default Favourites;

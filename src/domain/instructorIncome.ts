@@ -1,6 +1,6 @@
 interface InstructorIncome {
-    _id: null;
-    totalIncome: number;
-  }
+  _id: null;
+  totalIncome: number;
+}
 
-  export default InstructorIncome
+export default InstructorIncome;

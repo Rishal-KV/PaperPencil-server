@@ -64,7 +64,6 @@ class CourseUseCase {
     try {
       //pagination
 
-
       let page = parseInt(pageNo) || 1;
       let limit = parseInt(itemLimit) || 10;
       if (page < 1) page = 1;
@@ -168,10 +167,8 @@ class CourseUseCase {
     }
   }
 
-  async updateCourse(courseId:string, course: Course) {
+  async updateCourse(courseId: string, course: Course) {
     try {
-      
-
       const response = await this.courseRepo.updateCourse(courseId, course);
       if (response) {
         return { status: true, message: "course updated successfully" };
