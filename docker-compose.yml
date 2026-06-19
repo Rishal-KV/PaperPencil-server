@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: paper-pencil-server
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    # restart: unless-stopped
+    # If you need a database like MongoDB locally, you can uncomment the lines below:
+    # depends_on:
+    #   - mongo
+    
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: paper-pencil-mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo-data:/data/db
+
+volumes:
+  mongo-data:
