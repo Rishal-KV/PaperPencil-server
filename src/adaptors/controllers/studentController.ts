@@ -40,6 +40,12 @@ class StudentController {
 
       const response = await this.studentUseCase.authenticate(token, otp);
       if (response?.status) {
+        res.cookie("refreshToken", response.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
         res.status(200).json(response);
       } else {
         res.status(401).json(response);
@@ -61,6 +67,12 @@ class StudentController {
 
       if (verifiedStudent && verifiedStudent.status) {
         if (verifiedStudent.status) {
+          res.cookie("refreshToken", verifiedStudent.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
           return res.status(200).json({
             verifiedStudent,
           });
@@ -80,6 +92,12 @@ class StudentController {
 
       const response = await this.studentUseCase.googleAuth(req.body);
       if (response?.status) {
+        res.cookie("refreshToken", response.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
         res
           .cookie("studentToken", response.token, {
             expires: new Date(Date.now() + 25892000000),

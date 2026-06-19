@@ -3,6 +3,7 @@ import cors from "cors";
 import studentRoute from "../routes/studentRoute";
 import instructorRouter from "../routes/instructorRoute";
 import adminRoute from "../routes/adminRoute";
+import authRoute from "../routes/authRoute";
 import cookieParser from "cookie-parser";
 
 export const createServer = () => {
@@ -22,6 +23,7 @@ export const createServer = () => {
     app.use("/student", studentRoute);
     app.use("/instructor", instructorRouter);
     app.use("/admin", adminRoute);
+    app.use("/auth", authRoute);
 
     return app;
   } catch (error) {

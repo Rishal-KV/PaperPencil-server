@@ -118,6 +118,10 @@ class StudentUseCase {
               decodeToken._id,
               "student"
             );
+            const refreshToken = this.Jwt.createRefreshToken(
+              decodeToken._id,
+              "student"
+            );
             const studentData = await this.repository.fetchStudentData(
               decodeToken.email
             );
@@ -125,6 +129,7 @@ class StudentUseCase {
             return {
               status: true,
               token: studentToken,
+              refreshToken: refreshToken,
               studentData: studentData,
             };
           } else {
@@ -156,9 +161,11 @@ class StudentUseCase {
         return { status: false, message: "user is blocked" };
       } else {
         let token = this.Jwt.createToken(studentFound._id, "student");
+        let refreshToken = this.Jwt.createRefreshToken(studentFound._id, "student");
         return {
           status: true,
           token: token,
+          refreshToken: refreshToken,
           student: student,
           message: `welcome ${studentFound.name}`,
         };
@@ -184,21 +191,25 @@ class StudentUseCase {
         } else {
           let studentData = await this.repository.fetchStudentData(email);
           let token = this.Jwt.createToken(studentData?._id, "student");
+          let refreshToken = this.Jwt.createRefreshToken(studentData?._id, "student");
           return {
             status: true,
             message: `hey ${name} welcome back!!`,
             token,
+            refreshToken,
             studentData,
           };
         }
       } else {
         let student = await this.repository.saveGoogleAuth(credential);
         let token = this.Jwt.createToken(student._id, "student");
+        let refreshToken = this.Jwt.createRefreshToken(student._id, "student");
         let studentData = await this.repository.fetchStudentData(email);
         return {
           status: true,
           message: `welcome ${name} let's learn logether`,
           token,
+          refreshToken,
           studentData,
         };
       }
