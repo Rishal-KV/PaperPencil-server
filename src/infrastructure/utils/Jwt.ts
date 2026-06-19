@@ -15,10 +15,23 @@ class Jwt {
   createToken(id: string | undefined, role: string): string {
     try {
       let payLoad = { id, role };
-      const token = sign(payLoad, this.secretKey, { expiresIn: "2d" });
+      // Access token lives for 15 minutes
+      const token = sign(payLoad, this.secretKey, { expiresIn: "15m" });
       return token;
     } catch (error) {
-      console.error("Error creating token:", error);
+      console.error("Error creating access token:", error);
+      throw error;
+    }
+  }
+
+  createRefreshToken(id: string | undefined, role: string): string {
+    try {
+      let payLoad = { id, role };
+      // Refresh token lives for 7 days
+      const token = sign(payLoad, this.secretKey, { expiresIn: "7d" });
+      return token;
+    } catch (error) {
+      console.error("Error creating refresh token:", error);
       throw error;
     }
   }
